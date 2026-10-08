@@ -19,7 +19,39 @@ Player::~Player()
 {
 }
 
-void Player::Init()
+void Player::Draw()
+{
+	if (!isAlive_) return;
+
+	object3D_.Draw();
+
+	auto lHPos = MV1GetFramePosition(object3D_.handleId, 11);
+
+#ifdef _DEBUG
+	DrawLine3D(lHPos, Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xffff00u);
+
+	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
+		velocity_.XZ().Length(), velocity_.x, velocity_.z);
+#endif
+}
+
+void Player::Spawn()
+{
+	object3D_.position = PLAYER_POSITION_INIT;
+
+	isAlive_ = true;
+	hp_ = 1;
+	invincible_ = 3.0f;
+
+	object3D_.Update();
+}
+
+int Player::GetInputNumber() const
+{
+	return INPUT_NUM;
+}
+
+void Player::InitModel()
 {
 	auto i = static_cast<int>(ResourceManager::SRC::MODEL_PLAYER);
 
@@ -40,36 +72,13 @@ void Player::Init()
 		object3D_.position + Vector3(0, -4, 0),
 		object3D_.position + Vector3(0, 54, 0),
 	};
-
-	object3D_.Update();
 }
 
-void Player::Draw()
+void Player::InitAnim()
 {
-	if (!isAlive_) return;
-
-	object3D_.Draw();
-
-#ifdef _DEBUG
-	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
-		velocity_.XZ().Length(), velocity_.x, velocity_.z);
-#endif
-}
-
-void Player::Spawn()
-{
-	object3D_.position = PLAYER_POSITION_INIT;
-
-	isAlive_ = true;
-	hp_ = 1;
-	invincible_ = 3.0f;
-
-	object3D_.Update();
-}
-
-int Player::GetInputNumber() const
-{
-	return INPUT_NUM;
+	anim_ = std::make_unique<Animation>(object3D_.handleId);
+	anim_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0, 30.0f);
+	anim_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
 }
 
 void Player::Move()
@@ -123,5 +132,12 @@ void Player::Move()
 	}
 
 	// ê≥ñ ÇÉJÉÅÉâÇÃå¸Ç´Ç…ìØä˙
-	object3D_.rotation.y = CAM_ROT_Y;
+	object3D_.rotation.y =
+		LookRotation(scnMng_.GetCameraPtr().GetTargetPosition() - object3D_.position).ToEuler().y;
+
+
+	if (object3D_.position.y <= -1000.0f)
+	{
+		object3D_.position.y = 0.0f;
+	}
 }

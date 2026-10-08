@@ -15,7 +15,7 @@ bool GameScene::Init()
     player_->Init();
     player_->AddAwayCollider(stage_->GetStageObject().collider);
 
-    SceneManager::GetInstance().GetCameraPtr().SetFollowTarget(player_->GetObject3D());
+    SceneManager::GetInstance().GetCameraPtr().SetFollowTarget(&player_->GetObject3D());
 
     return true;
 }

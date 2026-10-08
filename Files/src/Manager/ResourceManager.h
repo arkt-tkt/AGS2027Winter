@@ -34,12 +34,16 @@ public:
 	// リソース名
 	enum class SRC
 	{
+		NONE = -1,
+
 		IMAGE_LOGO,
 		IMAGE_TITLE,
 
 		MODEL_STAGE,
 		MODEL_SKYDOME,
 		MODEL_PLAYER,
+		ANIME_IDLE,
+		ANIME_RIFLE_IDLE,
 
 		MAX
 	};
@@ -57,6 +61,7 @@ public:
 	const Resource& Reload(SRC src);
 
 	// リソースの複製ロード(モデル用)
+	// @return 複製したモデルのハンドルID
 	int LoadModelDuplicate(SRC src);
 
 	// 全リソースの一括非同期ロード

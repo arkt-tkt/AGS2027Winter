@@ -18,13 +18,19 @@ ActorBase3D::~ActorBase3D()
 	Release();
 }
 
-const Object3D* ActorBase3D::GetObject3D() const
+void ActorBase3D::Init()
 {
-	return &object3D_;
+	InitModel();
+
+	InitAnim();
+
+	object3D_.Update();
 }
 
 void ActorBase3D::Update()
 {
+	if (anim_) anim_->Update();
+
 	Move();
 
 	object3D_.position += velocity_;
@@ -40,6 +46,11 @@ void ActorBase3D::Release()
 {
 	isAlive_ = false;
 	object3D_.Release();
+}
+
+const Object3D& ActorBase3D::GetObject3D() const
+{
+	return object3D_;
 }
 
 bool ActorBase3D::IsAlive() const
@@ -107,9 +118,21 @@ void ActorBase3D::CollisionCapsule()
 		{
 			auto hit = hits.Dim[i];
 
+			// 法線が天井と思しき場合
+			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f && velocity_.y > 0.0f)
+			{
+				// 上下移動速度を殺す
+				velocity_.y = 0.0f;
+			}
+			// 法線と自分の移動方向が近しい場合
+			else if (Dot(velocity_, VECToVec3(hit.Normal)) >= 0.0f)
+			{
+				// 薄い壁を抜ける原因になってしまうため、この接触判定は触らない
+				continue;
+			}
+
 			for (int tryCnt = 0; tryCnt < 40; tryCnt++)
 			{
-
 				int pHit = HitCheck_Capsule_Triangle(
 					Vec3ToVEC(object3D_.collider->GetColliderData().pos1),
 					Vec3ToVEC(object3D_.collider->GetColliderData().pos2),
@@ -140,10 +163,13 @@ void ActorBase3D::CollisionGravity()
 
 		if (dat.type != Collider3D::TYPE::STAGE) continue;
 
+		Vector3 col1 = object3D_.position + lineCollider_.first;
+		Vector3 col2 = object3D_.position + lineCollider_.second;
+
 		auto hits = MV1CollCheck_LineDim(
 			dat.handleId, -1,
-			Vec3ToVEC(object3D_.position + lineCollider_.first),
-			Vec3ToVEC(object3D_.position + lineCollider_.second));
+			Vec3ToVEC(col1),
+			Vec3ToVEC(col2));
 
 		if (hits.HitNum && Dot(Vector3(0, velocity_.y, 0), Vector3(0, -1, 0)) > 0.0f)
 		{

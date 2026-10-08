@@ -19,8 +19,8 @@ void Stage::Init()
 {
 	stage_.handleId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_STAGE).handleId_;
 	stage_.position = 0.0f;
-	stage_.localPosition = Position3(0.0f, 1080.0f, 0.0f);
-	stage_.scale = 0.3f;
+	stage_.localPosition = Position3(0.0f, 0.0f, 0.0f);
+	stage_.scale = 0.5f;
 	stage_.collider = std::make_shared<Collider3D>(Collider3D::TYPE::STAGE, stage_.handleId);
 
 	skyDome_.handleId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_SKYDOME).handleId_;

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include "Common/Animation.h"
 #include "Common/Object3D.h"
 
 class ResourceManager;
@@ -9,8 +10,8 @@ class SceneManager;
 class ActorBase3D
 {
 public:
-	static constexpr float GRAVITY_POW = 80.0f;
-	static constexpr float JUMP_POW = 15.0f;
+	static constexpr float GRAVITY_POW = 60.0f;
+	static constexpr float JUMP_POW = 10.0f;
 
 	// コンストラクタ
 	ActorBase3D(bool alive = true);
@@ -18,7 +19,7 @@ public:
 	virtual ~ActorBase3D();
 
 	// 初期化処理
-	virtual void Init() = 0;
+	void Init();
 	// 更新処理
 	void Update();
 	// 描画処理
@@ -27,7 +28,7 @@ public:
 	void Release();
 
 	// Object3Dを取得
-	const Object3D* GetObject3D() const;
+	const Object3D& GetObject3D() const;
 	// 生存フラグを取得
 	virtual bool IsAlive() const;
 	// HPを取得
@@ -50,6 +51,8 @@ protected:
 
 	// オブジェクトの基本情報
 	Object3D object3D_;
+	// アニメータ
+	std::unique_ptr<Animation> anim_;
 	// 地面用線分コライダ
 	std::pair<Vector3, Vector3> lineCollider_;
 	// 衝突判定を取るコライダ
@@ -76,6 +79,11 @@ protected:
 	bool isLanding_ = true;
 	// ダッシュ状態
 	bool isSprinting_ = false;
+
+	// モデル初期化
+	virtual void InitModel() = 0;
+	// アニメ初期化
+	virtual void InitAnim() = 0;
 
 	// 移動処理
 	virtual void Move();

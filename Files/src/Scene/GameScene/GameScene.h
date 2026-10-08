@@ -14,6 +14,8 @@ public:
     bool Release() override;
 
 private:
+    static constexpr float MIN_Z_POS = -1000.0f;
+
     static constexpr float LOSS_STABILITY_PER_SECOND = -0.8f;
     static constexpr float GAIN_STABILITY_PER_SECOND = 0.2f;
     static constexpr float MAX_STABILITY = 100.0f;

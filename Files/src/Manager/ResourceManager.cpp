@@ -35,7 +35,7 @@ void ResourceManager::Init()
 	//res = std::make_unique<RES>(RES_T::IMAGE, "Image.png");
 	//resourcesMap_.emplace(SRC::IMAGE, std::move(res));
 	
-	res = std::make_unique<RES>(RES_T::MODEL, "Stage/chicken-gun-fruzer-polygon/source/base01truefull.mv1");
+	res = std::make_unique<RES>(RES_T::MODEL, "Stage/fruzer-city/city.mv1");
 	resourcesMap_.emplace(SRC::MODEL_STAGE, std::move(res));
 	
 	res = std::make_unique<RES>(RES_T::MODEL, "Stage/SkyDome/Skydome.mv1");
@@ -43,6 +43,12 @@ void ResourceManager::Init()
 	
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Player/character.mv1");
 	resourcesMap_.emplace(SRC::MODEL_PLAYER, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/standing_idle.mv1");
+	resourcesMap_.emplace(SRC::ANIME_IDLE, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/rifle_aiming_idle.mv1");
+	resourcesMap_.emplace(SRC::ANIME_RIFLE_IDLE, std::move(res));
 }
 
 void ResourceManager::Release()

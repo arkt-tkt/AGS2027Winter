@@ -10,7 +10,6 @@ public:
 	Player(int player_num);
 	virtual ~Player();
 
-	virtual void Init() override;
 	virtual void Draw() override;
 
 	void Spawn();
@@ -32,6 +31,9 @@ private:
 
 	const int PLAYER_NUM;
 	const int INPUT_NUM;
+
+	virtual void InitModel() override;
+	virtual void InitAnim() override;
 
 	virtual void Move() override;
 

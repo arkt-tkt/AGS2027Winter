@@ -29,6 +29,7 @@
     <ClCompile Include="src\Shader\PostEffect.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="src\Object\Stage.cpp" />
+    <ClCompile Include="src\Object\Common\Animation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -62,6 +63,7 @@
     <ClInclude Include="src\Shader\PostEffect.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
     <ClInclude Include="src\Object\Stage.h" />
+    <ClInclude Include="src\Object\Common\Animation.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

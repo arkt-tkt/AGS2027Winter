@@ -120,6 +120,8 @@ void Camera::ChangeCameraMode(MODE mode) { mode_ = mode; }
 
 const Vector3& Camera::GetPosition() const { return pos_; }
 
+const Vector3& Camera::GetTargetPosition() const { return targetPos_; }
+
 const Vector3& Camera::GetAngles() const { return angles_; }
 
 Camera::MODE Camera::GetCameraMode() const { return mode_; }
