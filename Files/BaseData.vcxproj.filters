@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Manager\ScoreManager.cpp" />
+    <ClCompile Include="src\Object\ActorBase3D.cpp" />
+    <ClCompile Include="src\Object\Camera.cpp" />
+    <ClCompile Include="src\Object\Common\Collider2D.cpp" />
+    <ClCompile Include="src\Manager\Resource.cpp" />
+    <ClCompile Include="src\Manager\ResourceManager.cpp" />
+    <ClCompile Include="src\Object\ActorBase2D.cpp" />
+    <ClCompile Include="src\Object\Common\Collider3D.cpp" />
+    <ClCompile Include="src\Object\Common\Object2D.cpp" />
+    <ClCompile Include="src\Object\Common\Object3D.cpp" />
+    <ClCompile Include="src\Object\Player.cpp" />
+    <ClCompile Include="src\Manager\Gamepad.cpp" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Common\Fader.cpp" />
+    <ClCompile Include="src\Common\Geometry.cpp" />
+    <ClCompile Include="src\Common\DxLibUtil.cpp" />
+    <ClCompile Include="src\Common\MathUtil.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Manager\AudioManager.cpp" />
+    <ClCompile Include="src\Manager\FPSManager.cpp" />
+    <ClCompile Include="src\Manager\InputManager.cpp" />
+    <ClCompile Include="src\Manager\SceneManager.cpp" />
+    <ClCompile Include="src\Scene\SceneBase.cpp" />
+    <ClCompile Include="src\Scene\TitleScene\TitleScene.cpp" />
+    <ClCompile Include="src\Common\Utility.cpp" />
+    <ClCompile Include="src\Shader\PostEffect.cpp" />
+    <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
+    <ClCompile Include="src\Object\Stage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Manager\ScoreManager.h" />
+    <ClInclude Include="src\Object\ActorBase3D.h" />
+    <ClInclude Include="src\Object\Camera.h" />
+    <ClInclude Include="src\Object\Common\Collider2D.h" />
+    <ClInclude Include="src\Manager\Resource.h" />
+    <ClInclude Include="src\Manager\ResourceManager.h" />
+    <ClInclude Include="src\Object\ActorBase2D.h" />
+    <ClInclude Include="src\Object\Common\Collider3D.h" />
+    <ClInclude Include="src\Object\Common\Object2D.h" />
+    <ClInclude Include="src\Object\Common\Object3D.h" />
+    <ClInclude Include="src\Object\Player.h" />
+    <ClInclude Include="src\Manager\Gamepad.h" />
+    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Common\Fader.h" />
+    <ClInclude Include="src\Common\Geometry.h" />
+    <ClInclude Include="src\Common\DxLibUtil.h" />
+    <ClInclude Include="src\Common\MathUtil.h" />
+    <ClInclude Include="src\Manager\AudioManager.h" />
+    <ClInclude Include="src\Manager\FPSManager.h" />
+    <ClInclude Include="src\Manager\InputManager.h" />
+    <ClInclude Include="src\Manager\SceneManager.h" />
+    <ClInclude Include="src\Scene\SceneBase.h" />
+    <ClInclude Include="src\Scene\TitleScene\TitleScene.h" />
+    <ClInclude Include="src\Object\Common\Object3D.h" />
+    <ClInclude Include="src\Object\ActorBase3D.h" />
+    <ClInclude Include="src\Object\Camera.h" />
+    <ClInclude Include="src\Object\Common\Collider3D.h" />
+    <ClInclude Include="src\Common\Utility.h" />
+    <ClInclude Include="src\Shader\PostEffect.h" />
+    <ClInclude Include="src\Scene\GameScene\GameScene.h" />
+    <ClInclude Include="src\Object\Stage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />
+    <FxCompile Include="src\Shader\Pixel\StandardPS.hlsl" />
+    <FxCompile Include="src\Shader\PostEffect\StarrySky.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Text\json\BossParameter.json" />
+    <None Include="Data\Text\json\SpecialAttack.json" />
+    <None Include="Data\Text\json\PlayerWeaponData.json" />
+    <None Include="Data\Text\json\EnemyPhaseData02.json" />
+    <None Include="Data\Shader\StarrySky.pso" />
+    <None Include="Data\Text\json\EnemyPhaseData01.json" />
+    <None Include="Data\Text\json\EnemyPhaseData03.json" />
+  </ItemGroup>
+</Project>
