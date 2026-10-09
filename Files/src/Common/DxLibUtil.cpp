@@ -168,3 +168,7 @@ VECTOR DxLibUtil::GetScreenPosToWorldPos(const VECTOR& worldPos, int scr_x, int 
 
 	return screenPos;
 }
+
+void DxLibUtil::DrawStringToCenterPos(int center_x, int y, const char* string, unsigned int color)
+{
+}

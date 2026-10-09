@@ -10,8 +10,8 @@ class SceneManager;
 class ActorBase3D
 {
 public:
-	static constexpr float GRAVITY_POW = 60.0f;
-	static constexpr float JUMP_POW = 10.0f;
+	static constexpr float GRAVITY_POW = 50.0f;
+	static constexpr float JUMP_POW = 7.0f;
 
 	// コンストラクタ
 	ActorBase3D(bool alive = true);
@@ -27,21 +27,21 @@ public:
 	// 解放処理
 	void Release();
 
-	// Object3Dを取得
-	const Object3D& GetObject3D() const;
-	// 生存フラグを取得
-	virtual bool IsAlive() const;
-	// HPを取得
-	float GetHP() const;
 	// HPを計算
 	virtual void CalcHP(float add);
-	// 無敵状態を取得
-	bool IsInvincible() const;
-	// スコアの値を取得
-	const int GetScoreValue() const;
-
 	// 衝突判定を取る相手を追加
 	void AddAwayCollider(std::weak_ptr<Collider3D> col);
+
+	// Object3Dを取得
+	const Object3D& GetObject3D() const { return object3D_; }
+	// 生存フラグを取得
+	virtual const bool& IsAlive() const { return isAlive_; }
+	// HPを取得
+	float GetHP() const { return hp_; }
+	// 無敵状態を取得
+	bool IsInvincible() const { return invincible_ < 0.0f; }
+	// スコアの値を取得
+	const int GetScoreValue() const { return scoreValue_; }
 
 protected:
 	// シングルトン参照

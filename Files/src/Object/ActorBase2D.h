@@ -14,7 +14,7 @@ public:
 	ActorBase2D();
 
 	// デストラクタ
-	~ActorBase2D();
+	virtual ~ActorBase2D();
 
 	virtual void Init() = 0;
 	virtual void Update() = 0;

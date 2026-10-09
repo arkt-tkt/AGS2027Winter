@@ -43,7 +43,7 @@ public:
 	// MODEL
 	Collider3D(TYPE type, int handle_id);
 
-	~Collider3D();
+	virtual ~Collider3D();
 
 	void Update(Position3 world_pos, Vector3 world_rot);
 	void UpdateAlt(Position3 world_pos1, Vector3 world_pos2);

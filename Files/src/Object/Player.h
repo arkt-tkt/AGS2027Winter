@@ -10,13 +10,13 @@ public:
 	Player(int player_num);
 	virtual ~Player();
 
-	virtual void Draw() override;
+	void Draw() override;
 
 	void Spawn();
-	int GetInputNumber() const;
 
 	// プレイヤー番号（0始まり）
-	int GetPlayerNumber() const { return PLAYER_NUM; }
+	const int& GetPlayerNumber() const { return PLAYER_NUM; }
+	const int& GetInputNumber() const { return INPUT_NUM; }
 
 private:
 	static constexpr float PLAYER_SCALE = 0.4f;
@@ -32,9 +32,9 @@ private:
 	const int PLAYER_NUM;
 	const int INPUT_NUM;
 
-	virtual void InitModel() override;
-	virtual void InitAnim() override;
+	void InitModel() override;
+	void InitAnim() override;
 
-	virtual void Move() override;
+	void Move() override;
 
 };

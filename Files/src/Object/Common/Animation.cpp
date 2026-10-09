@@ -9,6 +9,8 @@ Animation::Animation(int modelId)
 
 Animation::~Animation()
 {
+	MV1DetachAnim(modelId_, anims_[playType_.first][playType_.second].attachIdx);
+
 	for (auto& models : anims_)
 	{
 		for (const auto& anim : models.second)
@@ -48,7 +50,7 @@ void Animation::AddFromOther(ResourceManager::SRC src, int type, float speed)
 {
 	AnimData anim;
 
-	anim.model = ResourceManager::GetInstance().Load(src).handleId_;
+	anim.model = ResourceManager::GetInstance().LoadModelDuplicate(src);
 	anim.animType = type;
 	anim.speed = speed;
 

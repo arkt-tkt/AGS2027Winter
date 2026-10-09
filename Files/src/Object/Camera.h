@@ -1,7 +1,9 @@
 #pragma once
 #include <DxLib.h>
+#include <vector>
 #include "../Common/Geometry.h"
 
+class Collider3D;
 class Object3D;
 
 class Camera
@@ -18,9 +20,10 @@ public:
 	};
 
 	Camera();
+	~Camera();
+
 	bool Init();
 	void Update();
-
 	// カメラおよび3D機能のセットアップ(SetDrawScreen関数使用後は呼び出し必須)
 	void BeforeDraw();
 
@@ -28,13 +31,17 @@ public:
 	void DebugDraw(); // デバッグ用
 #endif
 
+	void AddAwayCollider(std::weak_ptr<Collider3D> col);
+	void ResetAwayColliders();
+
 	void SetFollowTarget(const Object3D* = nullptr);
 	void ChangeCameraMode(MODE mode);
 
-	const Vector3& GetPosition() const;
-	const Vector3& GetTargetPosition() const;
-	const Vector3& GetAngles() const;
-	MODE GetCameraMode() const;
+	const Vector3& GetPosition() const { return pos_; }
+	const Vector3& GetTargetPosition() const { return targetPos_; }
+	const Vector3& GetAngles() const { return angles_; }
+	const Vector3 GetAnglesDiff() const { return angles_ - prevAngles_; }
+	const MODE& GetCameraMode() const { return mode_; }
 
 	void StartShake(float intensity, float duration);
 
@@ -60,6 +67,8 @@ private:
 
 	const Object3D* followTarget_;
 
+	std::vector<std::weak_ptr<Collider3D>> awayColliders_;
+
 	MODE mode_;
 
 	float shakeTimer_ = 0.0f;
@@ -81,6 +90,8 @@ private:
 	void UpdateFollow();
 
 	void UpdateAngles();
+
+	void CollisionCheck();
 
 #ifdef _DEBUG
 	// デバッグ用

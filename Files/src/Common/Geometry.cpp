@@ -677,7 +677,7 @@ Vector3 GetForwardVector(const Vector3& v, const Vector3& zero)
 #pragma endregion
 
 #pragma region クォータニオン
-void Quaternion::Euler(double rad_x, double rad_y, double rad_z)
+Quaternion& Quaternion::Euler(double rad_x, double rad_y, double rad_z)
 {
 	rad_x = MathUtil::RadIn2PI(rad_x);
 	rad_y = MathUtil::RadIn2PI(rad_y);
@@ -697,11 +697,13 @@ void Quaternion::Euler(double rad_x, double rad_y, double rad_z)
 	x = sinX * cosY * cosZ + cosX * sinY * sinZ;
 	y = cosX * sinY * cosZ - sinX * cosY * sinZ;
 	z = cosX * cosY * sinZ - sinX * sinY * cosZ;
+
+	return *this;
 }
 
-void Quaternion::Euler(const Vector3& rad)
+Quaternion& Quaternion::Euler(const Vector3& rad)
 {
-	Euler(rad.x, rad.y, rad.z);
+	return Euler(rad.x, rad.y, rad.z);
 }
 
 double Quaternion::Magnitude() const
@@ -785,6 +787,15 @@ Quaternion Quaternion::Inversed() const
 	double n = 1.0f / MagnitudeSquare();
 	Quaternion tmp = { w, -x, -y, -z };
 	return { tmp.w * n, tmp.x * n, tmp.y * n, tmp.z * n };
+}
+
+Quaternion& Quaternion::operator=(const Quaternion& q)
+{
+	w = q.w;
+	x = q.x;
+	y = q.y;
+	z = q.z;
+	return *this;
 }
 
 Quaternion& Quaternion::operator+=(const Quaternion& q)

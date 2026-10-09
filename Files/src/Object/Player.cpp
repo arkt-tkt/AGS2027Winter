@@ -25,9 +25,8 @@ void Player::Draw()
 
 	object3D_.Draw();
 
-	auto lHPos = MV1GetFramePosition(object3D_.handleId, 11);
-
 #ifdef _DEBUG
+	auto lHPos = MV1GetFramePosition(object3D_.handleId, 11);
 	DrawLine3D(lHPos, Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xffff00u);
 
 	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
@@ -46,11 +45,6 @@ void Player::Spawn()
 	object3D_.Update();
 }
 
-int Player::GetInputNumber() const
-{
-	return INPUT_NUM;
-}
-
 void Player::InitModel()
 {
 	auto i = static_cast<int>(ResourceManager::SRC::MODEL_PLAYER);
@@ -64,7 +58,7 @@ void Player::InitModel()
 
 	object3D_.collider = std::make_shared<Collider3D>(
 		Collider3D::TYPE::PLAYER,
-		object3D_.position + Vector3(0, 12, 0),
+		object3D_.position + Vector3(0, 20, 0),
 		object3D_.position + Vector3(0, 64, 0),
 		8.0f);
 
@@ -92,9 +86,9 @@ void Player::Move()
 
 	const auto CAM_ROT_Y = scnMng_.GetCameraPtr().GetAngles().y;
 	const auto ACC = float(accel_ * scnMng_.GetDeltaTime());
-	const auto ACCELERATION = isSprinting_ ? 96.0f : 64.0f;
-	const auto FRICTION = 12.0f;
-	const auto MAX_SPD = isSprinting_ ? 7.5f : 5.0f;
+	const auto ACCELERATION = isSprinting_ ? 63.0f : 42.0f;
+	const auto FRICTION = 10.0f;
+	const auto MAX_SPD = isSprinting_ ? 3.75f : 2.5f;
 
 	Vector3 moveDir;
 
@@ -133,11 +127,25 @@ void Player::Move()
 
 	// 正面をカメラの向きに同期
 	object3D_.rotation.y =
-		LookRotation(scnMng_.GetCameraPtr().GetTargetPosition() - object3D_.position).ToEuler().y;
+		LookRotation(scnMng_.GetCameraPtr().GetTargetPosition() - object3D_.position).ToEuler().y +
+		std::abs(scnMng_.GetCameraPtr().GetAngles().x * 0.5f);
 
-
+	// マップから落下した場合
 	if (object3D_.position.y <= -1000.0f)
 	{
 		object3D_.position.y = 0.0f;
 	}
+
+	Quaternion qRot = Quaternion().Euler(-scnMng_.GetCameraPtr().GetAnglesDiff().x, 0, 0);
+
+	MATRIX mat = MGetIdent();
+
+	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 6);
+	MV1SetFrameUserLocalMatrix(object3D_.handleId, 6, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+
+	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 8);
+	MV1SetFrameUserLocalMatrix(object3D_.handleId, 8, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+
+	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 32);
+	MV1SetFrameUserLocalMatrix(object3D_.handleId, 32, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
 }

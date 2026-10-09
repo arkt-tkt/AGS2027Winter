@@ -257,10 +257,12 @@ struct Quaternion
 	// 関数用コンストラクタ
 	inline Quaternion(double w, double x, double y, double z) : w(w), x(x), y(y), z(z) {};
 
+	inline Quaternion(const Vector3& v) { *this = Quaternion().Euler(v); }
+
 	// オイラー角(要素の集合)から、Quaternionに変換
-	void Euler(double rad_x, double rad_y, double rad_z);
+	Quaternion& Euler(double rad_x, double rad_y, double rad_z);
 	// オイラー角(3次元ベクトル)から、Quaternionに変換
-	void Euler(const Vector3& rad);
+	Quaternion& Euler(const Vector3& rad);
 
 	// 平方和(各要素の2乗の和)の平方根
 	double Magnitude() const;
@@ -284,6 +286,8 @@ struct Quaternion
 	// 逆クォータニオン化済み
 	Quaternion Inversed() const;
 
+	// 代入
+	Quaternion& operator=(const Quaternion& q);
 	// クォータニオンの直接加算
 	Quaternion& operator+=(const Quaternion& q);
 	// スカラー倍

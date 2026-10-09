@@ -31,7 +31,7 @@ public:
 	// コンストラクタ(3Dモデルと紐付)
 	Object3D(int model_id);
 	// デストラクタ
-	~Object3D();
+	virtual ~Object3D();
 
 	virtual void Init() {}
 	// 拡縮・座標・回転を更新

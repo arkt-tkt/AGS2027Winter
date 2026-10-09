@@ -17,6 +17,11 @@ Camera::Camera()
 	Init();
 }
 
+Camera::~Camera()
+{
+	ResetAwayColliders();
+}
+
 bool Camera::Init()
 {
 	// カメラのNearとFarを設定する
@@ -58,6 +63,10 @@ void Camera::Update()
 
 	shakeTimer_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (shakeTimer_ < 0.0f) shakeTimer_ = 0.0f;
+
+	SetupDxLibCamera();
+
+	//CollisionCheck();
 }
 
 void Camera::BeforeDraw()
@@ -97,11 +106,22 @@ void Camera::DebugDraw()
 		targetPos_.x, targetPos_.y, targetPos_.z);
 
 	if (!followTarget_) return;
+
 	DrawFormatString(900, 160, 0xffffff,
 		"Follow: %.1f, %.1f, %.1f",
 		followTarget_->position.x, followTarget_->position.y, followTarget_->position.z);
 }
 #endif
+
+void Camera::AddAwayCollider(std::weak_ptr<Collider3D> col)
+{
+	awayColliders_.push_back(col);
+}
+
+void Camera::ResetAwayColliders()
+{
+	awayColliders_.clear();
+}
 
 void Camera::SetFollowTarget(const Object3D* t)
 {
@@ -116,15 +136,10 @@ void Camera::SetFollowTarget(const Object3D* t)
 	ChangeCameraMode(MODE::FOLLOW);
 }
 
-void Camera::ChangeCameraMode(MODE mode) { mode_ = mode; }
-
-const Vector3& Camera::GetPosition() const { return pos_; }
-
-const Vector3& Camera::GetTargetPosition() const { return targetPos_; }
-
-const Vector3& Camera::GetAngles() const { return angles_; }
-
-Camera::MODE Camera::GetCameraMode() const { return mode_; }
+void Camera::ChangeCameraMode(MODE mode)
+{
+	mode_ = mode;
+}
 
 void Camera::StartShake(float intensity, float duration)
 {
@@ -170,26 +185,7 @@ void Camera::UpdateFollow()
 		return;
 	}
 
-	/*
-	auto tgtPos = Vec3ToVEC(followTarget_->position);
-
-	VECTOR radAngles = VDegToRad(angles_);
-	MATRIX mat = MGetIdent();
-	mat = MMult(mat, MGetRotX(radAngles.x));
-	mat = MMult(mat, MGetRotY(radAngles.y));
-
-	VECTOR targetLocalRotPos = VTransform(FIXED_TARGET_POS, mat);
-	VECTOR nextTargetPos = VAdd(tgtPos, targetLocalRotPos);
-	targetPos_ = VLerp(prevTargetPos_, nextTargetPos, 1.0f);
-
-	VECTOR cameraLocalRotPos = VTransform(FOLLOW_CAMERA_LOCAL_POS, mat);
-	VECTOR newPos = VAdd(tgtPos, cameraLocalRotPos);
-	pos_ = VLerp(prevPos_, newPos, 1.0f);
-	*/
-
-	Quaternion quaRotY = AngleAxis(Vector3(0, 1, 0), angles_.y);
-
-	Quaternion quaRot = quaRotY * AngleAxis(Vector3(1, 0, 0), angles_.x);
+	Quaternion quaRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
 
 	auto tgtPos = followTarget_->position;
 
@@ -211,6 +207,43 @@ void Camera::UpdateAngles()
 
 	angles_.x = MathUtil::Clamp(angles_.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
 	angles_.y = MathUtil::RadIn2PI(angles_.y);
+}
+
+void Camera::CollisionCheck()
+{
+	for (const auto& c : awayColliders_)
+	{
+		auto& dat = c.lock()->GetColliderData();
+
+		if (dat.handleId == -1) continue;
+
+		auto viewPoint = VECToVec3(ConvScreenPosToWorldPos({ Application::RESOLUTION_WIDTH, Application::RESOLUTION_HEIGHT, 0 }));
+
+		auto hits = MV1CollCheck_LineDim(
+			dat.handleId, -1,
+			Vec3ToVEC(pos_),
+			Vec3ToVEC(viewPoint - (pos_ - viewPoint).Normalized()));
+
+		if (hits.HitNum)
+		{
+			Vector3 hitPos = VECToVec3(hits.Dim[0].HitPosition);
+
+			for (int i = 1; i < hits.HitNum; ++i)
+			{
+				auto pos = VECToVec3(hits.Dim[i].HitPosition);
+
+				if ((pos - viewPoint).LengthSquare() < (hitPos - viewPoint).LengthSquare())
+				{
+					hitPos = pos;
+				}
+			}
+
+			pos_ = hitPos + (pos_ - viewPoint).Normalized();
+		}
+
+		// 検出した地面ポリゴン情報の後始末
+		MV1CollResultPolyDimTerminate(hits);
+	}
 }
 
 #ifdef _DEBUG

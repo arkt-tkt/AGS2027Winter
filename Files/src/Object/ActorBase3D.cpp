@@ -48,21 +48,6 @@ void ActorBase3D::Release()
 	object3D_.Release();
 }
 
-const Object3D& ActorBase3D::GetObject3D() const
-{
-	return object3D_;
-}
-
-bool ActorBase3D::IsAlive() const
-{
-	return isAlive_;
-}
-
-float ActorBase3D::GetHP() const
-{
-	return hp_;
-}
-
 void ActorBase3D::CalcHP(float add)
 {
 	if (IsInvincible() && add < 0.0f) return;
@@ -73,16 +58,6 @@ void ActorBase3D::CalcHP(float add)
 		hp_ = 0.0f;
 		isAlive_ = false;
 	}
-}
-
-bool ActorBase3D::IsInvincible() const
-{
-	return invincible_ < 0.0f;
-}
-
-const int ActorBase3D::GetScoreValue() const
-{
-	return scoreValue_;
 }
 
 void ActorBase3D::AddAwayCollider(std::weak_ptr<Collider3D> col)
@@ -108,6 +83,8 @@ void ActorBase3D::CollisionCapsule()
 
 	for (const auto& c : awayColliders_)
 	{
+		if (c.lock()->GetColliderData().handleId == -1) continue;
+
 		auto hits = MV1CollCheck_Capsule(
 			c.lock()->GetColliderData().handleId, -1,
 			Vec3ToVEC(object3D_.collider->GetColliderData().pos1),
@@ -118,14 +95,20 @@ void ActorBase3D::CollisionCapsule()
 		{
 			auto hit = hits.Dim[i];
 
-			// 法線が天井と思しき場合
-			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f && velocity_.y > 0.0f)
+			// 衝突対象が天井と思しき場合
+			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f)
 			{
-				// 上下移動速度を殺す
-				velocity_.y = 0.0f;
+				continue;
 			}
+
+			// 衝突対象が床と思しき場合
+			if (VDot(hit.Normal, VGet(0, 1, 0)) >= 0.8f)
+			{
+				continue;
+			}
+
 			// 法線と自分の移動方向が近しい場合
-			else if (Dot(velocity_, VECToVec3(hit.Normal)) >= 0.0f)
+			if (Dot(velocity_, VECToVec3(hit.Normal)) >= 0.0f)
 			{
 				// 薄い壁を抜ける原因になってしまうため、この接触判定は触らない
 				continue;

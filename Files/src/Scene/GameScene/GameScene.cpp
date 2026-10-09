@@ -15,7 +15,9 @@ bool GameScene::Init()
     player_->Init();
     player_->AddAwayCollider(stage_->GetStageObject().collider);
 
-    SceneManager::GetInstance().GetCameraPtr().SetFollowTarget(&player_->GetObject3D());
+    auto& cam = SceneManager::GetInstance().GetCameraPtr();
+    cam.SetFollowTarget(&player_->GetObject3D());
+    cam.AddAwayCollider(stage_->GetStageObject().collider);
 
     return true;
 }
@@ -64,7 +66,9 @@ void GameScene::DrawUI()
 
 bool GameScene::Release()
 {
-    SceneManager::GetInstance().GetCameraPtr().SetFollowTarget();
+    auto& cam = SceneManager::GetInstance().GetCameraPtr();
+    cam.SetFollowTarget();
+    cam.ResetAwayColliders();
 
     return true;
 }

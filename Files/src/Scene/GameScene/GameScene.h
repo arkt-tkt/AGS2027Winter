@@ -5,7 +5,8 @@
 class Player;
 class Stage;
 
-class GameScene : public SceneBase {
+class GameScene : public SceneBase
+{
 public:
     bool Init() override;
     void Update() override;

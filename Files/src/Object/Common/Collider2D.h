@@ -42,7 +42,7 @@ public:
 	};
 
 	Collider2D();
-	~Collider2D();
+	virtual ~Collider2D();
 
 	void AddCollider(const Vector2& center, const Vector2& size);
 	void AddCollider(const Vector2& center, float radius);
