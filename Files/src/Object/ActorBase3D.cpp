@@ -98,7 +98,14 @@ void ActorBase3D::CollisionCapsule()
 			// Õ“Ë‘ÎÛ‚ª“Vˆä‚Æv‚µ‚«ê‡
 			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f)
 			{
-				continue;
+				if (!isLanding_ && velocity_.y > 0.0f)
+				{
+					velocity_.y = 0.0f;
+				}
+				else
+				{
+					continue;
+				}
 			}
 
 			// Õ“Ë‘ÎÛ‚ª°‚Æv‚µ‚«ê‡
