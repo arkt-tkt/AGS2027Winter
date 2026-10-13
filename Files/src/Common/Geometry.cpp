@@ -470,6 +470,24 @@ float CosSimilar(const Vector3& va, const Vector3& vb)
 
 	return Dot(va, vb) / (va.Length() * vb.Length());
 }
+
+Vector3 Parallel(const Vector3& f, const Vector3& n)
+{
+	// 計算に使う法線は正規化しておく必要がある
+	const auto N = n.Normalized();
+
+	// (f・N)で射影が取れる
+	// (f・N) * Nで法線方向に進んだ分だけ戻す
+	// これにより、法線と平行なベクトルに変形できる
+	return f - N * Dot(f, N);
+}
+
+Vector3 Reflect(const Vector3& f, const Vector3& n)
+{
+	const auto N = n.Normalized();
+
+	return f - N * 2.0f * Dot(f, N);
+}
 #pragma endregion
 
 #pragma region ４x４行列

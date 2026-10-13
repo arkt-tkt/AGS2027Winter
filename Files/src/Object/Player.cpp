@@ -64,8 +64,10 @@ void Player::InitModel()
 
 	lineCollider_ = {
 		object3D_.position + Vector3(0, -4, 0),
-		object3D_.position + Vector3(0, 54, 0),
+		object3D_.position + Vector3(0, 44, 0),
 	};
+
+	MV1SetMaterialEmiColor(object3D_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 }
 
 void Player::InitAnim()
@@ -84,7 +86,7 @@ void Player::Move()
 	auto& ins = InputManager::GetInstance();
 	using tag = InputManager::TAGS;
 
-	const auto CAM_ROT_Y = scnMng_.GetCameraPtr().GetAngles().y;
+	const auto& CAMERA = scnMng_.GetCameraPtr();
 	const auto ACC = float(accel_ * scnMng_.GetDeltaTime());
 	const auto ACCELERATION = isSprinting_ ? 63.0f : 42.0f;
 	const auto FRICTION = 10.0f;
@@ -104,7 +106,7 @@ void Player::Move()
 	// 移動方向をカメラの向きに同期
 	if (moveDir.XZ().LengthSquare() > 0.0f)
 	{
-		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAM_ROT_Y);
+		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
 		Vector3 moveSpeed = (quaMat * moveDir).Normalized() * ACCELERATION * dt;
 		velocity_.x += moveSpeed.x;
 		velocity_.z += moveSpeed.z;
@@ -120,15 +122,14 @@ void Player::Move()
 		velocity_.z *= mult;
 	}
 
-	if (ins.CheckNowMap(INPUT_NUM, tag::JUMP))
+	if (ins.CheckDownMap(INPUT_NUM, tag::JUMP))
 	{
 		Jump();
 	}
 
 	// 正面をカメラの向きに同期
-	object3D_.rotation.y =
-		LookRotation(scnMng_.GetCameraPtr().GetTargetPosition() - object3D_.position).ToEuler().y +
-		std::abs(scnMng_.GetCameraPtr().GetAngles().x * 0.5f);
+	object3D_.rotation.y = LookRotation(CAMERA.GetTargetPosition() - object3D_.position).ToEuler().y;
+	if (CAMERA.GetAngles().x < 0.0f) object3D_.rotation.y -= CAMERA.GetAngles().x * 0.4f;
 
 	// マップから落下した場合
 	if (object3D_.position.y <= -1000.0f)
@@ -136,16 +137,22 @@ void Player::Move()
 		object3D_.position.y = 0.0f;
 	}
 
-	Quaternion qRot = Quaternion().Euler(-scnMng_.GetCameraPtr().GetAnglesDiff().x, 0, 0);
 
+	Quaternion qRot = Quaternion().Euler(
+		-CAMERA.GetAngles().x * 0.5f,
+		0,
+		-CAMERA.GetAngles().x * 0.35f);
+
+	// ここにフレーム本来の座標、回転、拡大率が入る
 	MATRIX mat = MGetIdent();
 
-	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 6);
-	MV1SetFrameUserLocalMatrix(object3D_.handleId, 6, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	// 背骨(腰)
+	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 2);
+	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 2);
+	MV1SetFrameUserLocalMatrix(object3D_.handleId, 2, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
 
-	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 8);
-	MV1SetFrameUserLocalMatrix(object3D_.handleId, 8, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
-
-	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 32);
-	MV1SetFrameUserLocalMatrix(object3D_.handleId, 32, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	// 背骨(腰上)
+	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 3);
+	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 3);
+	MV1SetFrameUserLocalMatrix(object3D_.handleId, 3, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
 }

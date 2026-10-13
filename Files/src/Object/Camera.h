@@ -46,8 +46,8 @@ public:
 	void StartShake(float intensity, float duration);
 
 private:
-	static constexpr float CAMERA_NEAR_RANGE = 0.01f;
-	static constexpr float CAMERA_FAR_RANGE = 2500.0f;
+	static constexpr float CAMERA_NEAR_RANGE = 0.001f;
+	static constexpr float CAMERA_FAR_RANGE = 3500.0f;
 
 	static constexpr float FOG_START_RANGE = CAMERA_FAR_RANGE * 0.5f;
 	static constexpr float FOG_END_RANGE = CAMERA_FAR_RANGE;
@@ -59,8 +59,9 @@ private:
 	static constexpr Vector3 FIXED_CAMERA_LOCAL_POS = { 0.0f, 0.0f, -320.0f };
 	static constexpr Vector3 FIXED_CAMERA_ANGLES = { 0.0f, 0.0f, 0.0f };
 
-	static constexpr Vector3 FOLLOW_TARGET_LOCAL_POS = { 30.0f, 40.0f, 1000.0f };
-	static constexpr Vector3 FOLLOW_CAMERA_LOCAL_POS = { 30.0f, 70.0f, -150.0f };
+	static constexpr Vector3 FOLLOW_TARGET_LOCAL_POS = { 35.0f, 60.0f, 1000.0f };
+	static constexpr Vector3 FOLLOW_CAMERA_LOCAL_POS = { 35.0f, 60.0f, -150.0f };
+	static constexpr Vector3 FOLLOW_COLLIDER_LOCAL_POS = { 35.0f, 60.0f, 0.0f };
 
 	static constexpr float UP_ANGLE_LIMIT = -48.0f * DX_PI_F / 180.0f;
 	static constexpr float DOWN_ANGLE_LIMIT = 64.0f * DX_PI_F / 180.0f;

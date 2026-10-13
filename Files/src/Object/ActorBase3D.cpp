@@ -73,6 +73,7 @@ void ActorBase3D::Jump()
 {
 	if (!isLanding_) return;
 
+	object3D_.position.y += JUMP_OFFSET;
 	velocity_.y = JUMP_POW;
 	isLanding_ = false;
 }
@@ -121,7 +122,8 @@ void ActorBase3D::CollisionCapsule()
 				continue;
 			}
 
-			for (int tryCnt = 0; tryCnt < 40; tryCnt++)
+			// Õ“Ë‚µ‚È‚¢ƒMƒŠƒMƒŠ‚É‚È‚é‚Ü‚ÅŒJ‚è•Ô‚·
+			for (int tryCnt = 0; tryCnt < 50; tryCnt++)
 			{
 				int pHit = HitCheck_Capsule_Triangle(
 					Vec3ToVEC(object3D_.collider->GetColliderData().pos1),
@@ -131,10 +133,14 @@ void ActorBase3D::CollisionCapsule()
 
 				if (pHit)
 				{
-					object3D_.position += VECToVec3(hit.Normal) * 0.5f;
+					// ­‚µ‚¸‚Â–@ü•ûŒü‚ÉƒYƒ‰‚·
+					object3D_.position += VECToVec3(hit.Normal) * 0.05f;
 					object3D_.Update();
 					continue;
 				}
+
+				// ˆÚ“®•ûŒü‚ð–@ü‚Æ•½s‚É‚·‚é
+				velocity_ = Parallel(velocity_, VECToVec3(hit.Normal));
 
 				break;
 			}
@@ -161,7 +167,7 @@ void ActorBase3D::CollisionGravity()
 			Vec3ToVEC(col1),
 			Vec3ToVEC(col2));
 
-		if (hits.HitNum && Dot(Vector3(0, velocity_.y, 0), Vector3(0, -1, 0)) > 0.0f)
+		if (hits.HitNum)
 		{
 			auto hitPos = Vector3(0, 1000, 0);
 			auto basePos = object3D_.position + Vector3(0, 20, 0);
@@ -182,7 +188,7 @@ void ActorBase3D::CollisionGravity()
 		}
 		else
 		{
-			velocity_.y -= GRAVITY_POW * SceneManager::GetInstance().GetDeltaTime();
+			velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * SceneManager::GetInstance().GetDeltaTime(), MAX_FALL_VELOCITY);
 			isLanding_ = false;
 		}
 

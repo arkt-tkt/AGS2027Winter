@@ -191,6 +191,11 @@ Vector3 LerpRad(const Vector3& start, const Vector3& end, const float& rate);
 
 // 2つのベクトルのコサイン類似度
 float CosSimilar(const Vector3& va, const Vector3& vb);
+
+// 平行ベクトル
+Vector3 Parallel(const Vector3& f, const Vector3& n);
+// 反射ベクトル
+Vector3 Reflect(const Vector3& f, const Vector3& n);
 #pragma endregion
 
 #pragma region 4x4行列

@@ -66,7 +66,7 @@ void Camera::Update()
 
 	SetupDxLibCamera();
 
-	//CollisionCheck();
+	CollisionCheck();
 }
 
 void Camera::BeforeDraw()
@@ -105,11 +105,16 @@ void Camera::DebugDraw()
 		RadToDeg(angles_.x), RadToDeg(angles_.y), RadToDeg(angles_.z),
 		targetPos_.x, targetPos_.y, targetPos_.z);
 
-	if (!followTarget_) return;
-
-	DrawFormatString(900, 160, 0xffffff,
-		"Follow: %.1f, %.1f, %.1f",
-		followTarget_->position.x, followTarget_->position.y, followTarget_->position.z);
+	if (!followTarget_)
+	{
+		DrawFormatString(900, 160, 0xffffff, "Follow: nil");
+	}
+	else
+	{
+		DrawFormatString(900, 160, 0xffffff,
+			"Follow: %.1f, %.1f, %.1f",
+			followTarget_->position.x, followTarget_->position.y, followTarget_->position.z);
+	}
 }
 #endif
 
@@ -222,24 +227,26 @@ void Camera::CollisionCheck()
 		auto hits = MV1CollCheck_LineDim(
 			dat.handleId, -1,
 			Vec3ToVEC(pos_),
-			Vec3ToVEC(viewPoint - (pos_ - viewPoint).Normalized()));
+			Vec3ToVEC(targetPos_));
+
+		auto newPos = pos_;
 
 		if (hits.HitNum)
 		{
-			Vector3 hitPos = VECToVec3(hits.Dim[0].HitPosition);
-
-			for (int i = 1; i < hits.HitNum; ++i)
+			for (int i = 0; i < hits.HitNum; ++i)
 			{
-				auto pos = VECToVec3(hits.Dim[i].HitPosition);
+				auto hit = hits.Dim[i];
 
-				if ((pos - viewPoint).LengthSquare() < (hitPos - viewPoint).LengthSquare())
+				if (Dot(pos_ - targetPos_, pos_ - VECToVec3(hit.HitPosition)) > 0.9f)
 				{
-					hitPos = pos;
+					continue;
 				}
-			}
 
-			pos_ = hitPos + (pos_ - viewPoint).Normalized();
+				newPos = VECToVec3(hit.HitPosition);
+			}
 		}
+
+		pos_ = newPos;
 
 		// 検出した地面ポリゴン情報の後始末
 		MV1CollResultPolyDimTerminate(hits);
