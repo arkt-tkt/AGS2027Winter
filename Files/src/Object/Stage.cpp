@@ -19,14 +19,14 @@ void Stage::Init()
 {
 	stage_.handleId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_STAGE).handleId_;
 	stage_.position = 0.0f;
-	stage_.localPosition = Position3(0.0f, 0.0f, 0.0f);
+	stage_.localPosition = Position3(0.0f, 800.0f, 0.0f);
 	stage_.scale = 0.5f;
 	stage_.collider = std::make_shared<Collider3D>(Collider3D::TYPE::STAGE, stage_.handleId);
 	MV1SetMaterialEmiColor(stage_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 
 	skyDome_.handleId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_SKYDOME).handleId_;
 	skyDome_.position = 0.0f;
-	skyDome_.localPosition = Position3(0.0f, 120.0f, 0.0f);
+	skyDome_.localPosition = Position3(0.0f, 0.0f, 0.0f);
 	skyDome_.scale = 50.0f;
 	MV1SetMaterialEmiColor(skyDome_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 

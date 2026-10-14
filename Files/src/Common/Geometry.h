@@ -160,6 +160,8 @@ Vector3 operator+(const Vector3& va, const Vector3& vb);
 Vector3 operator-(const Vector3& va, const Vector3& vb);
 // スカラー倍ベクトル
 Vector3 operator*(const Vector3& v, const float& f);
+// スカラー倍ベクトル
+Vector3 operator*(const float& f, const Vector3& v);
 // スカラー割ベクトル
 Vector3 operator/(const Vector3& v, const float& f);
 // 内積（ドット積）

@@ -99,26 +99,12 @@ void ActorBase3D::CollisionCapsule()
 			// 衝突対象が天井と思しき場合
 			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f)
 			{
-				if (!isLanding_ && velocity_.y > 0.0f)
-				{
-					velocity_.y = 0.0f;
-				}
-				else
-				{
-					continue;
-				}
+				continue;
 			}
 
 			// 衝突対象が床と思しき場合
 			if (VDot(hit.Normal, VGet(0, 1, 0)) >= 0.8f)
 			{
-				continue;
-			}
-
-			// 法線と自分の移動方向が近しい場合
-			if (Dot(velocity_, VECToVec3(hit.Normal)) >= 0.0f)
-			{
-				// 薄い壁を抜ける原因になってしまうため、この接触判定は触らない
 				continue;
 			}
 
@@ -138,6 +124,10 @@ void ActorBase3D::CollisionCapsule()
 					object3D_.Update();
 					continue;
 				}
+
+				auto vec = (std::min)(Dot(velocity_, VECToVec3(hit.Normal)) + 1.0f, 1.0f);
+				velocity_.x *= vec;
+				velocity_.z *= vec;
 
 				// 移動方向を法線と平行にする
 				velocity_ = Parallel(velocity_, VECToVec3(hit.Normal));
@@ -169,22 +159,49 @@ void ActorBase3D::CollisionGravity()
 
 		if (hits.HitNum)
 		{
-			auto hitPos = Vector3(0, 1000, 0);
+			bool compHit = false;
+			auto retPos = Vector3(0, 1000, 0);
 			auto basePos = object3D_.position + Vector3(0, 20, 0);
 
 			for (int i = 0; i < hits.HitNum; ++i)
 			{
-				auto pos = VECToVec3(hits.Dim[i].HitPosition);
+				auto hit = hits.Dim[i];
 
-				if ((pos - basePos).LengthSquare() < (hitPos - basePos).LengthSquare())
+				// 衝突対象が天井と思しき場合
+				if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.5f)
 				{
-					hitPos = pos;
+					if (!isLanding_ && velocity_.y > 0.0f)
+					{
+						velocity_.y = 0.0f;
+					}
+					continue;
+				}
+
+				auto hitPos = VECToVec3(hit.HitPosition);
+
+				if (basePos.y < hitPos.y)
+				{
+					continue;
+				}
+
+				if ((hitPos - basePos).LengthSquare() < (retPos - basePos).LengthSquare())
+				{
+					retPos = hitPos;
+					compHit = true;
 				}
 			}
 
-			object3D_.position.y = hitPos.y + 0.5f;
-			velocity_.y = 0.0f;
-			isLanding_ = true;
+			if (compHit)
+			{
+				object3D_.position.y = retPos.y;
+				velocity_.y = 0.0f;
+				isLanding_ = true;
+			}
+			else
+			{
+				velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * SceneManager::GetInstance().GetDeltaTime(), MAX_FALL_VELOCITY);
+				isLanding_ = false;
+			}
 		}
 		else
 		{

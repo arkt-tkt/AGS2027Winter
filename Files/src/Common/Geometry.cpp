@@ -387,6 +387,11 @@ Vector3 operator*(const Vector3& v, const float& f)
 	return Vector3(v) *= f;
 }
 
+Vector3 operator*(const float& f, const Vector3& v)
+{
+	return Vector3(v) *= f;
+}
+
 Vector3 operator/(const Vector3& v, const float& f)
 {
 	return Vector3(v) /= f;

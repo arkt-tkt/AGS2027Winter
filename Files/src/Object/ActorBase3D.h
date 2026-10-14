@@ -11,8 +11,8 @@ class ActorBase3D
 {
 public:
 	static constexpr float JUMP_OFFSET = 3.0f;
-	static constexpr float JUMP_POW = 7.0f;
-	static constexpr float GRAVITY_POW = 50.0f;
+	static constexpr float JUMP_POW = 8.0f;
+	static constexpr float GRAVITY_POW = 40.0f;
 	static constexpr float MAX_FALL_VELOCITY = -28.0f;
 
 	// コンストラクタ

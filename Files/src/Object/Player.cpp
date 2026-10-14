@@ -26,6 +26,11 @@ void Player::Draw()
 	object3D_.Draw();
 
 #ifdef _DEBUG
+	DrawLine3D(
+		Vec3ToVEC(object3D_.position + lineCollider_.first),
+		Vec3ToVEC(object3D_.position + lineCollider_.second),
+		0xff8000u);
+
 	auto lHPos = MV1GetFramePosition(object3D_.handleId, 11);
 	DrawLine3D(lHPos, Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xffff00u);
 
@@ -58,13 +63,13 @@ void Player::InitModel()
 
 	object3D_.collider = std::make_shared<Collider3D>(
 		Collider3D::TYPE::PLAYER,
-		object3D_.position + Vector3(0, 20, 0),
-		object3D_.position + Vector3(0, 64, 0),
+		object3D_.position + Vector3(0, 24, 0),
+		object3D_.position + Vector3(0, 60, 0),
 		8.0f);
 
 	lineCollider_ = {
-		object3D_.position + Vector3(0, -4, 0),
-		object3D_.position + Vector3(0, 44, 0),
+		Vector3(0, -4, 0),
+		Vector3(0, 68, 0),
 	};
 
 	MV1SetMaterialEmiColor(object3D_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
@@ -129,7 +134,7 @@ void Player::Move()
 
 	// 正面をカメラの向きに同期
 	object3D_.rotation.y = LookRotation(CAMERA.GetTargetPosition() - object3D_.position).ToEuler().y;
-	if (CAMERA.GetAngles().x < 0.0f) object3D_.rotation.y -= CAMERA.GetAngles().x * 0.4f;
+	//if (CAMERA.GetAngles().x < 0.0f) object3D_.rotation.y -= CAMERA.GetAngles().x * 0.4f;
 
 	// マップから落下した場合
 	if (object3D_.position.y <= -1000.0f)
@@ -137,11 +142,10 @@ void Player::Move()
 		object3D_.position.y = 0.0f;
 	}
 
-
 	Quaternion qRot = Quaternion().Euler(
-		-CAMERA.GetAngles().x * 0.5f,
+		-CAMERA.GetAngles().x * 0.33f,
 		0,
-		-CAMERA.GetAngles().x * 0.35f);
+		-CAMERA.GetAngles().x * 0.12f);
 
 	// ここにフレーム本来の座標、回転、拡大率が入る
 	MATRIX mat = MGetIdent();
@@ -155,4 +159,9 @@ void Player::Move()
 	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 3);
 	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 3);
 	MV1SetFrameUserLocalMatrix(object3D_.handleId, 3, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+
+	// 背骨(胸)
+	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 4);
+	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 4);
+	MV1SetFrameUserLocalMatrix(object3D_.handleId, 4, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
 }
