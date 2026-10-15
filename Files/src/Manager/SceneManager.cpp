@@ -169,7 +169,7 @@ bool SceneManager::InitClass()
 void SceneManager::InitParam()
 {
 	// 背景色
-	SetBackgroundColor(0x10, 0x18, 0x20);
+	SetBackgroundColor(0x08, 0x00, 0x10);
 
 	// 最初はタイトル画面から
 	ChangeScene(SceneBase::SCENE::TITLE);

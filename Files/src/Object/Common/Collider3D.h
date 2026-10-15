@@ -8,6 +8,7 @@ class Collider3D
 public:
 	enum class TYPE
 	{
+		COLLIDER,
 		PLAYER,
 		ENEMY,
 		STAGE,
@@ -54,6 +55,10 @@ public:
 #endif
 
 	const COLLIDER_DATA& GetColliderData() const;
+
+	MV1_COLL_RESULT_POLY GetNearestHitPolyLine(
+		const Vector3& start,
+		const Vector3& end);
 
 private:
 #ifdef _DEBUG

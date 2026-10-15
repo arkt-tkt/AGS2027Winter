@@ -56,16 +56,6 @@ bool Application::Init()
 	SceneManager::CreateInstance();
 	SceneManager::GetInstance().Init();
 
-	// 乱数生成処理の初期化
-	// 非決定的な乱数
-	std::random_device rd;
-	// 乱数rdをシード値とした、擬似乱数生成（メルセンヌ・ツイスター）
-	std::mt19937 mt(rd());
-	// 一様分布生成器（今回はint型を指定）
-	std::uniform_int_distribution<int> randDist(0, 9999);
-	// 乱数をSRand関数に渡す
-	SRand(randDist(mt));
-
 	return true;
 }
 

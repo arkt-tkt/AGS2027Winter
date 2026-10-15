@@ -66,6 +66,7 @@
     <ClInclude Include="src\Object\Stage.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Object\Weapon\BaseWeapon.h" />
+    <ClInclude Include="src\Object\Enemy\EnemyBase.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

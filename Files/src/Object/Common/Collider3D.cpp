@@ -160,6 +160,45 @@ const Collider3D::COLLIDER_DATA& Collider3D::GetColliderData() const
 	return data_;
 }
 
+MV1_COLL_RESULT_POLY Collider3D::GetNearestHitPolyLine(const Vector3& start, const Vector3& end)
+{
+	MV1_COLL_RESULT_POLY ret = {};
+
+	// ü•ª‚ÅÕ“Ë”»’è
+	auto hits = MV1CollCheck_LineDim(
+		data_.handleId,
+		-1,
+		Vec3ToVEC(end),
+		Vec3ToVEC(start)
+	);
+
+	// ’Ç]‘ÎÛ‚Éˆê”Ô‹ß‚¢Õ“Ë“_‚ğ’T‚·
+	bool isCollision = false;
+	MV1_COLL_RESULT_POLY hitPoly = {};
+	double minDist = DBL_MAX;
+	for (int i = 0; i < hits.HitNum; i++)
+	{
+		const auto& hit = hits.Dim[i];
+		
+		// Õ“Ë”»’è
+		isCollision = true;
+
+		// ‹——£”»’è
+		auto dist = (double)(VECToVec3(hit.HitPosition) - start).LengthSquare();
+		if (dist < minDist)
+		{
+			// ’Ç]‘ÎÛ‚Éˆê”Ô‹ß‚¢Õ“Ë“_‚ğ—Dæ
+			minDist = dist;
+			ret = hit;
+		}
+	}
+
+	// ŒŸo‚µ‚½ƒ|ƒŠƒSƒ“î•ñ‚ÌŒãn––
+	MV1CollResultPolyDimTerminate(hits);
+
+	return ret;
+}
+
 void Collider3D::SharedConstructor()
 {
 	data_ = baseData_;

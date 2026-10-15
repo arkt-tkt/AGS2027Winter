@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <list>
+#include <vector>
 #include "../../Common/Geometry.h"
 #include "Collider3D.h"
 
@@ -24,7 +24,7 @@ public:
 	Vector3 localRotation;
 
 	// 自分自身の衝突判定
-	std::shared_ptr<Collider3D> collider;
+	std::vector<std::shared_ptr<Collider3D>> colliders;
 
 	// コンストラクタ
 	Object3D();
@@ -40,6 +40,8 @@ public:
 	void Draw();
 	// 解放
 	void Release();
+
+	std::vector<std::shared_ptr<Collider3D>> GetTypedColliders(Collider3D::TYPE type) const;
 
 private:
 

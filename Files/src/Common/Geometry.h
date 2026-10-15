@@ -241,6 +241,10 @@ Matrix4x4 RotationMatrixZ(const float& angle);
 Matrix4x4 RotationMatrixXYZ(const float& x, const float& y, const float& z);
 // XYZ順の回転行列
 Matrix4x4 RotationMatrixXYZ(const Vector3& v);
+// YXZ順の回転行列
+Matrix4x4 RotationMatrixYXZ(const float& x, const float& y, const float& z);
+// YXZ順の回転行列
+Matrix4x4 RotationMatrixYXZ(const Vector3& v);
 
 // 平行移動行列
 Matrix4x4 TranslationMatrix(const float& x, const float& y, const float& z);

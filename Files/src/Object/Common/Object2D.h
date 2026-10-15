@@ -18,6 +18,6 @@ public:
 	double scale;
 	double rotation;
 
-	//std::shared_ptr<Collider2D> collider;
+	//std::shared_ptr<Collider2D> colliders;
 
 };

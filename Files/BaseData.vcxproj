@@ -51,6 +51,7 @@
     <ClCompile Include="src\Shader\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Object\Enemy\EnemyBase.h" />
     <ClInclude Include="src\Common\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />
     <ClInclude Include="src\Object\ActorBase3D.h" />

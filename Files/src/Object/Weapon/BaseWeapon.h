@@ -16,13 +16,15 @@ public:
 	virtual void Reload();
 
 protected:
-	Object3D object3D_;
 	Vector3 muzzlePos_;
 
 	float damage_;
 
 	int clipSize_;
 	int maxClipSize_;
+
+	int reserve_;
+	int maxReserve_;
 
 	float reloadTime_;
 

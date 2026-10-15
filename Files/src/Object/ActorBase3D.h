@@ -33,6 +33,8 @@ public:
 	virtual void CalcHP(float add);
 	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
 	void AddAwayCollider(std::weak_ptr<Collider3D> col);
+	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
+	void AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols);
 
 	// Object3D‚ğæ“¾
 	const Object3D& GetObject3D() const { return object3D_; }

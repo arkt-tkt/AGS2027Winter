@@ -55,17 +55,13 @@ void Object3D::Update()
 	}
 
 	// Collider3D‚ÌÀ•Wî•ñXV
-	if (!collider) return;
-
-	if (collider->GetColliderData().shape != Collider3D::SHAPE::CAPSULE_ALT)
+	for (auto& collider : colliders)
 	{
-		collider->Update(position, rotation);
+		if (collider->GetColliderData().shape != Collider3D::SHAPE::CAPSULE_ALT)
+			collider->Update(position, rotation);
+		else
+			collider->UpdateAlt(position, position2nd);
 	}
-	else
-	{
-		collider->UpdateAlt(position, position2nd);
-	}
-
 }
 
 void Object3D::Draw()
@@ -74,9 +70,8 @@ void Object3D::Draw()
 
 #ifdef _DEBUG
 	// Collider3D‚Ì•`‰æ
-	if (!collider) return;
-
-	collider->DrawDebug();
+	for (auto& collider : colliders)
+		collider->DrawDebug();
 #endif
 }
 
@@ -85,5 +80,21 @@ void Object3D::Release()
 	position = position2nd = localPosition = {};
 	rotation = localRotation = {};
 
-	if (collider) collider->Release();
+	for (auto& collider : colliders)
+		collider->Release();
+
+	colliders.clear();
+}
+
+std::vector<std::shared_ptr<Collider3D>> Object3D::GetTypedColliders(Collider3D::TYPE type) const
+{
+	std::vector<std::shared_ptr<Collider3D>> ret;
+
+	for (auto& collider : colliders)
+	{
+		if (collider->GetColliderData().type == type)
+			ret.push_back(collider);
+	}
+
+	return ret;
 }

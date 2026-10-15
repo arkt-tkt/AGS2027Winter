@@ -61,11 +61,18 @@ void Player::InitModel()
 	object3D_.localPosition = PLAYER_LOCAL_POSITION;
 	object3D_.localRotation.y = DX_PI_F;
 
-	object3D_.collider = std::make_shared<Collider3D>(
-		Collider3D::TYPE::PLAYER,
-		object3D_.position + Vector3(0, 24, 0),
-		object3D_.position + Vector3(0, 60, 0),
-		8.0f);
+	object3D_.colliders.emplace_back(
+		std::make_shared<Collider3D>(
+			Collider3D::TYPE::COLLIDER,
+			object3D_.position + Vector3(0, 24, 0),
+			object3D_.position + Vector3(0, 60, 0),
+			8.0f)
+	);
+	object3D_.colliders.emplace_back(
+		std::make_shared<Collider3D>(
+			Collider3D::TYPE::PLAYER,
+			object3D_.handleId)
+	);
 
 	lineCollider_ = {
 		Vector3(0, -4, 0),
@@ -93,7 +100,7 @@ void Player::Move()
 
 	const auto& CAMERA = scnMng_.GetCameraPtr();
 	const auto ACC = float(accel_ * scnMng_.GetDeltaTime());
-	const auto ACCELERATION = isSprinting_ ? 63.0f : 42.0f;
+	const auto ACCELERATION = isSprinting_ ? 48.0f : 32.0f;
 	const auto FRICTION = 10.0f;
 	const auto MAX_SPD = isSprinting_ ? 3.75f : 2.5f;
 
@@ -121,7 +128,7 @@ void Player::Move()
 
 	if (velocity_.XZ().LengthSquare() > MAX_SPD * MAX_SPD)
 	{
-		float mult = float(double(MAX_SPD) * MAX_SPD / velocity_.XZ().LengthSquare());
+		float mult = MAX_SPD / velocity_.XZ().Length();
 
 		velocity_.x *= mult;
 		velocity_.z *= mult;

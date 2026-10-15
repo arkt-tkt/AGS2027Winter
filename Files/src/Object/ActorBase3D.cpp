@@ -65,6 +65,14 @@ void ActorBase3D::AddAwayCollider(std::weak_ptr<Collider3D> col)
 	awayColliders_.push_back(col);
 }
 
+void ActorBase3D::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)
+{
+	for (auto& col : cols)
+	{
+		awayColliders_.push_back(col);
+	}
+}
+
 void ActorBase3D::Move()
 {
 }
@@ -80,30 +88,41 @@ void ActorBase3D::Jump()
 
 void ActorBase3D::CollisionCapsule()
 {
-	if (!object3D_.collider) return;
-
 	for (const auto& c : awayColliders_)
 	{
-		if (c.lock()->GetColliderData().handleId == -1) continue;
+		auto& awColDat = c.lock()->GetColliderData();
+
+		if (awColDat.type != Collider3D::TYPE::STAGE || awColDat.handleId == -1) continue;
+
+		// コレに自分のコライダが入る
+		Collider3D* col = nullptr;
+
+		// カプセルコライダ探し
+		for (auto& collider : object3D_.colliders)
+		{
+			if (collider->GetColliderData().type == Collider3D::TYPE::COLLIDER)
+			{
+				col = collider.get();
+			}
+		}
+
+		// nullptrのままだと、恐らくobject3D_.collidersの中身が不足しているので返す
+		if (!col) return;
 
 		auto hits = MV1CollCheck_Capsule(
 			c.lock()->GetColliderData().handleId, -1,
-			Vec3ToVEC(object3D_.collider->GetColliderData().pos1),
-			Vec3ToVEC(object3D_.collider->GetColliderData().pos2),
-			object3D_.collider->GetColliderData().r);
+			Vec3ToVEC(col->GetColliderData().pos1),
+			Vec3ToVEC(col->GetColliderData().pos2),
+			col->GetColliderData().r);
 
 		for (int i = 0; i < hits.HitNum; i++)
 		{
 			auto hit = hits.Dim[i];
 
-			// 衝突対象が天井と思しき場合
-			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f)
-			{
-				continue;
-			}
-
-			// 衝突対象が床と思しき場合
-			if (VDot(hit.Normal, VGet(0, 1, 0)) >= 0.8f)
+			// 衝突判定後１度だけ行う分岐
+			if (VDot(hit.Normal, VGet(0, -1, 0)) >= 0.8f || // 衝突対象が天井と思しき場合
+				VDot(hit.Normal, VGet(0, 1, 0)) >= 0.8f || // 衝突対象が床と思しき場合
+				VDot(hit.Normal, Vec3ToVEC(velocity_)) >= 0.5f) // 衝突対象の法線が移動方向と近しい場合
 			{
 				continue;
 			}
@@ -112,19 +131,20 @@ void ActorBase3D::CollisionCapsule()
 			for (int tryCnt = 0; tryCnt < 50; tryCnt++)
 			{
 				int pHit = HitCheck_Capsule_Triangle(
-					Vec3ToVEC(object3D_.collider->GetColliderData().pos1),
-					Vec3ToVEC(object3D_.collider->GetColliderData().pos2),
-					object3D_.collider->GetColliderData().r,
+					Vec3ToVEC(col->GetColliderData().pos1),
+					Vec3ToVEC(col->GetColliderData().pos2),
+					col->GetColliderData().r,
 					hit.Position[0], hit.Position[1], hit.Position[2]);
 
 				if (pHit)
 				{
-					// 少しずつ法線方向にズラす
+					// ほんの少しずつ法線方向にズラす
 					object3D_.position += VECToVec3(hit.Normal) * 0.05f;
 					object3D_.Update();
 					continue;
 				}
 
+				// 移動方向と法線のズレに反比例して最大移動速度を決定
 				auto vec = (std::min)(Dot(velocity_, VECToVec3(hit.Normal)) + 1.0f, 1.0f);
 				velocity_.x *= vec;
 				velocity_.z *= vec;

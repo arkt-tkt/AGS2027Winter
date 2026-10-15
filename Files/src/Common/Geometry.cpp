@@ -675,6 +675,20 @@ Matrix4x4 RotationMatrixXYZ(const Vector3& v)
 	return RotationMatrixXYZ(v.x, v.y, v.z);
 }
 
+Matrix4x4 RotationMatrixYXZ(const float& x, const float& y, const float& z)
+{
+	Matrix4x4 result = IdentityMatrix();
+	result *= RotationMatrixY(y);
+	result *= RotationMatrixX(x);
+	result *= RotationMatrixZ(z);
+	return result;
+}
+
+Matrix4x4 RotationMatrixYXZ(const Vector3& v)
+{
+	return RotationMatrixYXZ(v.x, v.y, v.z);
+}
+
 Matrix4x4 TranslationMatrix(const float& x, const float& y, const float& z)
 {
 	Matrix4x4 result = IdentityMatrix();

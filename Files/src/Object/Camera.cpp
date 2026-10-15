@@ -24,16 +24,11 @@ Camera::~Camera()
 
 bool Camera::Init()
 {
-	// カメラのNearとFarを設定する
-	SetCameraNearFar(CAMERA_NEAR_RANGE, CAMERA_FAR_RANGE);
-
 	mode_ = MODE::FIXED;
 
 	prevPos_ = pos_ = FIXED_CAMERA_LOCAL_POS;
 	prevTargetPos_ = targetPos_ = FIXED_TARGET_POS;
 	prevAngles_ = angles_ = FIXED_CAMERA_ANGLES;
-
-	prevPos_ = pos_;
 
 	followTarget_ = nullptr;
 
@@ -46,16 +41,11 @@ void Camera::Update()
 	prevTargetPos_ = targetPos_;
 	prevAngles_ = angles_;
 
-#ifdef _DEBUG
-	// デバッグ用のカメラ回転処理
-	UpdateDebug();
-#endif
-
 	if (!SceneManager::GetInstance().IsPause()) switch (mode_)
 	{
 	case MODE::FIXED:
 		UpdateFixed(); break;
-	case MODE::FOLLOW:
+	case MODE::FOLLOW1:
 		UpdateFollow(); break;
 	}
 
@@ -64,15 +54,15 @@ void Camera::Update()
 	shakeTimer_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (shakeTimer_ < 0.0f) shakeTimer_ = 0.0f;
 
-	SetupDxLibCamera();
+	CollisionStage();
 
-	CollisionCheck();
+	CollisionPlayer();
 }
 
 void Camera::BeforeDraw()
 {
 	// 描画の際は必ず直前に呼び出しておく
-	SetupDxLibCamera();
+	UpdateDxLibCamera();
 
 	Vector3 finalPos = pos_;
 	Vector3 finalTarget = targetPos_;
@@ -81,7 +71,7 @@ void Camera::BeforeDraw()
 	ShakeScreen(finalPos, finalTarget);
 
 	// カメラの回転行列を作成
-	Matrix4x4 mat = RotationMatrixXYZ(angles_);
+	//Matrix4x4 mat = RotationMatrixYXZ(angles_);
 
 	// カメラの上方向を計算
 	//Vector3 up = mat * Vector3(0.0f, 1.0f, 0.0f);
@@ -123,6 +113,14 @@ void Camera::AddAwayCollider(std::weak_ptr<Collider3D> col)
 	awayColliders_.push_back(col);
 }
 
+void Camera::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)
+{
+	for (auto& col : cols)
+	{
+		awayColliders_.push_back(col);
+	}
+}
+
 void Camera::ResetAwayColliders()
 {
 	awayColliders_.clear();
@@ -138,7 +136,7 @@ void Camera::SetFollowTarget(const Object3D* t)
 	}
 
 	followTarget_ = t;
-	ChangeCameraMode(MODE::FOLLOW);
+	ChangeCameraMode(MODE::FOLLOW1);
 }
 
 void Camera::ChangeCameraMode(MODE mode)
@@ -153,32 +151,55 @@ void Camera::StartShake(float intensity, float duration)
 	shakeTimer_ = duration;
 }
 
+void Camera::UpdateDxLibCamera()
+{
+	// SetDrawScreen関数を使用した際にリセットされる各設定もここに記述する
+	// ConvWorldPosToScreenPos関数などを使用する場合には、その前に必ずこの関数を呼び出すこと！
+
+
+	/// カメラ
+	// 遠近法カメラ(FOV)を設定する
+	SetupCamera_Perspective(CAMERA_FOV);
+
+	// カメラのNearとFarを設定する
+	SetCameraNearFar(CAMERA_NEAR_RANGE, CAMERA_FAR_RANGE);
+
+
+	/// 深度バッファ
+	// Zバッファを有効にする
+	SetUseZBuffer3D(TRUE);
+
+	// Zバッファへの書き込みを有効にする
+	SetWriteZBuffer3D(TRUE);
+
+	// バックカリングを有効にする
+	SetUseBackCulling(DX_CULLING_LEFT);
+
+
+	/// ライト
+	// 正面から斜め下に向かったライト
+	ChangeLightTypeDir(Vec3ToVEC(LIGHT_DIRECTION));
+
+
+	/// フォグ
+	// フォグを有効化
+	SetFogEnable(TRUE);
+
+	// フォグの色を指定
+	SetFogColor(FOG_COLOR[0], FOG_COLOR[1], FOG_COLOR[2]);
+
+	// フォグの始点と終点を指定
+	SetFogStartEnd(FOG_START_RANGE, FOG_END_RANGE);
+
+}
+
 void Camera::UpdateFixed()
 {
-	/*
-	VECTOR radAngles = VDegToRad(angles_);
-	MATRIX mat = MGetIdent();
-	mat = MMult(mat, MGetRotX(radAngles.x));
-	mat = MMult(mat, MGetRotY(radAngles.y));
+	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
 
-	VECTOR targetLocalRotPos = VTransform(FIXED_TARGET_POS, mat);
-	VECTOR nextTargetPos = VAdd(VECTOR(), targetLocalRotPos);
-	targetPos_ = VLerp(prevTargetPos_, nextTargetPos, 1.0f);
+	targetPos_ = FIXED_TARGET_POS;
 
-	VECTOR cameraLocalRotPos = VTransform(FIXED_CAMERA_LOCAL_POS, mat);
-	VECTOR newPos = VAdd(FIXED_TARGET_POS, cameraLocalRotPos);
-	pos_ = VLerp(prevPos_, newPos, 1.0f);
-	*/
-
-	Matrix4x4 mat = RotationMatrixXYZ(angles_);
-
-	Vector3 targetLocalRotPos = mat * FIXED_TARGET_POS;
-	Vector3 nextTargetPos = Vector3() + targetLocalRotPos;
-	targetPos_ = Lerp(prevTargetPos_, nextTargetPos, 1.0f);
-
-	Vector3 cameraLocalRotPos = mat * FIXED_CAMERA_LOCAL_POS;
-	Vector3 newPos = FIXED_TARGET_POS + cameraLocalRotPos;
-	pos_ = Lerp(prevPos_, newPos, 1.0f);
+	pos_ = (qRot * FOLLOW_CAMERA_LOCAL_POS);
 }
 
 void Camera::UpdateFollow()
@@ -190,13 +211,13 @@ void Camera::UpdateFollow()
 		return;
 	}
 
-	Quaternion quaRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
+	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
 
-	auto tgtPos = followTarget_->position;
+	auto fPos = followTarget_->position;
 
-	targetPos_ = tgtPos + (quaRot * FOLLOW_TARGET_LOCAL_POS);
+	targetPos_ = fPos + (qRot * FOLLOW_TARGET_LOCAL_POS);
 
-	pos_ = tgtPos + (quaRot * FOLLOW_CAMERA_LOCAL_POS);
+	pos_ = fPos + (qRot * FOLLOW_CAMERA_LOCAL_POS);
 }
 
 void Camera::UpdateAngles()
@@ -214,125 +235,61 @@ void Camera::UpdateAngles()
 	angles_.y = MathUtil::RadIn2PI(angles_.y);
 }
 
-void Camera::CollisionCheck()
+void Camera::CollisionStage()
+{
+	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
+
+	for (const auto& c : awayColliders_)
+	{
+		auto& dat = c.lock()->GetColliderData();
+
+		if (dat.type != Collider3D::TYPE::STAGE || dat.handleId == -1) continue;
+
+		auto hitPoly = c.lock()->GetNearestHitPolyLine(
+			followTarget_->position + Vector3(0, FOLLOW_LOCAL_POS_Y, 0),
+			pos_ + qRot * Vector3(8, 0, 0)
+		);
+
+		if (!hitPoly.HitFlag)
+		{
+			continue;
+		}
+
+		auto pushBack =
+			Vector3(-FOLLOW_LOCAL_POS_X, 0, -FOLLOW_LOCAL_CAMERA_POS_Z).Normalized() * 0.5f;
+
+		auto norm = VECToVec3(hitPoly.Normal).Normalized() * 3.0f;
+
+		Vector3 newPos = VECToVec3(hitPoly.HitPosition) + qRot * pushBack + norm;
+		Vector3 targetPosAdjust = newPos - pos_;
+
+		pos_ = newPos;
+		targetPos_ += targetPosAdjust;
+	}
+}
+
+void Camera::CollisionPlayer()
 {
 	for (const auto& c : awayColliders_)
 	{
 		auto& dat = c.lock()->GetColliderData();
 
-		if (dat.handleId == -1) continue;
+		if (dat.type != Collider3D::TYPE::PLAYER || dat.handleId == -1) continue;
 
-		auto viewPoint = VECToVec3(ConvScreenPosToWorldPos({ Application::RESOLUTION_WIDTH, Application::RESOLUTION_HEIGHT, 0 }));
-
-		auto hits = MV1CollCheck_LineDim(
+		auto hit = MV1CollCheck_Line(
 			dat.handleId, -1,
 			Vec3ToVEC(pos_),
-			Vec3ToVEC(targetPos_));
+			Vec3ToVEC(targetPos_)
+		);
 
-		auto newPos = pos_;
-
-		if (hits.HitNum)
+		if (hit.HitFlag)
 		{
-			for (int i = 0; i < hits.HitNum; ++i)
-			{
-				auto hit = hits.Dim[i];
-
-				if (Dot(pos_ - targetPos_, pos_ - VECToVec3(hit.HitPosition)) > 0.9f)
-				{
-					continue;
-				}
-
-				newPos = VECToVec3(hit.HitPosition);
-			}
+			MV1SetOpacityRate(dat.handleId, 0.5f);
 		}
-
-		pos_ = newPos;
-
-		// 検出した地面ポリゴン情報の後始末
-		MV1CollResultPolyDimTerminate(hits);
-	}
-}
-
-#ifdef _DEBUG
-void Camera::UpdateDebug()
-{
-	auto& ins = InputManager::GetInstance();
-	using tag = InputManager::TAGS;
-
-	constexpr float add = DX_PI_F / 180.0f;
-	//constexpr float distAdd = 1.0f;
-
-	if (ins.CheckNowKey(KEY_INPUT_O))
-	{
-		angles_.x -= add;
-	}
-	if (ins.CheckNowKey(KEY_INPUT_L))
-	{
-		angles_.x += add;
-	}
-	if (ins.CheckNowKey(KEY_INPUT_K))
-	{
-		angles_.y -= add;
-	}
-	if (ins.CheckNowKey(KEY_INPUT_SEMICOLON))
-	{
-		angles_.y += add;
-	}
-
-	/*
-	if (ins.CheckNowKey(KEY_INPUT_ADD))
-		camLocalPos_.z += distAdd; // 近づく
-	if (ins.CheckNowKey(KEY_INPUT_SUBTRACT))
-		camLocalPos_.z -= distAdd; // 離れる
-	*/
-
-	// 既定値にリセット
-	if (ins.CheckNowKey(KEY_INPUT_NUMPAD0))
-	{
-		angles_ = FIXED_CAMERA_ANGLES;
-	}
-
-	angles_.x = MathUtil::Clamp(angles_.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
-	angles_.y = MathUtil::RadIn2PI(angles_.y);
-}
-#endif
-
-void Camera::SetupDxLibCamera()
-{
-	// SetDrawScreen関数を使用した際にリセットされる各設定もここに記述する
-	// ConvWorldPosToScreenPos関数などを使用する場合には、その前に必ずこの関数を呼び出すこと！
-
-	// カメラ・深度バッファ
-	{
-		// 遠近法カメラ(FOV)を設定する
-		SetupCamera_Perspective(CAMERA_FOV);
-
-		// Zバッファを有効にする
-		SetUseZBuffer3D(TRUE);
-
-		// Zバッファへの書き込みを有効にする
-		SetWriteZBuffer3D(TRUE);
-
-		// バックカリングを有効にする
-		SetUseBackCulling(DX_CULLING_LEFT);
-	}
-
-	// ライト
-	{
-		// 正面から斜め下に向かったライト
-		ChangeLightTypeDir(Vec3ToVEC(LIGHT_DIRECTION));
-	}
-
-	// フォグ
-	{
-		// フォグを有効化
-		SetFogEnable(TRUE);
-
-		// フォグの色を指定
-		SetFogColor(FOG_COLOR[0], FOG_COLOR[1], FOG_COLOR[2]);
-
-		// フォグの始点と終点を指定
-		SetFogStartEnd(FOG_START_RANGE, FOG_END_RANGE);
+		else if (MV1GetOpacityRate(dat.handleId) < 1.0f)
+		{
+			MV1SetOpacityRate(dat.handleId, 1.0f);
+		}
 	}
 }
 

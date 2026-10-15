@@ -8,16 +8,19 @@
 
 bool GameScene::Init()
 {
+    using CTY = Collider3D::TYPE;
+
     stage_ = std::make_unique<Stage>();
     stage_->Init();
 
     player_ = std::make_shared<Player>(0);
     player_->Init();
-    player_->AddAwayCollider(stage_->GetStageObject().collider);
+    player_->AddAwayColliders(stage_->GetStageObject().GetTypedColliders(CTY::STAGE));
 
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
     cam.SetFollowTarget(&player_->GetObject3D());
-    cam.AddAwayCollider(stage_->GetStageObject().collider);
+    cam.AddAwayColliders(player_->GetObject3D().GetTypedColliders(CTY::PLAYER));
+    cam.AddAwayColliders(stage_->GetStageObject().GetTypedColliders(CTY::STAGE));
 
     return true;
 }
