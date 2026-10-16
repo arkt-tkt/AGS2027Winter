@@ -1,17 +1,17 @@
 #include <DxLib.h>
-#include "../Application.h"
-#include "../Common/DxLibUtil.h"
-#include "../Common/MathUtil.h"
-#include "../Manager/InputManager.h"
-#include "../Manager/ResourceManager.h"
-#include "../Manager/SceneManager.h"
+#include "../../../Application.h"
+#include "../../../Common/DxLibUtil.h"
+#include "../../../Common/MathUtil.h"
+#include "../../../Manager/InputManager.h"
+#include "../../../Manager/ResourceManager.h"
+#include "../../../Manager/SceneManager.h"
 #include "Player.h"
 
 Player::Player(int player_num)
 	:
 	PLAYER_NUM(player_num),
 	INPUT_NUM(PLAYER_NUM + INPUT_INDEX_ADJUSTER),
-	ActorBase3D(true)
+	CharacterBase3D()
 {
 }
 
@@ -23,55 +23,57 @@ void Player::Draw()
 {
 	if (!isAlive_) return;
 
-	object3D_.Draw();
-
 #ifdef _DEBUG
 	DrawLine3D(
-		Vec3ToVEC(object3D_.position + lineCollider_.first),
-		Vec3ToVEC(object3D_.position + lineCollider_.second),
+		Vec3ToVEC(transform_.position + lineCollider_.first),
+		Vec3ToVEC(transform_.position + lineCollider_.second),
 		0xff8000u);
 
-	auto lHPos = MV1GetFramePosition(object3D_.handleId, 11);
+	auto lHPos = MV1GetFramePosition(transform_.handleId, 11);
 	DrawLine3D(lHPos, Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xffff00u);
 
 	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
 		velocity_.XZ().Length(), velocity_.x, velocity_.z);
 #endif
+
+	TurnBody();
+
+	CharacterBase3D::Draw();
 }
 
 void Player::Spawn()
 {
-	object3D_.position = PLAYER_POSITION_INIT;
+	transform_.position = PLAYER_POSITION_INIT;
 
 	isAlive_ = true;
 	hp_ = 1;
 	invincible_ = 3.0f;
 
-	object3D_.Update();
+	transform_.Update();
 }
 
 void Player::InitModel()
 {
 	auto i = static_cast<int>(ResourceManager::SRC::MODEL_PLAYER);
 
-	object3D_.handleId = resMng_.LoadModelDuplicate(
+	transform_.handleId = resMng_.LoadModelDuplicate(
 		ResourceManager::SRC(static_cast<ResourceManager::SRC>(i + PLAYER_NUM)));
-	object3D_.scale = PLAYER_SCALE;
-	object3D_.position = PLAYER_POSITION_INIT;
-	object3D_.localPosition = PLAYER_LOCAL_POSITION;
-	object3D_.localRotation.y = DX_PI_F;
+	transform_.scale = PLAYER_SCALE;
+	transform_.position = PLAYER_POSITION_INIT;
+	transform_.localPosition = PLAYER_LOCAL_POSITION;
+	transform_.localRotation.y = DX_PI_F;
 
-	object3D_.colliders.emplace_back(
+	colliders_.emplace_back(
 		std::make_shared<Collider3D>(
 			Collider3D::TYPE::COLLIDER,
-			object3D_.position + Vector3(0, 24, 0),
-			object3D_.position + Vector3(0, 60, 0),
+			transform_.position + Vector3(0, 24, 0),
+			transform_.position + Vector3(0, 60, 0),
 			8.0f)
 	);
-	object3D_.colliders.emplace_back(
+	colliders_.emplace_back(
 		std::make_shared<Collider3D>(
 			Collider3D::TYPE::PLAYER,
-			object3D_.handleId)
+			transform_.handleId)
 	);
 
 	lineCollider_ = {
@@ -79,12 +81,12 @@ void Player::InitModel()
 		Vector3(0, 68, 0),
 	};
 
-	MV1SetMaterialEmiColor(object3D_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
+	MV1SetMaterialEmiColor(transform_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 }
 
 void Player::InitAnim()
 {
-	anim_ = std::make_unique<Animation>(object3D_.handleId);
+	anim_ = std::make_unique<Animation>(transform_.handleId);
 	anim_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0, 30.0f);
 	anim_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
 }
@@ -100,9 +102,9 @@ void Player::Move()
 
 	const auto& CAMERA = scnMng_.GetCameraPtr();
 	const auto ACC = float(accel_ * scnMng_.GetDeltaTime());
-	const auto ACCELERATION = isSprinting_ ? 48.0f : 32.0f;
+	const auto ACCELERATION = isSprinting_ ? 24.0f : 24.0f;
 	const auto FRICTION = 10.0f;
-	const auto MAX_SPD = isSprinting_ ? 3.75f : 2.5f;
+	const auto MAX_SPD = isSprinting_ ? 1.5f : 1.0f;
 
 	Vector3 moveDir;
 
@@ -139,36 +141,39 @@ void Player::Move()
 		Jump();
 	}
 
-	// 正面をカメラの向きに同期
-	object3D_.rotation.y = LookRotation(CAMERA.GetTargetPosition() - object3D_.position).ToEuler().y;
-	//if (CAMERA.GetAngles().x < 0.0f) object3D_.rotation.y -= CAMERA.GetAngles().x * 0.4f;
-
 	// マップから落下した場合
-	if (object3D_.position.y <= -1000.0f)
-	{
-		object3D_.position.y = 0.0f;
-	}
+	if (transform_.position.y <= -1000.0f ||
+		transform_.position.y >= 1000.0f)
+		transform_.position.y = 0.0f;
+}
+
+void Player::TurnBody()
+{
+	// 正面をカメラの向きに同期
+	transform_.rotation.y = LookRotation(scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).ToEuler().y;
 
 	Quaternion qRot = Quaternion().Euler(
-		-CAMERA.GetAngles().x * 0.33f,
+		-scnMng_.GetCameraPtr().GetAngles().x * 0.28f,
 		0,
-		-CAMERA.GetAngles().x * 0.12f);
+		-scnMng_.GetCameraPtr().GetAngles().x * 0.2f);
 
 	// ここにフレーム本来の座標、回転、拡大率が入る
 	MATRIX mat = MGetIdent();
 
 	// 背骨(腰)
-	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 2);
-	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 2);
-	MV1SetFrameUserLocalMatrix(object3D_.handleId, 2, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	MV1ResetFrameUserLocalMatrix(transform_.handleId, 2);
+	mat = MV1GetFrameLocalMatrix(transform_.handleId, 2);
+	MV1SetFrameUserLocalMatrix(transform_.handleId, 2, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
 
 	// 背骨(腰上)
-	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 3);
-	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 3);
-	MV1SetFrameUserLocalMatrix(object3D_.handleId, 3, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	MV1ResetFrameUserLocalMatrix(transform_.handleId, 3);
+	mat = MV1GetFrameLocalMatrix(transform_.handleId, 3);
+	MV1SetFrameUserLocalMatrix(transform_.handleId, 3, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
 
 	// 背骨(胸)
-	MV1ResetFrameUserLocalMatrix(object3D_.handleId, 4);
-	mat = MV1GetFrameLocalMatrix(object3D_.handleId, 4);
-	MV1SetFrameUserLocalMatrix(object3D_.handleId, 4, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	MV1ResetFrameUserLocalMatrix(transform_.handleId, 4);
+	mat = MV1GetFrameLocalMatrix(transform_.handleId, 4);
+	MV1SetFrameUserLocalMatrix(transform_.handleId, 4, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+
+	transform_.Update();
 }

@@ -1,9 +1,8 @@
 #include <memory>
 #include "../SceneBase.h"
-#include "../../Object/Stage.h"
+#include "../../Object/Actor/Stage.h"
 
 class Player;
-class Stage;
 
 class GameScene : public SceneBase
 {

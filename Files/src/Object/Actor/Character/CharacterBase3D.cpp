@@ -1,54 +1,48 @@
-#include "../Common/DxLibUtil.h"
-#include "../Manager/FPSManager.h"
-#include "../Manager/ResourceManager.h"
-#include "../Manager/SceneManager.h"
-#include "ActorBase3D.h"
+#include "../../../Common/DxLibUtil.h"
+#include "../../../Manager/SceneManager.h"
+#include "CharacterBase3D.h"
 
-ActorBase3D::ActorBase3D(bool alive)
-	:
-	resMng_(ResourceManager::GetInstance()),
-	scnMng_(SceneManager::GetInstance()),
-	isAlive_(alive),
-	hp_(alive ? 1.0f : 0.0f)
-{
-}
-
-ActorBase3D::~ActorBase3D()
-{
-	Release();
-}
-
-void ActorBase3D::Init()
-{
-	InitModel();
-
-	InitAnim();
-
-	object3D_.Update();
-}
-
-void ActorBase3D::Update()
+void CharacterBase3D::Update()
 {
 	if (anim_) anim_->Update();
 
 	Move();
 
-	object3D_.position += velocity_;
+	transform_.position += velocity_;
 
 	CollisionCapsule();
 
 	CollisionGravity();
 
-	object3D_.Update();
+	transform_.Update();
+
+	UpdateColliders();
 }
 
-void ActorBase3D::Release()
+void CharacterBase3D::UpdateColliders()
 {
-	isAlive_ = false;
-	object3D_.Release();
+	// Collider3Dの座標情報更新
+	for (auto& collider : colliders_)
+	{
+		if (collider->GetColliderData().shape != Collider3D::SHAPE::CAPSULE_ALT)
+			collider->Update(transform_.position, transform_.rotation);
+		else
+			collider->UpdateAlt(transform_.position, transform_.position2nd);
+	}
 }
 
-void ActorBase3D::CalcHP(float add)
+void CharacterBase3D::Draw()
+{
+	transform_.Draw();
+
+#ifdef _DEBUG
+	// Collider3Dの描画
+	for (auto& collider : colliders_)
+		collider->DrawDebug();
+#endif
+}
+
+void CharacterBase3D::CalcHP(float add)
 {
 	if (IsInvincible() && add < 0.0f) return;
 
@@ -60,33 +54,16 @@ void ActorBase3D::CalcHP(float add)
 	}
 }
 
-void ActorBase3D::AddAwayCollider(std::weak_ptr<Collider3D> col)
-{
-	awayColliders_.push_back(col);
-}
-
-void ActorBase3D::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)
-{
-	for (auto& col : cols)
-	{
-		awayColliders_.push_back(col);
-	}
-}
-
-void ActorBase3D::Move()
-{
-}
-
-void ActorBase3D::Jump()
+void CharacterBase3D::Jump()
 {
 	if (!isLanding_) return;
 
-	object3D_.position.y += JUMP_OFFSET;
+	transform_.position.y += JUMP_OFFSET;
 	velocity_.y = JUMP_POW;
 	isLanding_ = false;
 }
 
-void ActorBase3D::CollisionCapsule()
+void CharacterBase3D::CollisionCapsule()
 {
 	for (const auto& c : awayColliders_)
 	{
@@ -98,11 +75,12 @@ void ActorBase3D::CollisionCapsule()
 		Collider3D* col = nullptr;
 
 		// カプセルコライダ探し
-		for (auto& collider : object3D_.colliders)
+		for (auto& collider : colliders_)
 		{
 			if (collider->GetColliderData().type == Collider3D::TYPE::COLLIDER)
 			{
 				col = collider.get();
+				break;
 			}
 		}
 
@@ -128,7 +106,7 @@ void ActorBase3D::CollisionCapsule()
 			}
 
 			// 衝突しないギリギリになるまで繰り返す
-			for (int tryCnt = 0; tryCnt < 50; tryCnt++)
+			for (int tryCnt = 0; tryCnt < 30; tryCnt++)
 			{
 				int pHit = HitCheck_Capsule_Triangle(
 					Vec3ToVEC(col->GetColliderData().pos1),
@@ -139,8 +117,8 @@ void ActorBase3D::CollisionCapsule()
 				if (pHit)
 				{
 					// ほんの少しずつ法線方向にズラす
-					object3D_.position += VECToVec3(hit.Normal) * 0.05f;
-					object3D_.Update();
+					transform_.position += VECToVec3(hit.Normal) * 0.07f;
+					UpdateColliders();
 					continue;
 				}
 
@@ -161,7 +139,7 @@ void ActorBase3D::CollisionCapsule()
 	}
 }
 
-void ActorBase3D::CollisionGravity()
+void CharacterBase3D::CollisionGravity()
 {
 	for (const auto& c : awayColliders_)
 	{
@@ -169,8 +147,8 @@ void ActorBase3D::CollisionGravity()
 
 		if (dat.type != Collider3D::TYPE::STAGE) continue;
 
-		Vector3 col1 = object3D_.position + lineCollider_.first;
-		Vector3 col2 = object3D_.position + lineCollider_.second;
+		Vector3 col1 = transform_.position + lineCollider_.first;
+		Vector3 col2 = transform_.position + lineCollider_.second;
 
 		auto hits = MV1CollCheck_LineDim(
 			dat.handleId, -1,
@@ -181,7 +159,7 @@ void ActorBase3D::CollisionGravity()
 		{
 			bool compHit = false;
 			auto retPos = Vector3(0, 1000, 0);
-			auto basePos = object3D_.position + Vector3(0, 20, 0);
+			auto basePos = transform_.position + Vector3(0, 20, 0);
 
 			for (int i = 0; i < hits.HitNum; ++i)
 			{
@@ -213,19 +191,19 @@ void ActorBase3D::CollisionGravity()
 
 			if (compHit)
 			{
-				object3D_.position.y = retPos.y;
+				transform_.position.y = retPos.y;
 				velocity_.y = 0.0f;
 				isLanding_ = true;
 			}
 			else
 			{
-				velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * SceneManager::GetInstance().GetDeltaTime(), MAX_FALL_VELOCITY);
+				velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * scnMng_.GetDeltaTime(), MAX_FALL_VELOCITY);
 				isLanding_ = false;
 			}
 		}
 		else
 		{
-			velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * SceneManager::GetInstance().GetDeltaTime(), MAX_FALL_VELOCITY);
+			velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * scnMng_.GetDeltaTime(), MAX_FALL_VELOCITY);
 			isLanding_ = false;
 		}
 

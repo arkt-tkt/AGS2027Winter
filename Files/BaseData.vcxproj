@@ -21,17 +21,15 @@
   <ItemGroup>
     <ClCompile Include="src\Common\Utility.cpp" />
     <ClCompile Include="src\Manager\ScoreManager.cpp" />
-    <ClCompile Include="src\Object\ActorBase3D.cpp" />
+    <ClCompile Include="src\Object\Actor\ActorBase3D.cpp" />
     <ClCompile Include="src\Object\Camera.cpp" />
     <ClCompile Include="src\Object\Common\Animation.cpp" />
-    <ClCompile Include="src\Object\Common\Collider2D.cpp" />
     <ClCompile Include="src\Manager\Resource.cpp" />
     <ClCompile Include="src\Manager\ResourceManager.cpp" />
-    <ClCompile Include="src\Object\ActorBase2D.cpp" />
     <ClCompile Include="src\Object\Common\Collider3D.cpp" />
-    <ClCompile Include="src\Object\Common\Object2D.cpp" />
-    <ClCompile Include="src\Object\Common\Object3D.cpp" />
-    <ClCompile Include="src\Object\Player.cpp" />
+    <ClCompile Include="src\Object\Common\Transform3D.cpp" />
+    <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
+    <ClCompile Include="src\Object\Actor\Character\Player.cpp" />
     <ClCompile Include="src\Manager\Gamepad.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Common\Fader.cpp" />
@@ -43,7 +41,7 @@
     <ClCompile Include="src\Manager\FPSManager.cpp" />
     <ClCompile Include="src\Manager\InputManager.cpp" />
     <ClCompile Include="src\Manager\SceneManager.cpp" />
-    <ClCompile Include="src\Object\Stage.cpp" />
+    <ClCompile Include="src\Object\Actor\Stage.cpp" />
     <ClCompile Include="src\Object\Weapon\BaseWeapon.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="src\Scene\SceneBase.cpp" />
@@ -51,20 +49,17 @@
     <ClCompile Include="src\Shader\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Object\Enemy\EnemyBase.h" />
+    <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
     <ClInclude Include="src\Common\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />
-    <ClInclude Include="src\Object\ActorBase3D.h" />
+    <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
     <ClInclude Include="src\Object\Camera.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
-    <ClInclude Include="src\Object\Common\Collider2D.h" />
     <ClInclude Include="src\Manager\Resource.h" />
     <ClInclude Include="src\Manager\ResourceManager.h" />
-    <ClInclude Include="src\Object\ActorBase2D.h" />
     <ClInclude Include="src\Object\Common\Collider3D.h" />
-    <ClInclude Include="src\Object\Common\Object2D.h" />
-    <ClInclude Include="src\Object\Common\Object3D.h" />
-    <ClInclude Include="src\Object\Player.h" />
+    <ClInclude Include="src\Object\Common\Transform3D.h" />
+    <ClInclude Include="src\Object\Actor\Character\Player.h" />
     <ClInclude Include="src\Manager\Gamepad.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Common\Fader.h" />
@@ -75,7 +70,7 @@
     <ClInclude Include="src\Manager\FPSManager.h" />
     <ClInclude Include="src\Manager\InputManager.h" />
     <ClInclude Include="src\Manager\SceneManager.h" />
-    <ClInclude Include="src\Object\Stage.h" />
+    <ClInclude Include="src\Object\Actor\Stage.h" />
     <ClInclude Include="src\Object\Weapon\BaseWeapon.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
     <ClInclude Include="src\Scene\SceneBase.h" />

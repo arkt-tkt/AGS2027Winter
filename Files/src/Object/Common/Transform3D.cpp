@@ -1,8 +1,8 @@
 #include <DxLib.h>
 #include "../../Common/DxLibUtil.h"
-#include "Object3D.h"
+#include "Transform3D.h"
 
-Object3D::Object3D()
+Transform3D::Transform3D()
 {
 	handleId = -1;
 
@@ -15,7 +15,7 @@ Object3D::Object3D()
 	Init();
 }
 
-Object3D::Object3D(int model_id)
+Transform3D::Transform3D(int model_id)
 {
 	handleId = model_id;
 
@@ -28,11 +28,11 @@ Object3D::Object3D(int model_id)
 	Init();
 }
 
-Object3D::~Object3D()
+Transform3D::~Transform3D()
 {
 }
 
-void Object3D::Update()
+void Transform3D::Update()
 {
 	mScale = ScaleMatrix(scale);
 
@@ -53,48 +53,15 @@ void Object3D::Update()
 	{
 		MV1SetMatrix(handleId, DxLibUtil::Mat4x4ToMAT(mat));
 	}
-
-	// Collider3D‚ÌÀ•Wî•ñXV
-	for (auto& collider : colliders)
-	{
-		if (collider->GetColliderData().shape != Collider3D::SHAPE::CAPSULE_ALT)
-			collider->Update(position, rotation);
-		else
-			collider->UpdateAlt(position, position2nd);
-	}
 }
 
-void Object3D::Draw()
+void Transform3D::Draw()
 {
 	MV1DrawModel(handleId);
-
-#ifdef _DEBUG
-	// Collider3D‚Ì•`‰æ
-	for (auto& collider : colliders)
-		collider->DrawDebug();
-#endif
 }
 
-void Object3D::Release()
+void Transform3D::Release()
 {
 	position = position2nd = localPosition = {};
 	rotation = localRotation = {};
-
-	for (auto& collider : colliders)
-		collider->Release();
-
-	colliders.clear();
-}
-
-std::vector<std::shared_ptr<Collider3D>> Object3D::GetTypedColliders(Collider3D::TYPE type) const
-{
-	std::vector<std::shared_ptr<Collider3D>> ret;
-
-	for (auto& collider : colliders)
-	{
-		if (collider->GetColliderData().type == type)
-			ret.push_back(collider);
-	}
-
-	return ret;
 }

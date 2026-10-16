@@ -2,9 +2,9 @@
 #include <list>
 #include <memory>
 #include <numbers>
-#include "ActorBase3D.h"
+#include "CharacterBase3D.h"
 
-class Player : public ActorBase3D
+class Player : public CharacterBase3D
 {
 public:
 	Player(int player_num);
@@ -36,5 +36,7 @@ private:
 	void InitAnim() override;
 
 	void Move() override;
+
+	void TurnBody();
 
 };

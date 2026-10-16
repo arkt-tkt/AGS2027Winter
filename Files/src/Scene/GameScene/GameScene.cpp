@@ -3,7 +3,7 @@
 #include "../../Common/MathUtil.h"
 #include "../../Manager/InputManager.h"
 #include "../../Manager/SceneManager.h"
-#include "../../Object/Player.h"
+#include "../../Object/Actor/Character/Player.h"
 #include "GameScene.h"
 
 bool GameScene::Init()
@@ -15,12 +15,12 @@ bool GameScene::Init()
 
     player_ = std::make_shared<Player>(0);
     player_->Init();
-    player_->AddAwayColliders(stage_->GetStageObject().GetTypedColliders(CTY::STAGE));
+    player_->AddAwayColliders(stage_->GetTypedColliders(CTY::STAGE));
 
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
-    cam.SetFollowTarget(&player_->GetObject3D());
-    cam.AddAwayColliders(player_->GetObject3D().GetTypedColliders(CTY::PLAYER));
-    cam.AddAwayColliders(stage_->GetStageObject().GetTypedColliders(CTY::STAGE));
+    cam.SetFollowTarget(&player_->GetTransform());
+    cam.AddAwayColliders(player_->GetTypedColliders(CTY::PLAYER));
+    cam.AddAwayColliders(stage_->GetTypedColliders(CTY::STAGE));
 
     return true;
 }
@@ -47,6 +47,12 @@ void GameScene::Update()
     auto spStabChange = (LOSS_STABILITY_PER_SECOND + GAIN_STABILITY_PER_SECOND * activeDevice_) * dt;
     stability_ = MathUtil::Clamp(stability_ + spStabChange, 0.0f, MAX_STABILITY);
 
+
+    if (InputManager::GetInstance().CheckDownKey(KEY_INPUT_C))
+    {
+        scnMng_.GetCameraPtr().SwitchFollowMode();
+    }
+
     stage_->Update();
 
     player_->Update();
@@ -63,7 +69,7 @@ void GameScene::DrawUI()
 {
     auto col = 0xffffffu;
     if (stability_ <= 30.0f) col = 0xff4040u;
-    DrawFormatString(20, 20, col, "Spacial Stability: %.0f%%", stability_);
+    DrawFormatString(20, 20, col, "Spacial Stability: %.1f%%", stability_);
     DrawFormatString(20, 40, 0xffffffu, "Active Device(s): %1d", activeDevice_);
 }
 

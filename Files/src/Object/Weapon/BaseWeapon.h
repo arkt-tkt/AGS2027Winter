@@ -1,11 +1,20 @@
 #pragma once
-#include "../Common/Object3D.h"
+#include "../Common/Transform3D.h"
 #include "../../Common/Geometry.h"
 
-class BaseWeapon : public Object3D
+class BaseWeapon : public Transform3D
 {
 public:
-	BaseWeapon();
+	struct WeaponData
+	{
+		float damage;
+		int clipSize;
+		int reserve;
+		float reloadTime;
+		float moveSpeedMult;
+	};
+
+	BaseWeapon(WeaponData dat);
 
 	void Update();
 	void Draw();
@@ -15,19 +24,11 @@ public:
 	virtual void Alt();
 	virtual void Reload();
 
+	float GetReloadProg() const;
+
 protected:
 	Vector3 muzzlePos_;
 
-	float damage_;
-
-	int clipSize_;
-	int maxClipSize_;
-
-	int reserve_;
-	int maxReserve_;
-
-	float reloadTime_;
-
-	float moveSpeedMult_;
-
+	WeaponData baseData_;
+	WeaponData editData_;
 };

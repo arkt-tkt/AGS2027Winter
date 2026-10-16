@@ -25,7 +25,7 @@ void FPSManager::Update(bool show_key)
 void FPSManager::Draw() const
 {
     if (showFlag_)
-        DrawFormatStringToHandle(5, 5, 0xFFFFFFU, fontHandle_,
+        DrawFormatString(5, 5, 0xFFFFFFU,
             "AVG FPS: %.2f\nMIN FPS: %.2f\nMAX FPS: %.2f",
             averageFPS_, minFPS_, maxFPS_);
 }

@@ -4,7 +4,7 @@
 #include "../../Common/Geometry.h"
 #include "Collider3D.h"
 
-class Object3D
+class Transform3D
 {
 public:
 	// 3Dモデル用ハンドルID
@@ -23,15 +23,12 @@ public:
 	// ローカル回転
 	Vector3 localRotation;
 
-	// 自分自身の衝突判定
-	std::vector<std::shared_ptr<Collider3D>> colliders;
-
 	// コンストラクタ
-	Object3D();
+	Transform3D();
 	// コンストラクタ(3Dモデルと紐付)
-	Object3D(int model_id);
+	Transform3D(int model_id);
 	// デストラクタ
-	virtual ~Object3D();
+	virtual ~Transform3D();
 
 	virtual void Init() {}
 	// 拡縮・座標・回転を更新
@@ -41,10 +38,7 @@ public:
 	// 解放
 	void Release();
 
-	std::vector<std::shared_ptr<Collider3D>> GetTypedColliders(Collider3D::TYPE type) const;
-
 private:
-
 	Matrix4x4 mScale;
 	Matrix4x4 mRot;
 	Matrix4x4 mPos;

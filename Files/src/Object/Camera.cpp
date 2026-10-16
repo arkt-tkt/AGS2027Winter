@@ -9,7 +9,7 @@
 #include "../Manager/InputManager.h"
 #include "../Manager/ResourceManager.h"
 #include "../Manager/SceneManager.h"
-#include "Player.h"
+#include "Common/Transform3D.h"
 #include "Camera.h"
 
 Camera::Camera()
@@ -46,7 +46,9 @@ void Camera::Update()
 	case MODE::FIXED:
 		UpdateFixed(); break;
 	case MODE::FOLLOW1:
-		UpdateFollow(); break;
+		UpdateFollow1(); break;
+	case MODE::FOLLOW2:
+		UpdateFollow2(); break;
 	}
 
 	UpdateAngles();
@@ -54,9 +56,12 @@ void Camera::Update()
 	shakeTimer_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (shakeTimer_ < 0.0f) shakeTimer_ = 0.0f;
 
-	CollisionStage();
+	if (mode_ == MODE::FOLLOW1)
+	{
+		CollisionStage();
 
-	CollisionPlayer();
+		CollisionPlayer();
+	}
 }
 
 void Camera::BeforeDraw()
@@ -126,7 +131,7 @@ void Camera::ResetAwayColliders()
 	awayColliders_.clear();
 }
 
-void Camera::SetFollowTarget(const Object3D* t)
+void Camera::SetFollowTarget(const Transform3D* t)
 {
 	if (!t)
 	{
@@ -136,12 +141,26 @@ void Camera::SetFollowTarget(const Object3D* t)
 	}
 
 	followTarget_ = t;
-	ChangeCameraMode(MODE::FOLLOW1);
+	ChangeCameraMode(MODE::FOLLOW2);
 }
 
 void Camera::ChangeCameraMode(MODE mode)
 {
 	mode_ = mode;
+}
+
+void Camera::SwitchFollowMode()
+{
+	if (mode_ == MODE::NONE || mode_ == MODE::FIXED) return;
+
+	auto intMode = (int)mode_;
+
+	if (++intMode == (int)MODE::END)
+	{
+		intMode = (int)MODE::FIXED + 1;
+	}
+
+	mode_ = (Camera::MODE)intMode;
 }
 
 void Camera::StartShake(float intensity, float duration)
@@ -199,10 +218,10 @@ void Camera::UpdateFixed()
 
 	targetPos_ = FIXED_TARGET_POS;
 
-	pos_ = (qRot * FOLLOW_CAMERA_LOCAL_POS);
+	pos_ = (qRot * FOLLOW1_CAMERA_LOCAL_POS);
 }
 
-void Camera::UpdateFollow()
+void Camera::UpdateFollow1()
 {
 	// フォロー先が無いやん！となったら一時固定カメラで
 	if (followTarget_ == nullptr)
@@ -215,21 +234,39 @@ void Camera::UpdateFollow()
 
 	auto fPos = followTarget_->position;
 
-	targetPos_ = fPos + (qRot * FOLLOW_TARGET_LOCAL_POS);
+	targetPos_ = fPos + qRot * FOLLOW1_TARGET_LOCAL_POS;
 
-	pos_ = fPos + (qRot * FOLLOW_CAMERA_LOCAL_POS);
+	pos_ = fPos + (qRot * FOLLOW1_CAMERA_LOCAL_POS);
+}
+
+void Camera::UpdateFollow2()
+{
+	// フォロー先が無いやん！となったら一時固定カメラで
+	if (followTarget_ == nullptr)
+	{
+		UpdateFixed();
+		return;
+	}
+
+	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
+
+	auto fPos = followTarget_->position;
+	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->handleId, 5));
+
+	targetPos_ = fNeckPos + qRot * Vector3(-3, 5, 500);
+
+	pos_ = fNeckPos + qRot * Vector3(-3, 5, 8);
 }
 
 void Camera::UpdateAngles()
 {
 	auto& ins = InputManager::GetInstance();
-	constexpr float add = 0.05f;
 	const float dt = SceneManager::GetInstance().GetDeltaTime();
 
 	auto vec = ins.GetMouseMoveLength();
 
-	angles_.x += add * dt * vec.y;
-	angles_.y += add * dt * vec.x;
+	angles_.x += mouseSensitivity_ * dt * vec.y;
+	angles_.y += mouseSensitivity_ * dt * vec.x;
 
 	angles_.x = MathUtil::Clamp(angles_.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
 	angles_.y = MathUtil::RadIn2PI(angles_.y);
@@ -246,8 +283,8 @@ void Camera::CollisionStage()
 		if (dat.type != Collider3D::TYPE::STAGE || dat.handleId == -1) continue;
 
 		auto hitPoly = c.lock()->GetNearestHitPolyLine(
-			followTarget_->position + Vector3(0, FOLLOW_LOCAL_POS_Y, 0),
-			pos_ + qRot * Vector3(8, 0, 0)
+			followTarget_->position + Vector3(0, FOLLOW1_LOCAL_POS_Y, 0),
+			pos_ + qRot * Vector3(2, 1, 0)
 		);
 
 		if (!hitPoly.HitFlag)
@@ -256,7 +293,7 @@ void Camera::CollisionStage()
 		}
 
 		auto pushBack =
-			Vector3(-FOLLOW_LOCAL_POS_X, 0, -FOLLOW_LOCAL_CAMERA_POS_Z).Normalized() * 0.5f;
+			Vector3(-FOLLOW1_LOCAL_POS_X, 0, -FOLLOW1_LOCAL_CAMERA_POS_Z).Normalized() * 0.5f;
 
 		auto norm = VECToVec3(hitPoly.Normal).Normalized() * 3.0f;
 
@@ -284,7 +321,7 @@ void Camera::CollisionPlayer()
 
 		if (hit.HitFlag)
 		{
-			MV1SetOpacityRate(dat.handleId, 0.5f);
+			MV1SetOpacityRate(dat.handleId, 0.25f);
 		}
 		else if (MV1GetOpacityRate(dat.handleId) < 1.0f)
 		{

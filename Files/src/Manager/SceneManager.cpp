@@ -41,6 +41,9 @@ void SceneManager::Update()
 
 		back->LateUpdate();
 
+		// カメラの更新
+		camera_->Update();
+
 		// ポーズ中以外はエフェクトを更新する
 		if (!isPause_) UpdateEffekseer3D();
 
@@ -54,9 +57,11 @@ void SceneManager::Update()
 			ChangeScene(next);
 		}
 	}
-
-	// カメラの更新
-	camera_->Update();
+	else
+	{
+		// カメラの更新
+		camera_->Update();
+	}
 }
 
 void SceneManager::Draw()
