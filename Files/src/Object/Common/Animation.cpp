@@ -69,32 +69,6 @@ void Animation::AddFromOther(ResourceManager::SRC src, int type, float speed)
 	}
 }
 
-void Animation::Play(ResourceManager::SRC src, int type, bool isLoop)
-{
-	if (playType_.second != -1)
-	{
-		// モデルからアニメーションを外す
-		MV1DetachAnim(modelId_, anims_[playType_.first][playType_.second].attachIdx);
-	}
-	
-	// アニメーション種別を変更
-	playType_.first = src;
-	playType_.second = type;
-	playAnim_ = anims_[src][type];
-	
-	// 初期化
-	playAnim_.step = 0.0f;
-
-	// モデルにアニメーションを付ける
-	playAnim_.attachIdx = AttachAnim(playAnim_.model);
-
-	// アニメーション総時間の取得
-	playAnim_.totalTime = MV1GetAttachAnimTotalTime(modelId_, playAnim_.attachIdx);
-
-	// アニメーションループ
-	isLoop_ = isLoop;
-}
-
 void Animation::Update()
 {
 	// 経過時間の取得
@@ -129,9 +103,40 @@ void Animation::Update()
 	MV1SetAttachAnimTime(modelId_, playAnim_.attachIdx, playAnim_.step);
 }
 
-void Animation::SetPlayingAnimSpeed(float speed)
+void Animation::Play(ResourceManager::SRC src, int type, bool isLoop)
 {
-	speed_ = speed;
+	if (playType_.second != -1)
+	{
+		// モデルからアニメーションを外す
+		MV1DetachAnim(modelId_, playAnim_.attachIdx);
+	}
+	
+	// アニメーション種別を変更
+	playType_.first = src;
+	playType_.second = type;
+	playAnim_ = anims_[src][type];
+	
+	// 初期化
+	playAnim_.step = 0.0f;
+
+	// モデルにアニメーションを付ける
+	playAnim_.attachIdx = AttachAnim(playAnim_.model);
+
+	// アニメーション総時間の取得
+	playAnim_.totalTime = MV1GetAttachAnimTotalTime(modelId_, playAnim_.attachIdx);
+
+	// アニメーションループ
+	isLoop_ = isLoop;
+}
+
+bool Animation::IsPlaying() const
+{
+	return playAnim_.step != playAnim_.totalTime;
+}
+
+bool Animation::IsPlaying(ResourceManager::SRC src, int type) const
+{
+	return playType_.first == src && playType_.second == type && playAnim_.step != playAnim_.totalTime;
 }
 
 int Animation::AttachAnim(int anim_model)

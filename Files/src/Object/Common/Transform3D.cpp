@@ -4,7 +4,7 @@
 
 Transform3D::Transform3D()
 {
-	handleId = -1;
+	modelId = -1;
 
 	scale = Vector3(1.0f, 1.0f, 1.0f);
 	position = Position3();
@@ -17,7 +17,7 @@ Transform3D::Transform3D()
 
 Transform3D::Transform3D(int model_id)
 {
-	handleId = model_id;
+	modelId = model_id;
 
 	scale = Vector3(1.0f, 1.0f, 1.0f);
 	position = Position3();
@@ -49,15 +49,15 @@ void Transform3D::Update()
 
 	Matrix4x4 mat = mScale * mRot % mPos;
 
-	if (handleId != -1)
+	if (modelId != -1)
 	{
-		MV1SetMatrix(handleId, DxLibUtil::Mat4x4ToMAT(mat));
+		MV1SetMatrix(modelId, DxLibUtil::Mat4x4ToMAT(mat));
 	}
 }
 
 void Transform3D::Draw()
 {
-	MV1DrawModel(handleId);
+	MV1DrawModel(modelId);
 }
 
 void Transform3D::Release()

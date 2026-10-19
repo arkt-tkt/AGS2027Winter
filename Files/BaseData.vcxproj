@@ -42,7 +42,7 @@
     <ClCompile Include="src\Manager\InputManager.cpp" />
     <ClCompile Include="src\Manager\SceneManager.cpp" />
     <ClCompile Include="src\Object\Actor\Stage.cpp" />
-    <ClCompile Include="src\Object\Weapon\BaseWeapon.cpp" />
+    <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="src\Scene\SceneBase.cpp" />
     <ClCompile Include="src\Scene\TitleScene\TitleScene.cpp" />
@@ -71,7 +71,7 @@
     <ClInclude Include="src\Manager\InputManager.h" />
     <ClInclude Include="src\Manager\SceneManager.h" />
     <ClInclude Include="src\Object\Actor\Stage.h" />
-    <ClInclude Include="src\Object\Weapon\BaseWeapon.h" />
+    <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
     <ClInclude Include="src\Scene\SceneBase.h" />
     <ClInclude Include="src\Scene\TitleScene\TitleScene.h" />

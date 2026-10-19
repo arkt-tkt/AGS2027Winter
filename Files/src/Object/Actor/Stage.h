@@ -11,6 +11,10 @@ public:
 	void Draw() override;
 
 private:
+	static constexpr int INVIS_FRAME_ARR[] = {
+		468, 493
+	};
+
 	Transform3D skyDome_;
 
 	// ƒ‚ƒfƒ‹‰Šú‰»

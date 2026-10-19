@@ -6,15 +6,14 @@ class CharacterBase3D : public ActorBase3D
 {
 public:
 	static constexpr float JUMP_OFFSET = 3.0f;
-	static constexpr float JUMP_POW = 7.0f;
-	static constexpr float GRAVITY_POW = 35.0f;
-	static constexpr float MAX_FALL_VELOCITY = -25.0f;
+	static constexpr float JUMP_POW = 6.0f;
+	static constexpr float GRAVITY_POW = 32.0f;
+	static constexpr float MAX_FALL_VELOCITY = -24.0f;
 
 	CharacterBase3D() : ActorBase3D() {};
 	virtual ~CharacterBase3D() {};
 
 	void Update() override final;
-	void UpdateColliders();
 
 	void Draw() override;
 
@@ -31,7 +30,7 @@ public:
 
 protected:
 	// アニメータ
-	std::unique_ptr<Animation> anim_;
+	std::unique_ptr<Animation> animation_;
 	// 地面用線分コライダ
 	std::pair<Vector3, Vector3> lineCollider_;
 
@@ -55,9 +54,12 @@ protected:
 	// ダッシュ状態
 	bool isSprinting_ = false;
 
+	// ジャンプ入力への反応
 	void Jump();
-
+	// アニメーション変更
+	virtual void AnimationSwitch() {}
+	// カプセルコライダの衝突判定
 	void CollisionCapsule();
-	// 重力処理
+	// 重力方向の衝突判定
 	void CollisionGravity();
 };

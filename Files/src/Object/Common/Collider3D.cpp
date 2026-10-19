@@ -70,7 +70,7 @@ Collider3D::Collider3D(TYPE type, int handle_id)
 		handle_id
 	)
 {
-	MV1SetupCollInfo(baseData_.handleId);
+	MV1SetupCollInfo(baseData_.modelId);
 	SharedConstructor();
 }
 
@@ -80,6 +80,12 @@ Collider3D::~Collider3D()
 
 void Collider3D::Update(Position3 world_pos, Vector3 world_rot)
 {
+	if (baseData_.shape == SHAPE::MODEL)
+	{
+		MV1RefreshCollInfo(baseData_.modelId);
+		return;
+	}
+
 	data_ = baseData_;
 
 	Quaternion qRot;
@@ -94,9 +100,6 @@ void Collider3D::Update(Position3 world_pos, Vector3 world_rot)
 	case SHAPE::CAPSULE:
 		data_.pos1 = (mRot * baseData_.pos1) + world_pos;
 		data_.pos2 = (mRot * baseData_.pos2) + world_pos;
-		break;
-	case SHAPE::MODEL:
-		MV1RefreshCollInfo(baseData_.handleId);
 		break;
 	}
 }
@@ -113,9 +116,9 @@ void Collider3D::UpdateAlt(Position3 world_pos1, Vector3 world_pos2)
 
 void Collider3D::Release()
 {
-	if (baseData_.handleId != -1)
+	if (baseData_.modelId != -1)
 	{
-		MV1TerminateCollInfo(baseData_.handleId);
+		MV1TerminateCollInfo(baseData_.modelId);
 	}
 }
 
@@ -166,7 +169,7 @@ MV1_COLL_RESULT_POLY Collider3D::GetNearestHitPolyLine(const Vector3& start, con
 
 	// ê¸ï™Ç≈è’ìÀîªíË
 	auto hits = MV1CollCheck_LineDim(
-		data_.handleId,
+		data_.modelId,
 		-1,
 		Vec3ToVEC(end),
 		Vec3ToVEC(start)

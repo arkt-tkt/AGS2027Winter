@@ -293,6 +293,9 @@ void InputManager::InitInputMap()
 
 		AddorReplaceMap(i, TAGS::SPRINT,
 			{ { btn::BUTTON_L3, btn::NONE }, { KEY_INPUT_LSHIFT, 0x00 } });
+
+		AddorReplaceMap(i, TAGS::RELOAD,
+			{ { btn::BUTTON_X, btn::NONE }, { KEY_INPUT_R, 0x00 } });
 	}
 }
 

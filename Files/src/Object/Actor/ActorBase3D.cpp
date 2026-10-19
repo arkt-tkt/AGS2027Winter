@@ -22,7 +22,25 @@ void ActorBase3D::Init()
 
 	InitAnim();
 
+	InitOther();
+
 	transform_.Update();
+}
+
+void ActorBase3D::UpdateColliders()
+{
+	// Collider3D‚ÌÀ•Wî•ñXV
+	for (auto& collider : colliders_)
+	{
+		if (collider->GetColliderData().shape != Collider3D::SHAPE::CAPSULE_ALT)
+		{
+			collider->Update(transform_.position, transform_.rotation);
+		}
+		else
+		{
+			collider->UpdateAlt(transform_.position, transform_.position2nd);
+		}
+	}
 }
 
 void ActorBase3D::Release()

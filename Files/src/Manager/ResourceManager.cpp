@@ -44,11 +44,17 @@ void ResourceManager::Init()
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Player/character.mv1");
 	resourcesMap_.emplace(SRC::MODEL_PLAYER, std::move(res));
 
+	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly-m16/source/M16A1.mv1");
+	resourcesMap_.emplace(SRC::MODEL_WPN_AR_AR1, std::move(res));
+
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/standing_idle.mv1");
 	resourcesMap_.emplace(SRC::ANIME_IDLE, std::move(res));
 
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/rifle_aiming_idle.mv1");
 	resourcesMap_.emplace(SRC::ANIME_RIFLE_IDLE, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/reloading.mv1");
+	resourcesMap_.emplace(SRC::ANIME_RIFLE_RELOAD, std::move(res));
 }
 
 void ResourceManager::Release()

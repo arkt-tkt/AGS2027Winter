@@ -30,7 +30,7 @@ public:
 		Position3 pos1;
 		Position3 pos2;
 		float r;
-		int handleId;
+		int modelId;
 	};
 
 	// SPHERE

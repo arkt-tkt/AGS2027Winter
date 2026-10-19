@@ -35,27 +35,42 @@ void Stage::Draw()
 
 void Stage::InitModel()
 {
-	transform_.handleId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_STAGE).handleId_;
+	// ステージ
+	transform_.modelId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_STAGE).handleId_;
 	transform_.position = 0.0f;
 	transform_.localPosition = Position3(0.0f, 800.0f, 0.0f);
 	transform_.scale = 0.5f;
-	colliders_.emplace_back(std::make_shared<Collider3D>(Collider3D::TYPE::STAGE, transform_.handleId));
 
-	int frames = MV1GetFrameNum(transform_.handleId);
+	for (const int& IDX : INVIS_FRAME_ARR)
+	{
+		MV1SetFrameVisible(transform_.modelId, IDX, FALSE);
+	}
+
+	int frames = MV1GetFrameNum(transform_.modelId);
 	for (int i = 0; i < frames; ++i)
 	{
-		COLOR_F emi = MV1GetMaterialDifColor(transform_.handleId, i);
+		COLOR_F emi = MV1GetMaterialDifColor(transform_.modelId, i);
 		emi.r *= 0.25f;
 		emi.g *= 0.25f;
 		emi.b *= 0.25f;
-		MV1SetMaterialEmiColor(transform_.handleId, i, emi);
+		MV1SetMaterialEmiColor(transform_.modelId, i, emi);
 	}
 
-	skyDome_.handleId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_SKYDOME).handleId_;
+	// スカイドーム
+	skyDome_.modelId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_SKYDOME).handleId_;
 	skyDome_.position = 0.0f;
 	skyDome_.localPosition = Position3(0.0f, 0.0f, 0.0f);
 	skyDome_.scale = 50.0f;
-	MV1SetMaterialEmiColor(skyDome_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
+	MV1SetMaterialEmiColor(skyDome_.modelId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
+
+	// 一度だけ更新
+	transform_.Update();
+
+	// コライダ
+	colliders_.emplace_back(std::make_shared<Collider3D>(Collider3D::TYPE::STAGE, transform_.modelId));
+
+	// 一度だけ更新
+	UpdateColliders();
 }
 
 void Stage::InitAnim()

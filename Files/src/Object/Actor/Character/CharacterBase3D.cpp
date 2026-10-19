@@ -4,31 +4,25 @@
 
 void CharacterBase3D::Update()
 {
-	if (anim_) anim_->Update();
-
+	// 移動
 	Move();
 
 	transform_.position += velocity_;
 
+	// アニメーション
+	AnimationSwitch();
+
+	if (animation_) animation_->Update();
+
+	// 衝突判定
 	CollisionCapsule();
 
 	CollisionGravity();
 
+	// 更新
 	transform_.Update();
 
 	UpdateColliders();
-}
-
-void CharacterBase3D::UpdateColliders()
-{
-	// Collider3Dの座標情報更新
-	for (auto& collider : colliders_)
-	{
-		if (collider->GetColliderData().shape != Collider3D::SHAPE::CAPSULE_ALT)
-			collider->Update(transform_.position, transform_.rotation);
-		else
-			collider->UpdateAlt(transform_.position, transform_.position2nd);
-	}
 }
 
 void CharacterBase3D::Draw()
@@ -67,9 +61,9 @@ void CharacterBase3D::CollisionCapsule()
 {
 	for (const auto& c : awayColliders_)
 	{
-		auto& awColDat = c.lock()->GetColliderData();
+		auto& dat = c.lock()->GetColliderData();
 
-		if (awColDat.type != Collider3D::TYPE::STAGE || awColDat.handleId == -1) continue;
+		if (dat.type != Collider3D::TYPE::STAGE || dat.modelId == -1) continue;
 
 		// コレに自分のコライダが入る
 		Collider3D* col = nullptr;
@@ -88,7 +82,7 @@ void CharacterBase3D::CollisionCapsule()
 		if (!col) return;
 
 		auto hits = MV1CollCheck_Capsule(
-			c.lock()->GetColliderData().handleId, -1,
+			dat.modelId, -1,
 			Vec3ToVEC(col->GetColliderData().pos1),
 			Vec3ToVEC(col->GetColliderData().pos2),
 			col->GetColliderData().r);
@@ -151,7 +145,7 @@ void CharacterBase3D::CollisionGravity()
 		Vector3 col2 = transform_.position + lineCollider_.second;
 
 		auto hits = MV1CollCheck_LineDim(
-			dat.handleId, -1,
+			dat.modelId, -1,
 			Vec3ToVEC(col1),
 			Vec3ToVEC(col2));
 

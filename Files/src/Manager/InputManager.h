@@ -33,7 +33,7 @@ public:
 		NONE,
 
 		DEBUG,
-		
+
 		SYSTEM_OK,
 		SYSTEM_NG,
 		SYSTEM_PAUSE,
@@ -45,12 +45,14 @@ public:
 		MOVE_RIGHT,
 		MOVE_UP,
 
+		JUMP,
+		SPRINT,
+
 		ATTACK_MAIN,
 		ATTACK_SUB,
 		ATTACK_SPECIAL,
 
-		JUMP,
-		SPRINT,
+		RELOAD,
 	};
 
 	// ここに書かれているタグに登録されたボタンは、

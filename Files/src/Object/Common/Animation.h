@@ -23,18 +23,20 @@ public:
 	void AddFromMine(int type, float speed);
 	void AddFromOther(ResourceManager::SRC src, int type, float speed);
 
-	void Play(ResourceManager::SRC src, int type, bool isLoop = true);
-
 	void Update();
 
-	void SetPlayingAnimSpeed(float speed = 1.0f);
+	void Play(ResourceManager::SRC src, int type, bool isLoop = true);
+	bool IsPlaying() const;
+	bool IsPlaying(ResourceManager::SRC src, int type) const;
+
+	void SetPlayingAnimSpeed(float speed = 1.0f) { speed_ = speed; }
 
 private:
 	int modelId_;
 
 	std::map<ResourceManager::SRC, std::map<int, AnimData>> anims_;
 
-	std::pair<ResourceManager::SRC, int> playType_;
+	std::pair<ResourceManager::SRC, int> playType_ = { ResourceManager::SRC::ANIME_IDLE, -1 };
 	AnimData playAnim_;
 
 	bool isLoop_;

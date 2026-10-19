@@ -29,7 +29,7 @@ void Player::Draw()
 		Vec3ToVEC(transform_.position + lineCollider_.second),
 		0xff8000u);
 
-	auto lHPos = MV1GetFramePosition(transform_.handleId, 11);
+	auto lHPos = MV1GetFramePosition(transform_.modelId, 11);
 	DrawLine3D(lHPos, Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xffff00u);
 
 	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
@@ -39,6 +39,8 @@ void Player::Draw()
 	TurnBody();
 
 	CharacterBase3D::Draw();
+
+	wpn_->Draw();
 }
 
 void Player::Spawn()
@@ -56,7 +58,7 @@ void Player::InitModel()
 {
 	auto i = static_cast<int>(ResourceManager::SRC::MODEL_PLAYER);
 
-	transform_.handleId = resMng_.LoadModelDuplicate(
+	transform_.modelId = resMng_.LoadModelDuplicate(
 		ResourceManager::SRC(static_cast<ResourceManager::SRC>(i + PLAYER_NUM)));
 	transform_.scale = PLAYER_SCALE;
 	transform_.position = PLAYER_POSITION_INIT;
@@ -73,7 +75,7 @@ void Player::InitModel()
 	colliders_.emplace_back(
 		std::make_shared<Collider3D>(
 			Collider3D::TYPE::PLAYER,
-			transform_.handleId)
+			transform_.modelId)
 	);
 
 	lineCollider_ = {
@@ -81,14 +83,24 @@ void Player::InitModel()
 		Vector3(0, 68, 0),
 	};
 
-	MV1SetMaterialEmiColor(transform_.handleId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
+	MV1SetMaterialEmiColor(transform_.modelId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 }
 
 void Player::InitAnim()
 {
-	anim_ = std::make_unique<Animation>(transform_.handleId);
-	anim_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0, 30.0f);
-	anim_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
+	animation_ = std::make_unique<Animation>(transform_.modelId);
+
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_RELOAD, 0, 30.0f);
+
+	animation_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
+}
+
+void Player::InitOther()
+{
+	wpn_ = std::make_unique<WeaponBase>();
+	wpn_->Init();
+	wpn_->SetParentTransform(transform_);
 }
 
 void Player::Move()
@@ -147,6 +159,22 @@ void Player::Move()
 		transform_.position.y = 0.0f;
 }
 
+void Player::AnimationSwitch()
+{
+	auto& ins = InputManager::GetInstance();
+	using tag = InputManager::TAGS;
+
+	if (ins.CheckDownMap(INPUT_NUM, tag::RELOAD) &&
+		!animation_->IsPlaying(ResourceManager::SRC::ANIME_RIFLE_RELOAD, 0))
+	{
+		animation_->Play(ResourceManager::SRC::ANIME_RIFLE_RELOAD, 0, false);
+	}
+	else if (!animation_->IsPlaying())
+	{
+		animation_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
+	}
+}
+
 void Player::TurnBody()
 {
 	// ³–Ê‚ðƒJƒƒ‰‚ÌŒü‚«‚É“¯Šú
@@ -160,20 +188,14 @@ void Player::TurnBody()
 	// ‚±‚±‚ÉƒtƒŒ[ƒ€–{—ˆ‚ÌÀ•WA‰ñ“]AŠg‘å—¦‚ª“ü‚é
 	MATRIX mat = MGetIdent();
 
-	// ”wœ(˜)
-	MV1ResetFrameUserLocalMatrix(transform_.handleId, 2);
-	mat = MV1GetFrameLocalMatrix(transform_.handleId, 2);
-	MV1SetFrameUserLocalMatrix(transform_.handleId, 2, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
-
-	// ”wœ(˜ã)
-	MV1ResetFrameUserLocalMatrix(transform_.handleId, 3);
-	mat = MV1GetFrameLocalMatrix(transform_.handleId, 3);
-	MV1SetFrameUserLocalMatrix(transform_.handleId, 3, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
-
-	// ”wœ(‹¹)
-	MV1ResetFrameUserLocalMatrix(transform_.handleId, 4);
-	mat = MV1GetFrameLocalMatrix(transform_.handleId, 4);
-	MV1SetFrameUserLocalMatrix(transform_.handleId, 4, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	for (const int& idx : ROTATABLE_FRAME_INDEX)
+	{
+		MV1ResetFrameUserLocalMatrix(transform_.modelId, idx);
+		mat = MV1GetFrameLocalMatrix(transform_.modelId, idx);
+		MV1SetFrameUserLocalMatrix(transform_.modelId, idx, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+	}
 
 	transform_.Update();
+
+	wpn_->Update();
 }

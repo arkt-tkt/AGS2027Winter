@@ -2,6 +2,7 @@
 #include <list>
 #include <memory>
 #include <numbers>
+#include "../Weapon/WeaponBase.h"
 #include "CharacterBase3D.h"
 
 class Player : public CharacterBase3D
@@ -23,6 +24,8 @@ private:
 	static constexpr Position3 PLAYER_LOCAL_POSITION = { 0.0f, 0.0f, 0.0f };
 	static constexpr Position3 PLAYER_POSITION_INIT = { 0.0f, 0.0f, 0.0f };
 
+	static constexpr int ROTATABLE_FRAME_INDEX[] = { 2, 3, 4 };
+
 	static constexpr int INPUT_INDEX_ADJUSTER = 1;
 
 	static constexpr float INVINCIBLE_TIME = 3.0f;
@@ -32,10 +35,15 @@ private:
 	const int PLAYER_NUM;
 	const int INPUT_NUM;
 
+	std::unique_ptr<WeaponBase> wpn_;
+
 	void InitModel() override;
 	void InitAnim() override;
+	void InitOther() override;
 
 	void Move() override;
+
+	void AnimationSwitch() override;
 
 	void TurnBody();
 

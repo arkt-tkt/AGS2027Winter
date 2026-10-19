@@ -251,7 +251,7 @@ void Camera::UpdateFollow2()
 	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
 
 	auto fPos = followTarget_->position;
-	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->handleId, 5));
+	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->modelId, 5));
 
 	targetPos_ = fNeckPos + qRot * Vector3(-3, 5, 500);
 
@@ -280,7 +280,7 @@ void Camera::CollisionStage()
 	{
 		auto& dat = c.lock()->GetColliderData();
 
-		if (dat.type != Collider3D::TYPE::STAGE || dat.handleId == -1) continue;
+		if (dat.type != Collider3D::TYPE::STAGE || dat.modelId == -1) continue;
 
 		auto hitPoly = c.lock()->GetNearestHitPolyLine(
 			followTarget_->position + Vector3(0, FOLLOW1_LOCAL_POS_Y, 0),
@@ -311,21 +311,21 @@ void Camera::CollisionPlayer()
 	{
 		auto& dat = c.lock()->GetColliderData();
 
-		if (dat.type != Collider3D::TYPE::PLAYER || dat.handleId == -1) continue;
+		if (dat.type != Collider3D::TYPE::PLAYER || dat.modelId == -1) continue;
 
 		auto hit = MV1CollCheck_Line(
-			dat.handleId, -1,
+			dat.modelId, -1,
 			Vec3ToVEC(pos_),
 			Vec3ToVEC(targetPos_)
 		);
 
 		if (hit.HitFlag)
 		{
-			MV1SetOpacityRate(dat.handleId, 0.25f);
+			MV1SetOpacityRate(dat.modelId, 0.25f);
 		}
-		else if (MV1GetOpacityRate(dat.handleId) < 1.0f)
+		else if (MV1GetOpacityRate(dat.modelId) < 1.0f)
 		{
-			MV1SetOpacityRate(dat.handleId, 1.0f);
+			MV1SetOpacityRate(dat.modelId, 1.0f);
 		}
 	}
 }

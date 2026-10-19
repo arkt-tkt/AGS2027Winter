@@ -214,6 +214,8 @@ struct Matrix4x4
 
 // 3次元ベクトルとの計算
 Vector3 operator*(const Matrix4x4& m, const Vector3& v);
+//
+Vector3 TransformSR(const Matrix4x4& m, const Vector3& v);
 // 行列の結合
 Matrix4x4 operator*(const Matrix4x4& ma, const Matrix4x4& mb);
 // 行列の結合（拡縮行列を無視）

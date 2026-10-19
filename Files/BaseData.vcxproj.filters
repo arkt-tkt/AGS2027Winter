@@ -27,7 +27,7 @@
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="src\Object\Actor\Stage.cpp" />
     <ClCompile Include="src\Object\Common\Animation.cpp" />
-    <ClCompile Include="src\Object\Weapon\BaseWeapon.cpp" />
+    <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -51,8 +51,6 @@
     <ClInclude Include="src\Manager\SceneManager.h" />
     <ClInclude Include="src\Scene\SceneBase.h" />
     <ClInclude Include="src\Scene\TitleScene\TitleScene.h" />
-    <ClInclude Include="src\Object\Common\Object3D.h" />
-    <ClInclude Include="src\Object\ActorBase3D.h" />
     <ClInclude Include="src\Object\Camera.h" />
     <ClInclude Include="src\Object\Common\Collider3D.h" />
     <ClInclude Include="src\Common\Utility.h" />
@@ -60,7 +58,7 @@
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
     <ClInclude Include="src\Object\Actor\Stage.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
-    <ClInclude Include="src\Object\Weapon\BaseWeapon.h" />
+    <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
   </ItemGroup>
   <ItemGroup>

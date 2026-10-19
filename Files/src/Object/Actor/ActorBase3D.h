@@ -18,6 +18,8 @@ public:
 	void Init();
 	// 更新処理
 	virtual void Update() = 0;
+	// コライダ更新処理
+	void UpdateColliders();
 	// 描画処理
 	virtual void Draw() = 0;
 	// 解放処理
@@ -53,11 +55,13 @@ protected:
 	virtual void InitModel() = 0;
 	// アニメ初期化
 	virtual void InitAnim() = 0;
+	// その他の初期化
+	virtual void InitOther() {}
 
 	// 移動処理
-	virtual void Move() {};
+	virtual void Move() {}
 
-	virtual void Collision() {};
+	virtual void Collision() {}
 
 };
 

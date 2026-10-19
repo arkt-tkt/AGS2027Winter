@@ -8,7 +8,7 @@ class Transform3D
 {
 public:
 	// 3Dモデル用ハンドルID
-	int handleId;
+	int modelId;
 
 	// 拡縮
 	Vector3 scale;
