@@ -261,7 +261,7 @@ Vector3 GetForwardVector(const Vector3& v, const Vector3& zero);
 // クォータニオン
 struct Quaternion
 {
-	static constexpr float kEpsilonNormalSqrt = 1.0e-15f;
+	static constexpr float kEpsilonNormalSqrt = 1.0e-10f;
 
 	double w, x, y, z;
 

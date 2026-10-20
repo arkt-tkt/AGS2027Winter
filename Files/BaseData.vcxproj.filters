@@ -29,6 +29,7 @@
     <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
+    <ClCompile Include="src\Object\Actor\Projectile\ProjectileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -60,6 +61,7 @@
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
+    <ClInclude Include="src\Object\Actor\Projectile\ProjectileManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

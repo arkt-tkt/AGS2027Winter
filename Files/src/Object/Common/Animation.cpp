@@ -105,6 +105,8 @@ void Animation::Update()
 
 void Animation::Play(ResourceManager::SRC src, int type, bool isLoop)
 {
+	if (playType_ == std::pair{ src, type }) return;
+
 	if (playType_.second != -1)
 	{
 		// モデルからアニメーションを外す

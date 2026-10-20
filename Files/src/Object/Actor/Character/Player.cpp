@@ -34,6 +34,9 @@ void Player::Draw()
 
 	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
 		velocity_.XZ().Length(), velocity_.x, velocity_.z);
+
+	DrawFormatString(200, 240, 0xffffffu, "Rotation: %.3f, %.3f, %.3f",
+		transform_.rotation.x, transform_.rotation.y, transform_.rotation.z);
 #endif
 
 	TurnBody();
@@ -41,6 +44,10 @@ void Player::Draw()
 	CharacterBase3D::Draw();
 
 	wpn_->Draw();
+}
+
+void Player::DrawUI()
+{
 }
 
 void Player::Spawn()
@@ -62,7 +69,7 @@ void Player::InitModel()
 		ResourceManager::SRC(static_cast<ResourceManager::SRC>(i + PLAYER_NUM)));
 	transform_.scale = PLAYER_SCALE;
 	transform_.position = PLAYER_POSITION_INIT;
-	transform_.localPosition = PLAYER_LOCAL_POSITION;
+	transform_.localPosition = PLAYER_POSITION_LOCAL;
 	transform_.localRotation.y = DX_PI_F;
 
 	colliders_.emplace_back(
@@ -90,10 +97,11 @@ void Player::InitAnim()
 {
 	animation_ = std::make_unique<Animation>(transform_.modelId);
 
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0, 30.0f);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_RIFLE_RELOAD, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 30.0f);
 
-	animation_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
+	animation_->Play(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0);
 }
 
 void Player::InitOther()
@@ -164,26 +172,42 @@ void Player::AnimationSwitch()
 	auto& ins = InputManager::GetInstance();
 	using tag = InputManager::TAGS;
 
-	if (ins.CheckDownMap(INPUT_NUM, tag::RELOAD) &&
-		!animation_->IsPlaying(ResourceManager::SRC::ANIME_RIFLE_RELOAD, 0))
+	if (!animation_->IsPlaying(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0))
 	{
-		animation_->Play(ResourceManager::SRC::ANIME_RIFLE_RELOAD, 0, false);
+		if (ins.CheckDownMap(INPUT_NUM, tag::RELOAD))
+		{
+			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, false);
+		}
+		else if (velocity_.XZ().LengthSquare() > 0.1f)
+		{
+			// 足踏みに置き換えるまではコメントアウト
+			//animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE, 0);
+		}
+		else
+		{
+			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0);
+		}
 	}
-	else if (!animation_->IsPlaying())
-	{
-		animation_->Play(ResourceManager::SRC::ANIME_RIFLE_IDLE, 0);
-	}
+
 }
 
 void Player::TurnBody()
 {
+	// キャラクターから注視点へのベクトル
+	auto toTarget = scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position;
+	// ここでY軸要素を除去しないと回転が不均一になる
+	toTarget.y = 0.0f;
+
 	// 正面をカメラの向きに同期
-	transform_.rotation.y = LookRotation(scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).ToEuler().y;
+	transform_.rotation.y = LookRotation(toTarget).ToEuler().y;
+
+	// 徐々に体を折り曲げる
+	int frameCnt = _countof(ROTATABLE_FRAME_INDEX);
 
 	Quaternion qRot = Quaternion().Euler(
-		-scnMng_.GetCameraPtr().GetAngles().x * 0.28f,
+		-scnMng_.GetCameraPtr().GetAngles().x * 0.84f / frameCnt,
 		0,
-		-scnMng_.GetCameraPtr().GetAngles().x * 0.2f);
+		-scnMng_.GetCameraPtr().GetAngles().x * 0.6f / frameCnt);
 
 	// ここにフレーム本来の座標、回転、拡大率が入る
 	MATRIX mat = MGetIdent();

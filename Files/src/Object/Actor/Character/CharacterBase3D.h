@@ -10,12 +10,13 @@ public:
 	static constexpr float GRAVITY_POW = 32.0f;
 	static constexpr float MAX_FALL_VELOCITY = -24.0f;
 
-	CharacterBase3D() : ActorBase3D() {};
-	virtual ~CharacterBase3D() {};
+	CharacterBase3D() : ActorBase3D() {}
+	virtual ~CharacterBase3D() {}
 
 	void Update() override final;
 
 	void Draw() override;
+	virtual void DrawUI() {}
 
 	// ¶‘¶ƒtƒ‰ƒO‚ğæ“¾
 	virtual const bool& IsAlive() const { return isAlive_; }

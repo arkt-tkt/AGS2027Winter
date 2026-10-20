@@ -36,7 +36,7 @@ private:
 
 	std::map<ResourceManager::SRC, std::map<int, AnimData>> anims_;
 
-	std::pair<ResourceManager::SRC, int> playType_ = { ResourceManager::SRC::ANIME_IDLE, -1 };
+	std::pair<ResourceManager::SRC, int> playType_ = { ResourceManager::SRC::ANIME_PL_IDLE, -1 };
 	AnimData playAnim_;
 
 	bool isLoop_;

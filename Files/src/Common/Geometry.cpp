@@ -727,19 +727,16 @@ Vector3 GetForwardVector(const Vector3& v, const Vector3& zero)
 #pragma region クォータニオン
 Quaternion& Quaternion::Euler(double rad_x, double rad_y, double rad_z)
 {
-	rad_x = MathUtil::RadIn2PI(rad_x);
-	rad_y = MathUtil::RadIn2PI(rad_y);
-	rad_z = MathUtil::RadIn2PI(rad_z);
+	rad_x = MathUtil::RadIn2PI(-rad_x);
+	rad_y = MathUtil::RadIn2PI(-rad_y);
+	rad_z = MathUtil::RadIn2PI(-rad_z);
 
 	double cosZ = cos(rad_z / 2.0f);
-	double sinZ = -sin(rad_z / 2.0f); // 左手座標系用の改良
-	//double sinZ = sin(rad_z / 2.0f);
+	double sinZ = sin(rad_z / 2.0f);
 	double cosX = cos(rad_x / 2.0f);
-	double sinX = -sin(rad_x / 2.0f); // 左手座標系用の改良
-	//double sinX = sin(rad_x / 2.0f);
+	double sinX = sin(rad_x / 2.0f);
 	double cosY = cos(rad_y / 2.0f);
-	double sinY = -sin(rad_y / 2.0f); // 左手座標系用の改良
-	//double sinY = sin(rad_y / 2.0f);
+	double sinY = sin(rad_y / 2.0f);
 
 	w = cosX * cosY * cosZ + sinX * sinY * sinZ;
 	x = sinX * cosY * cosZ + cosX * sinY * sinZ;
@@ -780,7 +777,7 @@ Vector3 Quaternion::ToEuler() const
 	ret.y = static_cast<float>(std::atan2(r11, r12));
 	ret.z = static_cast<float>(std::atan2(r31, r32));
 
-	return ret;
+	return -ret;
 }
 
 Matrix4x4 Quaternion::ToMatrix() const
@@ -969,8 +966,8 @@ Quaternion AngleAxis(Vector3 axis, double rad)
 	axis.z = (float)(axis.z * norm);
 
 	c = cos(0.5f * rad);
-	//s = -sin(0.5f * rad); // 左手座標系用の改良？
 	s = sin(0.5f * rad);
+	//s = -sin(0.5f * rad); // 左手座標系用の改良？
 
 	ret.w = c;
 	ret.x = s * axis.x;
@@ -982,7 +979,13 @@ Quaternion AngleAxis(Vector3 axis, double rad)
 
 Quaternion LookRotation(const Vector3& dir)
 {
-	Vector3 up = { 0.0f, 1.0f, 0.0f };
+	auto up = Vector3(0, 1, 0);
+
+	if (std::abs(Dot(dir, up)) > 0.999f)
+	{
+		up = Vector3(0, 0, 1);
+	}
+
 	return LookRotation(dir, up);
 }
 
@@ -1022,51 +1025,37 @@ Quaternion LookRotation(Vector3 dir, Vector3 up)
 		quaternion.x = ((double)m12 - m21) * num;
 		quaternion.y = ((double)m20 - m02) * num;
 		quaternion.z = ((double)m01 - m10) * num;
-
-		quaternion.x = -quaternion.x; // 左手座標系用の改良
-		quaternion.y = -quaternion.y; // 左手座標系用の改良
-		quaternion.z = -quaternion.z; // 左手座標系用の改良
-		return quaternion.Normalized();
 	}
-
-	if ((m00 >= m11) && (m00 >= m22)) {
+	else if ((m00 >= m11) && (m00 >= m22)) {
 		auto num7 = sqrt(((1.0f + m00) - m11) - m22);
 		auto num4 = 0.5f / num7;
 		quaternion.x = 0.5 * num7;
 		quaternion.y = ((double)m01 + m10) * num4;
 		quaternion.z = ((double)m02 + m20) * num4;
 		quaternion.w = ((double)m12 - m21) * num4;
-
-		quaternion.x = -quaternion.x; // 左手座標系用の改良
-		quaternion.y = -quaternion.y; // 左手座標系用の改良
-		quaternion.z = -quaternion.z; // 左手座標系用の改良
-		return quaternion.Normalized();
 	}
-
-	if (m11 > m22) {
+	else if (m11 > m22) {
 		auto num6 = sqrt(((1.0f + m11) - m00) - m22);
 		auto num3 = 0.5f / num6;
 		quaternion.x = ((double)m10 + m01) * num3;
 		quaternion.y = 0.5 * num6;
 		quaternion.z = ((double)m21 + m12) * num3;
 		quaternion.w = ((double)m20 - m02) * num3;
-
-		quaternion.x = -quaternion.x; // 左手座標系用の改良
-		quaternion.y = -quaternion.y; // 左手座標系用の改良
-		quaternion.z = -quaternion.z; // 左手座標系用の改良
-		return quaternion.Normalized();
+	}
+	else
+	{
+		auto num5 = sqrt(((1.0f + m22) - m00) - m11);
+		auto num2 = 0.5f / num5;
+		quaternion.x = ((double)m20 + m02) * num2;
+		quaternion.y = ((double)m21 + m12) * num2;
+		quaternion.z = 0.5 * num5;
+		quaternion.w = ((double)m01 - m10) * num2;
 	}
 
-	auto num5 = sqrt(((1.0f + m22) - m00) - m11);
-	auto num2 = 0.5f / num5;
-	quaternion.x = ((double)m20 + m02) * num2;
-	quaternion.y = ((double)m21 + m12) * num2;
-	quaternion.z = 0.5 * num5;
-	quaternion.w = ((double)m01 - m10) * num2;
-
-	quaternion.x = -quaternion.x; // 左手座標系用の改良
-	quaternion.y = -quaternion.y; // 左手座標系用の改良
-	quaternion.z = -quaternion.z; // 左手座標系用の改良
+	//quaternion.x = -quaternion.x; // 左手座標系用の改良
+	//quaternion.y = -quaternion.y; // 左手座標系用の改良
+	//quaternion.z = -quaternion.z; // 左手座標系用の改良
+	
 	return quaternion.Normalized();
 }
 
@@ -1121,10 +1110,10 @@ Quaternion GetRotation(const Matrix4x4& mat)
 			}
 	}
 
+	//ret.x = -ret.x; // 左手座標系用の改良
+	//ret.y = -ret.y; // 左手座標系用の改良
+	//ret.z = -ret.z; // 左手座標系用の改良
 
-	ret.x = -ret.x; // 左手座標系用の改良
-	ret.y = -ret.y; // 左手座標系用の改良
-	ret.z = -ret.z; // 左手座標系用の改良
 	return ret;
 }
 #pragma endregion

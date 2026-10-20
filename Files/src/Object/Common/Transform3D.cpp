@@ -42,7 +42,7 @@ void Transform3D::Update()
 	qLocalRot.Euler(localRotation);
 	qRot.Euler(rotation);
 
-	mRot = (qLocalRot * qRot).ToMatrix();
+	mRot = (qRot * qLocalRot).ToMatrix();
 
 	// ローカル座標を原点とした回転を行った場合の座標を得る
 	mPos = TranslationMatrix((mp * mRot * mip) * (localPosition + position));

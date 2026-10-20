@@ -5,7 +5,8 @@
 
 FPSManager* FPSManager::instance_ = nullptr;
 
-FPSManager::FPSManager(unsigned int fps) :
+FPSManager::FPSManager(unsigned int fps)
+    :
     showFlag_(false),
     fontHandle_(-1)
 {

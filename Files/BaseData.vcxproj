@@ -22,6 +22,7 @@
     <ClCompile Include="src\Common\Utility.cpp" />
     <ClCompile Include="src\Manager\ScoreManager.cpp" />
     <ClCompile Include="src\Object\Actor\ActorBase3D.cpp" />
+    <ClCompile Include="src\Object\Actor\Projectile\ProjectileManager.cpp" />
     <ClCompile Include="src\Object\Camera.cpp" />
     <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Manager\Resource.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="src\Common\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />
     <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
+    <ClInclude Include="src\Object\Actor\Projectile\ProjectileManager.h" />
     <ClInclude Include="src\Object\Camera.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Manager\Resource.h" />
