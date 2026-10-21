@@ -117,25 +117,30 @@ void Player::Move()
 
 	auto dt = scnMng_.GetDeltaTime();
 
-	auto& ins = InputManager::GetInstance();
+	// 別名
 	using tag = InputManager::TAGS;
 
+	// ローカル定数
+	const auto& INS = InputManager::GetInstance();
 	const auto& CAMERA = scnMng_.GetCameraPtr();
-	const auto ACC = float(accel_ * scnMng_.GetDeltaTime());
-	const auto ACCELERATION = isSprinting_ ? 24.0f : 24.0f;
-	const auto FRICTION = 10.0f;
+	const auto ACC = accel_ * scnMng_.GetDeltaTime();
+	const auto ACCELERATION = 13.5f;
+	const auto FRICTION = 9.0f;
+
+	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) ? true : false;
 	const auto MAX_SPD = isSprinting_ ? 1.5f : 1.0f;
 
-	Vector3 moveDir;
-
-	if (ins.CheckNowMap(INPUT_NUM, tag::MOVE_UP)) moveDir.z++; // 上移動の処理
-	if (ins.CheckNowMap(INPUT_NUM, tag::MOVE_DOWN)) moveDir.z--; // 下移動の処理
-	if (ins.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT)) moveDir.x--; // 左移動の処理
-	if (ins.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT)) moveDir.x++; // 右移動の処理
-
+	// 緩やかに減速、多少滑る
 	float decaySpeed = std::exp(-FRICTION * dt);
 	velocity_.x *= decaySpeed;
 	velocity_.z *= decaySpeed;
+
+	// 移動方向
+	Vector3 moveDir;
+	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_UP)) moveDir.z++; // 上移動の処理
+	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_DOWN)) moveDir.z--; // 下移動の処理
+	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT)) moveDir.x--; // 左移動の処理
+	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT)) moveDir.x++; // 右移動の処理
 
 	// 移動方向をカメラの向きに同期
 	if (moveDir.XZ().LengthSquare() > 0.0f)
@@ -146,8 +151,7 @@ void Player::Move()
 		velocity_.z += moveSpeed.z;
 	}
 
-	isSprinting_ = ins.CheckNowMap(INPUT_NUM, tag::SPRINT) ? true : false;
-
+	// 最大速度
 	if (velocity_.XZ().LengthSquare() > MAX_SPD * MAX_SPD)
 	{
 		float mult = MAX_SPD / velocity_.XZ().Length();
@@ -156,7 +160,8 @@ void Player::Move()
 		velocity_.z *= mult;
 	}
 
-	if (ins.CheckDownMap(INPUT_NUM, tag::JUMP))
+	// ジャンプ
+	if (INS.CheckDownMap(INPUT_NUM, tag::JUMP))
 	{
 		Jump();
 	}
@@ -171,6 +176,8 @@ void Player::AnimationSwitch()
 {
 	auto& ins = InputManager::GetInstance();
 	using tag = InputManager::TAGS;
+	
+	transform_.localPosition = {};
 
 	if (!animation_->IsPlaying(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0))
 	{
@@ -180,8 +187,7 @@ void Player::AnimationSwitch()
 		}
 		else if (velocity_.XZ().LengthSquare() > 0.1f)
 		{
-			// 足踏みに置き換えるまではコメントアウト
-			//animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE, 0);
+			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE, 0);
 		}
 		else
 		{

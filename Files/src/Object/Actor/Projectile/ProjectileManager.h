@@ -1,11 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "../ActorBase3D.h"
 
-class Projectile : public ActorBase3D
-{
-};
+class Projectile;
 
 class ProjectileManager
 {
@@ -31,6 +28,9 @@ private:
 	virtual ~ProjectileManager() {}
 
 public:
+	void Update();
+
+	void CreateProjectile(Projectile::Data);
 	std::vector<Projectile*> GetActiveProjectiles() { return active_; }
 
 private:

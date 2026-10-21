@@ -101,7 +101,7 @@ void WeaponBase::InitModel()
 	transform_.modelId = resMng_.Load(ResourceManager::SRC::MODEL_WPN_AR_AR1).handleId_;
 	transform_.scale = 0.04f;
 	transform_.position = 0.0f;
-	transform_.localPosition = Position3(-2, -1, 10);
+	transform_.localPosition = Position3(-1, -1, 10);
 
 	transform_.Update();
 }

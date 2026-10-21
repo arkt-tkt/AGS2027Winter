@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "../../Common/Geometry.h"
 #include "../../Manager/ResourceManager.h"
 
 class Animation
@@ -29,6 +30,7 @@ public:
 	bool IsPlaying() const;
 	bool IsPlaying(ResourceManager::SRC src, int type) const;
 
+	Vector3 GetAnimLocalPos(int frame) const;
 	void SetPlayingAnimSpeed(float speed = 1.0f) { speed_ = speed; }
 
 private:

@@ -72,7 +72,7 @@ private:
 
 	static constexpr float MOUSE_SENSITIVITY_INIT = 0.1f;
 
-	static constexpr float UP_ANGLE_LIMIT = -48.0f * DX_PI_F / 180.0f;
+	static constexpr float UP_ANGLE_LIMIT = -64.0f * DX_PI_F / 180.0f;
 	static constexpr float DOWN_ANGLE_LIMIT = 64.0f * DX_PI_F / 180.0f;
 
 	const Transform3D* followTarget_;

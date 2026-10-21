@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "../../Common/DxLibUtil.h"
 #include "../../Manager/SceneManager.h"
 #include "Animation.h"
 
@@ -79,7 +80,7 @@ void Animation::Update()
 
 	// アニメーション終了判定
 	bool isEnd = false;
-	if (playAnim_.step > playAnim_.totalTime)
+	if (playAnim_.step >= playAnim_.totalTime)
 	{
 		isEnd = true;
 	}
@@ -90,7 +91,7 @@ void Animation::Update()
 		if (isLoop_)
 		{
 			// ループ再生
-			playAnim_.step = 0.0f;
+			playAnim_.step -= playAnim_.totalTime;
 		}
 		else
 		{
@@ -139,6 +140,11 @@ bool Animation::IsPlaying() const
 bool Animation::IsPlaying(ResourceManager::SRC src, int type) const
 {
 	return playType_.first == src && playType_.second == type && playAnim_.step != playAnim_.totalTime;
+}
+
+Vector3 Animation::GetAnimLocalPos(int frame) const
+{
+	return VECToVec3(MV1GetAttachAnimFrameLocalPosition(modelId_, playAnim_.attachIdx, frame));
 }
 
 int Animation::AttachAnim(int anim_model)

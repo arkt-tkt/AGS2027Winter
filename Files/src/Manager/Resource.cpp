@@ -125,7 +125,9 @@ void Resource::Load()
 		handleId_ = LoadPixelShader(path_.c_str());
 
 		if (constBufferSize_ > 0)
+		{
 			constBufferId_ = CreateShaderConstantBuffer(sizeof(FLOAT4) * constBufferSize_);
+		}
 		break;
 	case Resource::TYPE::SE:
 		handleId_ = LoadSoundMem(path_.c_str());
@@ -175,6 +177,14 @@ void Resource::Release()
 			{
 				MV1DeleteModel(id);
 			}
+		}
+		break;
+	case Resource::TYPE::PIXEL_SHADER:
+		DeleteShader(handleId_);
+
+		if (constBufferId_ != -1)
+		{
+			DeleteShaderConstantBuffer(constBufferId_);
 		}
 		break;
 	case Resource::TYPE::JSON:
