@@ -31,9 +31,15 @@ private:
 
 public:
 	void Update();
+	void LateUpdate();
 	void Draw();
 
 	void Spawn();
+
+	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
+	void AddAwayCollider(std::weak_ptr<Collider3D> col) { awayColliders_.push_back(col); }
+	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
+	void AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols);
 
 	void SetPlayerPtr(std::weak_ptr<Player> player) { player_ = player; }
 	Player* GetPlayerPtr() const { return player_.lock().get(); }
@@ -44,6 +50,7 @@ private:
 
 	GameScene* gameScene_ = nullptr;
 	std::weak_ptr<Player> player_;
+	std::vector<std::weak_ptr<Collider3D>> awayColliders_;
 
 	std::vector<std::unique_ptr<EnemyBase>> pool_;
 	std::vector<EnemyBase*> active_;

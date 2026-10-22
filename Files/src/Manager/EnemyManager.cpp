@@ -43,6 +43,14 @@ void EnemyManager::Update()
 	}
 }
 
+void EnemyManager::LateUpdate()
+{
+	for (auto it = active_.begin(); it != active_.end(); ++it)
+	{
+		(*it)->LateUpdate();
+	}
+}
+
 void EnemyManager::Draw()
 {
 	for (auto& cell : active_)
@@ -60,8 +68,17 @@ void EnemyManager::Spawn()
 		{
 			cell = std::make_unique<EnemyBase>(this);
 			cell->Init();
+			for (auto& col : awayColliders_) cell->AddAwayCollider(col);
 			active_.push_back(cell.get());
 			return;
 		}
+	}
+}
+
+void EnemyManager::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)
+{
+	for (auto& col : cols)
+	{
+		awayColliders_.push_back(col);
 	}
 }

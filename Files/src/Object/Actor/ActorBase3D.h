@@ -31,7 +31,7 @@ public:
 	void Release();
 
 	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
-	void AddAwayCollider(std::weak_ptr<Collider3D> col);
+	void AddAwayCollider(std::weak_ptr<Collider3D> col) { awayColliders_.push_back(col); }
 	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
 	void AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols);
 

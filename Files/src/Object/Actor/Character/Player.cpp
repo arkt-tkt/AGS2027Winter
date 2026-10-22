@@ -52,12 +52,6 @@ void Player::DrawUI()
 void Player::InitParam()
 {
 	isAlive_ = true;
-
-	maxHp_ = 100.0f;
-	hp_ = maxHp_;
-	maxSpeed_ = 1.0f;
-	accel_ = 13.5f;
-	deccel_ = 9.0f;
 	
 	invincible_ = 3.0f;
 }
@@ -124,14 +118,6 @@ void Player::Move()
 	const auto& INS = InputManager::GetInstance();
 	const auto& CAMERA = scnMng_.GetCameraPtr();
 
-	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) ? true : false;
-	const auto MAX_SPD = isSprinting_ ? maxSpeed_ * sprintMult_ : maxSpeed_;
-
-	// 緩やかに減速、多少滑る
-	float decaySpeed = std::exp(-deccel_ * dt);
-	velocity_.x *= decaySpeed;
-	velocity_.z *= decaySpeed;
-
 	// 移動方向
 	Vector3 moveDir;
 	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_UP)) moveDir.z++; // 上移動の処理
@@ -139,17 +125,37 @@ void Player::Move()
 	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT)) moveDir.x--; // 左移動の処理
 	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT)) moveDir.x++; // 右移動の処理
 
+
+	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) && moveDir.XZ().LengthSquare() ?
+		true : false;
+	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
+	const auto MAX_SPD = maxSpeed_ * SPRINT_MULT * dt;
+	Vector3 moveSpeed;
+	float dotRate = 0.0f;
+
+	if (moveDir.XZ().LengthSquare() > 0.0f)
+	{
+		// 移動方向をカメラの向きに合わせて回転
+		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
+		moveSpeed = (quaMat * moveDir).Normalized() * accel_ * dt;
+
+		dotRate = Dot(moveSpeed.XZ(), velocity_.XZ()) + 1.0f * 0.5f;
+	}
+
+	// 緩やかに減速、多少滑る
+	float decaySpeed =  MathUtil::Lerp(std::exp(-deccel_ * dt), 1.0f, dotRate);
+	velocity_.x *= decaySpeed;
+	velocity_.z *= decaySpeed;
+
 	// 移動方向をカメラの向きに同期
 	if (moveDir.XZ().LengthSquare() > 0.0f)
 	{
-		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
-		Vector3 moveSpeed = (quaMat * moveDir).Normalized() * accel_ * dt;
 		velocity_.x += moveSpeed.x;
 		velocity_.z += moveSpeed.z;
 	}
 
 	// 最大速度
-	if (velocity_.XZ().LengthSquare() > MAX_SPD * MAX_SPD)
+	if (velocity_.XZ().LengthSquare() * SPRINT_MULT > MAX_SPD * MAX_SPD)
 	{
 		float mult = MAX_SPD / velocity_.XZ().Length();
 

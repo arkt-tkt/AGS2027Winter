@@ -26,6 +26,7 @@ bool GameScene::Init()
 
     EnemyManager::CreateInstance(this);
     EnemyManager::GetInstance().SetPlayerPtr(player_);
+    EnemyManager::GetInstance().AddAwayColliders(stage_->GetTypedColliders(COL_TY::STAGE));
 
     ProjectileManager::CreateInstance();
 
@@ -71,6 +72,8 @@ void GameScene::Update()
 
 void GameScene::LateUpdate()
 {
+    EnemyManager::GetInstance().LateUpdate();
+
     player_->LateUpdate();
 }
 

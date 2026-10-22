@@ -27,6 +27,7 @@ void ActorBase3D::Init()
 	InitOther();
 
 	transform_.Update();
+	UpdateColliders();
 }
 
 void ActorBase3D::UpdateColliders()
@@ -53,11 +54,6 @@ void ActorBase3D::Release()
 		collider->Release();
 
 	colliders_.clear();
-}
-
-void ActorBase3D::AddAwayCollider(std::weak_ptr<Collider3D> col)
-{
-	awayColliders_.push_back(col);
 }
 
 void ActorBase3D::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)

@@ -39,17 +39,17 @@ protected:
 	// 生存フラグ
 	bool isAlive_ = true;
 	// HP
-	float hp_ = 1.0f;
+	float hp_ = 100.0f;
 	// 最大HP
 	float maxHp_ = hp_;
-	// 移動速度
-	float maxSpeed_ = 1.0f;
+	// 1秒あたりの最大移動速度
+	float maxSpeed_ = 120.0f;
 	// ダッシュ倍率
 	float sprintMult_ = 1.5f;
 	// 加速力
-	float accel_ = 20.0f;
+	float accel_ = 12.0f;
 	// 減速力
-	float deccel_ = 12.0f;
+	float deccel_ = 9.0f;
 	// 無敵状態タイマー
 	float invincible_ = 0.0f;
 	// スコア
