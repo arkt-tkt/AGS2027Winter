@@ -29,9 +29,10 @@
     <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
-    <ClCompile Include="src\Object\Actor\Projectile\ProjectileManager.cpp" />
+    <ClCompile Include="src\Manager\ProjectileManager.cpp" />
     <ClCompile Include="src\Object\Actor\Projectile\Projectile.cpp" />
     <ClCompile Include="src\Object\Actor\Character\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="src\Manager\EnemyManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -63,9 +64,10 @@
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
-    <ClInclude Include="src\Object\Actor\Projectile\ProjectileManager.h" />
+    <ClInclude Include="src\Manager\ProjectileManager.h" />
     <ClInclude Include="src\Object\Actor\Projectile\Projectile.h" />
     <ClInclude Include="src\Object\Actor\Character\Enemy\EnemyBase.h" />
+    <ClInclude Include="src\Manager\EnemyManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

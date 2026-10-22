@@ -2,11 +2,10 @@
 #include <chrono>
 #include <list>
 #include <memory>
-#include "../Common/AutoText.h"
+#include "FPSManager.h"
 #include "../Common/Fader.h"
 #include "../Object/Camera.h"
 #include "../Scene/SceneBase.h"
-#include "../Shader/PostEffect.h"
 
 class SceneManager {
 public:
@@ -32,11 +31,15 @@ public:
 	bool Release();
 	void ReleaseScene();
 
-	const std::list<SceneBase*> GetSceneList() const;
-	Camera& GetCameraPtr() const;
-	Fader& GetFaderPtr() const;
-	float GetDeltaTime() const;
-	SceneBase* GetFrontScene() const;
+	// 最前面(アクティブ状態)のシーンを生ポインタ状態で返す
+	SceneBase* GetTopScene() const;
+
+	Camera& GetCameraPtr() const { return *camera_; }
+
+	Fader& GetFaderPtr() const { return *fader_; }
+
+	// float型のデルタタイムを返す
+	const float GetDeltaTime() const { return FPSManager::GetInstance().GetDeltaTime<float>(); }
 
 	bool IsPause() const;
 	bool PrevPause() const;
@@ -45,10 +48,9 @@ public:
 	unsigned int GetNextSceneVariable() const;
 
 private:
-	std::list<SceneBase*> sceneList_;
+	std::list<std::unique_ptr<SceneBase>> sceneList_;
 	std::unique_ptr<Camera> camera_;
 	std::unique_ptr<Fader> fader_;
-	std::unique_ptr<PostEffect> postEffect_;
 
 	int postEffectScreen_;
 

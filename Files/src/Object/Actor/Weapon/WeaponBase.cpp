@@ -18,26 +18,11 @@ void WeaponBase::Update()
 			editData_.clipSize = baseData_.clipSize;
 		}
 	}
+}
 
-	if (parent_->modelId != -1)
-	{
-		using namespace DxLibUtil;
-
-		// mixamorigの35番は右手首、40番は右手人差し指の付け根
-		auto rhPos = VECToVec3(MV1GetFramePosition(parent_->modelId, 35));
-		auto rhIndexPos = VECToVec3(MV1GetFramePosition(parent_->modelId, 40));
-		transform_.position = rhPos + (rhIndexPos - rhPos) / 2.0f;
-
-		// 右手から注視点へのベクトルを取り、
-		// その方向に銃口を向ける
-		auto basePos = VECToVec3(MV1GetFramePosition(parent_->modelId, 35));
-		auto& lookPos = scnMng_.GetCameraPtr().GetTargetPosition();
-
-		auto forward = (lookPos - basePos).Normalized();
-
-		auto qRot = LookRotation(forward);
-		transform_.rotation = qRot.ToEuler();
-	}
+void WeaponBase::LateUpdate()
+{
+	TurnVisual();
 
 	transform_.Update();
 }
@@ -63,6 +48,8 @@ void WeaponBase::Main()
 	if (editData_.reloadTime) return;
 
 	editData_.clipSize = MathUtil::Clamp(editData_.clipSize - 1, 0, baseData_.clipSize);
+
+
 }
 
 void WeaponBase::Sub()
@@ -104,4 +91,26 @@ void WeaponBase::InitModel()
 	transform_.localPosition = Position3(-1, -1, 10);
 
 	transform_.Update();
+}
+
+void WeaponBase::TurnVisual()
+{
+	if (parent_->modelId == -1) return;
+
+	using namespace DxLibUtil;
+
+	// mixamorigの35番は右手首、40番は右手人差し指の付け根
+	auto rhPos = VECToVec3(MV1GetFramePosition(parent_->modelId, 35));
+	auto rhIndexPos = VECToVec3(MV1GetFramePosition(parent_->modelId, 40));
+	transform_.position = rhPos + (rhIndexPos - rhPos) / 2.0f;
+
+	// 右手から注視点へのベクトルを取り、
+	// その方向に銃口を向ける
+	auto basePos = VECToVec3(MV1GetFramePosition(parent_->modelId, 35));
+	auto& lookPos = scnMng_.GetCameraPtr().GetTargetPosition();
+
+	auto forward = (lookPos - basePos).Normalized();
+
+	auto qRot = LookRotation(forward);
+	transform_.rotation = qRot.ToEuler();
 }

@@ -3,7 +3,6 @@
 #include "../Application.h"
 #include "../Scene/TitleScene/TitleScene.h"
 #include "../Scene/GameScene/GameScene.h"
-#include "FPSManager.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "ScoreManager.h"
@@ -30,7 +29,7 @@ void SceneManager::Update()
 		if (sceneList_.empty()) return;
 
 		// 配列末尾のポインタを取る
-		auto back = sceneList_.back();
+		auto back = sceneList_.back().get();
 
 		// ポーズ判定の更新
 		prevPause_ = isPause_;
@@ -39,10 +38,10 @@ void SceneManager::Update()
 		// アクティブなシーンだけ更新する
 		back->Update();
 
-		back->LateUpdate();
-
 		// カメラの更新
 		camera_->Update();
+
+		back->LateUpdate();
 
 		// ポーズ中以外はエフェクトを更新する
 		if (!isPause_) UpdateEffekseer3D();
@@ -69,38 +68,25 @@ void SceneManager::Draw()
 	camera_->BeforeDraw();
 
 	// 非アクティブのシーンも描画する
-	for (auto scene : sceneList_)
+	for (auto it = sceneList_.begin(); it != sceneList_.end(); ++it)
 	{
-		scene->Draw();
+		(*it)->Draw();
 	}
 
 	// フェーダー等の画面エフェクトを挟む
 	fader_->Draw();
 
-	//SetDrawScreen(postEffectScreen_);
-	//postEffect_->Draw();
-	//SetDrawScreen(Application::GetInstance().GetPreDrawScreen());
-	//DrawGraph(0, 0, postEffectScreen_, TRUE);
-
 	// SetDrawScreen関数を呼んだので
 	camera_->BeforeDraw();
 
 	// ここからUI系描画
-	for (auto scene : sceneList_)
+	for (auto it = sceneList_.begin(); it != sceneList_.end(); ++it)
 	{
-		scene->DrawUI();
+		(*it)->DrawUI();
 	}
 
 #ifdef _DEBUG
 	camera_->DebugDraw();
-
-	/*
-	for (auto rit = sceneList_.rbegin(); rit != sceneList_.rend(); ++rit)
-	{
-		auto s = (*rit)->GetMyScene();
-
-	}
-	*/
 #endif
 }
 
@@ -119,35 +105,17 @@ void SceneManager::ReleaseScene()
 {
 	// 現在アクティブなシーンを解放して削除
 	sceneList_.back()->Release();
-	delete sceneList_.back();
 
 	// リストからも削除
 	sceneList_.pop_back();
 }
 
-const std::list<SceneBase*> SceneManager::GetSceneList() const
+SceneBase* SceneManager::GetTopScene() const
 {
-	return sceneList_;
-}
-
-Camera& SceneManager::GetCameraPtr() const
-{
-	return *camera_;
-}
-
-Fader& SceneManager::GetFaderPtr() const
-{
-	return *fader_;
-}
-
-float SceneManager::GetDeltaTime() const
-{
-	return FPSManager::GetInstance().GetDeltaTime<float>();
-}
-
-SceneBase* SceneManager::GetFrontScene() const
-{
-	return sceneList_.back();
+	if (!sceneList_.empty()) {
+		return sceneList_.back().get();
+	}
+	return nullptr;
 }
 
 void SceneManager::SetNextSceneVariable(unsigned int u) { nextSceneVariable_ = u; }
@@ -161,12 +129,6 @@ bool SceneManager::InitClass()
 	camera_ = std::make_unique<Camera>();
 
 	fader_ = std::make_unique<Fader>();
-
-	//auto& postEffect = ResourceManager::GetInstance().Load(ResourceManager::SRC::PS_FXAA);
-	//postEffect_ = std::make_unique<PostEffect>(postEffect.handleId_, postEffect.constBufferId_, postEffect.constBufferSize_);
-	//postEffect_->MakeSquareVertex({ 0, 0 }, { Application::RESOLUTION_WIDTH, Application::RESOLUTION_HEIGHT });
-	//std::vector texs = { Application::GetInstance().GetPreDrawScreen() };
-	//postEffect_->SetUseTextures(texs);
 
 	return true;
 }
@@ -284,7 +246,7 @@ bool SceneManager::CheckFader()
 
 void SceneManager::DoChangeScene(SceneBase::SCENE scene)
 {
-	SceneBase* ret = nullptr;
+	std::unique_ptr<SceneBase> ret = nullptr;
 	unsigned int var = nextSceneVariable_;
 
 	if (scene != SceneBase::SCENE::PAUSE)
@@ -306,24 +268,24 @@ void SceneManager::DoChangeScene(SceneBase::SCENE scene)
 		switch (scene)
 		{
 		case SceneBase::SCENE::TITLE:
-			ret = new TitleScene();
+			ret = std::make_unique<TitleScene>();
 			break;
 		case SceneBase::SCENE::GAME:
-			ret = new GameScene();
+			ret = std::make_unique<GameScene>();
 			break;
 		}
 	}
 	else
 	{
 		// ポーズシーン
-		//ret = new PauseScene();
+		//ret = std::make_unique<PauseScene>();
 	}
 
 	if (ret != nullptr)
 	{
 		ret->Assign(scene, var);
 		ret->Init();
-		sceneList_.push_back(ret);
+		sceneList_.push_back(std::move(ret));
 
 		nextSceneVariable_ = 0u;
 	}

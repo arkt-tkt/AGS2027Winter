@@ -17,6 +17,9 @@ private:
 
 	Transform3D skyDome_;
 
+
+	// パラメータ初期化
+	void InitParam() override;
 	// モデル初期化
 	void InitModel() override;
 	// アニメ初期化

@@ -5,24 +5,45 @@
 void CharacterBase3D::Update()
 {
 	// 移動
-	Move();
+	{
+		Move();
 
-	transform_.position += velocity_;
+		transform_.position += velocity_;
+	}
 
 	// アニメーション
-	AnimationSwitch();
+	{
+		AnimationSwitch();
 
-	if (animation_) animation_->Update();
+		if (animation_) animation_->Update();
+	}
 
 	// 衝突判定
-	CollisionCapsule();
+	{
+		if (CollisionCapsule())
+		{
+			CollisionMove();
+		}
 
-	CollisionGravity();
+		CollisionGravity();
+	}
 
 	// 更新
-	transform_.Update();
+	{
+		transform_.Update();
 
-	UpdateColliders();
+		UpdateColliders();
+	}
+
+	// その他下位クラスの処理
+	{
+		SubClass();
+	}
+}
+
+void CharacterBase3D::LateUpdate()
+{
+	TurnVisual();
 }
 
 void CharacterBase3D::Draw()
@@ -57,8 +78,10 @@ void CharacterBase3D::Jump()
 	isLanding_ = false;
 }
 
-void CharacterBase3D::CollisionCapsule()
+bool CharacterBase3D::CollisionCapsule()
 {
+	bool ret = false;
+
 	for (const auto& c : awayColliders_)
 	{
 		auto& dat = c.lock()->GetColliderData();
@@ -79,7 +102,7 @@ void CharacterBase3D::CollisionCapsule()
 		}
 
 		// nullptrのままだと、恐らくobject3D_.collidersの中身が不足しているので返す
-		if (!col) return;
+		if (!col) return false;
 
 		auto hits = MV1CollCheck_Capsule(
 			dat.modelId, -1,
@@ -89,6 +112,8 @@ void CharacterBase3D::CollisionCapsule()
 
 		for (int i = 0; i < hits.HitNum; i++)
 		{
+			ret = true;
+
 			auto hit = hits.Dim[i];
 
 			// 衝突判定後１度だけ行う分岐
@@ -131,6 +156,8 @@ void CharacterBase3D::CollisionCapsule()
 		// 検出した地面ポリゴン情報の後始末
 		MV1CollResultPolyDimTerminate(hits);
 	}
+
+	return ret;
 }
 
 void CharacterBase3D::CollisionGravity()

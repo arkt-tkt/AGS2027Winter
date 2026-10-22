@@ -44,6 +44,9 @@ void ResourceManager::Init()
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Player/character.mv1");
 	resourcesMap_.emplace(SRC::MODEL_PLAYER, std::move(res));
 
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Enemy/character.mv1");
+	resourcesMap_.emplace(SRC::MODEL_ENEMY1, std::move(res));
+
 	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/sg553-assault-rifle/source/sg553.mv1");
 	resourcesMap_.emplace(SRC::MODEL_WPN_AR_AR1, std::move(res));
 

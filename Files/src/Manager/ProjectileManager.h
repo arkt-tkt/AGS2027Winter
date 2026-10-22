@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include "../Object/Actor/Projectile/Projectile.h"
 
 class Projectile;
 
@@ -29,9 +30,10 @@ private:
 
 public:
 	void Update();
+	void Draw();
 
-	void CreateProjectile(Projectile::Data);
-	std::vector<Projectile*> GetActiveProjectiles() { return active_; }
+	void Create(Projectile::Data);
+	std::vector<Projectile*> GetActives() { return active_; }
 
 private:
 	static constexpr size_t POOL_SIZE = 120;

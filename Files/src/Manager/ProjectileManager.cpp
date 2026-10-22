@@ -1,4 +1,3 @@
-#include "Projectile.h"
 #include "ProjectileManager.h"
 
 ProjectileManager* ProjectileManager::instance_ = nullptr;
@@ -31,7 +30,15 @@ void ProjectileManager::Update()
 	}
 }
 
-void ProjectileManager::CreateProjectile(Projectile::Data dat)
+void ProjectileManager::Draw()
+{
+	for (auto& cell : active_)
+	{
+		cell->Draw();
+	}
+}
+
+void ProjectileManager::Create(Projectile::Data dat)
 {
 	for (auto& cell : pool_) if (!cell->IsAlive())
 	{

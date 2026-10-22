@@ -23,8 +23,9 @@
     <ClCompile Include="src\Manager\ScoreManager.cpp" />
     <ClCompile Include="src\Object\Actor\ActorBase3D.cpp" />
     <ClCompile Include="src\Object\Actor\Character\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="src\Manager\EnemyManager.cpp" />
     <ClCompile Include="src\Object\Actor\Projectile\Projectile.cpp" />
-    <ClCompile Include="src\Object\Actor\Projectile\ProjectileManager.cpp" />
+    <ClCompile Include="src\Manager\ProjectileManager.cpp" />
     <ClCompile Include="src\Object\Camera.cpp" />
     <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Manager\Resource.cpp" />
@@ -57,8 +58,9 @@
     <ClInclude Include="src\Manager\ScoreManager.h" />
     <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
     <ClInclude Include="src\Object\Actor\Character\Enemy\EnemyBase.h" />
+    <ClInclude Include="src\Manager\EnemyManager.h" />
     <ClInclude Include="src\Object\Actor\Projectile\Projectile.h" />
-    <ClInclude Include="src\Object\Actor\Projectile\ProjectileManager.h" />
+    <ClInclude Include="src\Manager\ProjectileManager.h" />
     <ClInclude Include="src\Object\Camera.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Manager\Resource.h" />

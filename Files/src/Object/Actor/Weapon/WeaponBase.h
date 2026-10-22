@@ -17,6 +17,7 @@ public:
 	virtual ~WeaponBase() {}
 
 	void Update() override;
+	void LateUpdate() override;
 	void Draw() override;
 
 	virtual void Main();
@@ -35,7 +36,10 @@ protected:
 	WeaponData baseData_;
 	WeaponData editData_;
 
+	void InitParam() override {}
 	void InitModel() override;
 	void InitAnim() override {}
+
+	void TurnVisual() override;
 
 };

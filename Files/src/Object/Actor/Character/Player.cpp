@@ -39,8 +39,6 @@ void Player::Draw()
 		transform_.rotation.x, transform_.rotation.y, transform_.rotation.z);
 #endif
 
-	TurnBody();
-
 	CharacterBase3D::Draw();
 
 	wpn_->Draw();
@@ -48,17 +46,20 @@ void Player::Draw()
 
 void Player::DrawUI()
 {
+	DrawFormatString(20, 700, 0xffffffu, "HP %3d", MathUtil::Round(hp_));
 }
 
-void Player::Spawn()
+void Player::InitParam()
 {
-	transform_.position = PLAYER_POSITION_INIT;
-
 	isAlive_ = true;
-	hp_ = 1;
-	invincible_ = 3.0f;
 
-	transform_.Update();
+	maxHp_ = 100.0f;
+	hp_ = maxHp_;
+	maxSpeed_ = 1.0f;
+	accel_ = 13.5f;
+	deccel_ = 9.0f;
+	
+	invincible_ = 3.0f;
 }
 
 void Player::InitModel()
@@ -77,13 +78,12 @@ void Player::InitModel()
 			Collider3D::TYPE::COLLIDER,
 			transform_.position + Vector3(0, 24, 0),
 			transform_.position + Vector3(0, 60, 0),
-			8.0f)
-	);
+			8.0f));
+
 	colliders_.emplace_back(
 		std::make_shared<Collider3D>(
 			Collider3D::TYPE::PLAYER,
-			transform_.modelId)
-	);
+			transform_.modelId));
 
 	lineCollider_ = {
 		Vector3(0, -4, 0),
@@ -123,15 +123,12 @@ void Player::Move()
 	// ローカル定数
 	const auto& INS = InputManager::GetInstance();
 	const auto& CAMERA = scnMng_.GetCameraPtr();
-	const auto ACC = accel_ * scnMng_.GetDeltaTime();
-	const auto ACCELERATION = 13.5f;
-	const auto FRICTION = 9.0f;
 
 	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) ? true : false;
-	const auto MAX_SPD = isSprinting_ ? 1.5f : 1.0f;
+	const auto MAX_SPD = isSprinting_ ? maxSpeed_ * sprintMult_ : maxSpeed_;
 
 	// 緩やかに減速、多少滑る
-	float decaySpeed = std::exp(-FRICTION * dt);
+	float decaySpeed = std::exp(-deccel_ * dt);
 	velocity_.x *= decaySpeed;
 	velocity_.z *= decaySpeed;
 
@@ -146,7 +143,7 @@ void Player::Move()
 	if (moveDir.XZ().LengthSquare() > 0.0f)
 	{
 		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
-		Vector3 moveSpeed = (quaMat * moveDir).Normalized() * ACCELERATION * dt;
+		Vector3 moveSpeed = (quaMat * moveDir).Normalized() * accel_ * dt;
 		velocity_.x += moveSpeed.x;
 		velocity_.z += moveSpeed.z;
 	}
@@ -197,7 +194,7 @@ void Player::AnimationSwitch()
 
 }
 
-void Player::TurnBody()
+void Player::TurnVisual()
 {
 	// キャラクターから注視点へのベクトル
 	auto toTarget = scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position;
@@ -227,5 +224,5 @@ void Player::TurnBody()
 
 	transform_.Update();
 
-	wpn_->Update();
+	wpn_->LateUpdate();
 }

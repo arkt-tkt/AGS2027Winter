@@ -33,13 +33,17 @@ void Stage::Draw()
 	transform_.Draw();
 }
 
+void Stage::InitParam()
+{
+	transform_.position = 0.0f;
+	transform_.localPosition = Position3(0.0f, 800.0f, 0.0f);
+	transform_.scale = 0.5f;
+}
+
 void Stage::InitModel()
 {
 	// ステージ
 	transform_.modelId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_STAGE).handleId_;
-	transform_.position = 0.0f;
-	transform_.localPosition = Position3(0.0f, 800.0f, 0.0f);
-	transform_.scale = 0.5f;
 
 	for (const int& IDX : INVIS_FRAME_ARR)
 	{
@@ -56,6 +60,9 @@ void Stage::InitModel()
 		MV1SetMaterialEmiColor(transform_.modelId, i, emi);
 	}
 
+	// コライダ
+	colliders_.emplace_back(std::make_shared<Collider3D>(Collider3D::TYPE::STAGE, transform_.modelId));
+
 	// スカイドーム
 	skyDome_.modelId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_SKYDOME).handleId_;
 	skyDome_.position = 0.0f;
@@ -64,13 +71,7 @@ void Stage::InitModel()
 	MV1SetMaterialEmiColor(skyDome_.modelId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 
 	// 一度だけ更新
-	transform_.Update();
-
-	// コライダ
-	colliders_.emplace_back(std::make_shared<Collider3D>(Collider3D::TYPE::STAGE, transform_.modelId));
-
-	// 一度だけ更新
-	UpdateColliders();
+	skyDome_.Update();
 }
 
 void Stage::InitAnim()

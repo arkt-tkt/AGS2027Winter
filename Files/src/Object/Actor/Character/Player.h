@@ -14,8 +14,6 @@ public:
 	void Draw() override;
 	void DrawUI() override;
 
-	void Spawn();
-
 	// プレイヤー番号（0始まり）
 	const int& GetPlayerNumber() const { return PLAYER_NUM; }
 	const int& GetInputNumber() const { return INPUT_NUM; }
@@ -36,6 +34,7 @@ private:
 
 	std::unique_ptr<WeaponBase> wpn_;
 
+	void InitParam() override;
 	void InitModel() override;
 	void InitAnim() override;
 	void InitOther() override;
@@ -44,6 +43,6 @@ private:
 
 	void AnimationSwitch() override;
 
-	void TurnBody();
+	void TurnVisual() override;
 
 };

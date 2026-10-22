@@ -5,7 +5,7 @@
 class FPSManager final {
 public:
 	// シングルトン
-	static void CreateInstance(unsigned int fps = STANDARD_FPS) { if (instance_ == nullptr) instance_ = new FPSManager(fps); }
+	static void CreateInstance(unsigned int fps = FPS_STANDARD) { if (instance_ == nullptr) instance_ = new FPSManager(fps); }
 	static FPSManager& GetInstance() { return *instance_; }
 	static void DeleteInstance() { if (instance_ != nullptr) delete instance_; instance_ = nullptr; }
 
@@ -34,16 +34,18 @@ public:
 
 	// デルタタイム取得（実際にFPSから算出）
 	template<typename T>
-	T GetDeltaTime() const;
+	const T GetDeltaTime() const;
 
 	// 描画用フォントを設定
 	void SetDrawFont(int handle);
 
 private:
 	// 標準目標FPS
-	static constexpr unsigned int STANDARD_FPS = 60U;
+	static constexpr unsigned int FPS_STANDARD = 60U;
 	// 最大目標FPS
-	static constexpr unsigned int MAX_FPS = 300U;
+	static constexpr unsigned int FPS_MAX = 300U;
+	// デルタタイム遅延上限
+	static constexpr float DELTA_TIME_DELAY_MULT_MAX = 2.0f;
 
 	// 目標FPS
 	unsigned int targetFPS_;

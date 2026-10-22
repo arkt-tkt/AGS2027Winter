@@ -1,26 +1,33 @@
 #include <DxLib.h>
 #include "../../Application.h"
 #include "../../Common/MathUtil.h"
+#include "../../Manager/EnemyManager.h"
 #include "../../Manager/InputManager.h"
+#include "../../Manager/ProjectileManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Object/Actor/Character/Player.h"
 #include "GameScene.h"
 
 bool GameScene::Init()
 {
-    using CTY = Collider3D::TYPE;
+    using COL_TY = Collider3D::TYPE;
 
     stage_ = std::make_unique<Stage>();
     stage_->Init();
 
     player_ = std::make_shared<Player>(0);
     player_->Init();
-    player_->AddAwayColliders(stage_->GetTypedColliders(CTY::STAGE));
+    player_->AddAwayColliders(stage_->GetTypedColliders(COL_TY::STAGE));
 
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
     cam.SetFollowTarget(&player_->GetTransform());
-    cam.AddAwayColliders(player_->GetTypedColliders(CTY::PLAYER));
-    cam.AddAwayColliders(stage_->GetTypedColliders(CTY::STAGE));
+    cam.AddAwayColliders(player_->GetTypedColliders(COL_TY::PLAYER));
+    cam.AddAwayColliders(stage_->GetTypedColliders(COL_TY::STAGE));
+
+    EnemyManager::CreateInstance(this);
+    EnemyManager::GetInstance().SetPlayerPtr(player_);
+
+    ProjectileManager::CreateInstance();
 
     return true;
 }
@@ -55,22 +62,39 @@ void GameScene::Update()
 
     stage_->Update();
 
+    ProjectileManager::GetInstance().Update();
+
+	EnemyManager::GetInstance().Update();
+
     player_->Update();
+}
+
+void GameScene::LateUpdate()
+{
+    player_->LateUpdate();
 }
 
 void GameScene::Draw()
 {
     stage_->Draw();
 
+    EnemyManager::GetInstance().Draw();
+
     player_->Draw();
+
+    ProjectileManager::GetInstance().Draw();
 }
 
 void GameScene::DrawUI()
 {
+#ifdef _DEBUG
     auto col = 0xffffffu;
     if (stability_ <= 30.0f) col = 0xff4040u;
     DrawFormatString(20, 20, col, "Spacial Stability: %.1f%%", stability_);
     DrawFormatString(20, 40, 0xffffffu, "Active Device(s): %1d", activeDevice_);
+#endif
+
+    player_->DrawUI();
 }
 
 bool GameScene::Release()
@@ -78,6 +102,9 @@ bool GameScene::Release()
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
     cam.SetFollowTarget();
     cam.ResetAwayColliders();
+
+    EnemyManager::DeleteInstance();
+    ProjectileManager::DeleteInstance();
 
     return true;
 }

@@ -319,7 +319,7 @@ void InputManager::UpdateMouse()
 	// マウスボタンの入力状態を取得（各ビット毎に入力情報が入る）
 	auto mb = GetMouseInput();
 	
-	// とりあえず標準的なボタン3つ＋サイドボタン2つに対応
+	// とりあえず標準的なボタン3つ＋サイドボタン2つまで対応
 	for (int i = MOUSE_INPUT_LEFT; i <= MOUSE_INPUT_5; i *= 2)
 	{
 		nowMouse_[i] = mb & i;

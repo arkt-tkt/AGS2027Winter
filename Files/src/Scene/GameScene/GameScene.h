@@ -9,6 +9,7 @@ class GameScene : public SceneBase
 public:
     bool Init() override;
     void Update() override;
+    void LateUpdate() override;
     void Draw() override;
     void DrawUI() override;
     bool Release() override;

@@ -14,6 +14,7 @@ public:
 	virtual ~CharacterBase3D() {}
 
 	void Update() override final;
+	void LateUpdate() override final;
 
 	void Draw() override;
 	virtual void DrawUI() {}
@@ -43,8 +44,12 @@ protected:
 	float maxHp_ = hp_;
 	// 移動速度
 	float maxSpeed_ = 1.0f;
-	// 加減速力
+	// ダッシュ倍率
+	float sprintMult_ = 1.5f;
+	// 加速力
 	float accel_ = 20.0f;
+	// 減速力
+	float deccel_ = 12.0f;
 	// 無敵状態タイマー
 	float invincible_ = 0.0f;
 	// スコア
@@ -57,10 +62,17 @@ protected:
 
 	// ジャンプ入力への反応
 	void Jump();
+	
 	// アニメーション変更
 	virtual void AnimationSwitch() {}
+
 	// カプセルコライダの衝突判定
-	void CollisionCapsule();
+	bool CollisionCapsule();
 	// 重力方向の衝突判定
 	void CollisionGravity();
+	// 衝突時のみ発生する移動処理
+	virtual void CollisionMove() {}
+
+	// その他下位クラスの処理
+	virtual void SubClass() {}
 };

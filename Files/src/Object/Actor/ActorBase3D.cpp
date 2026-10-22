@@ -18,6 +18,8 @@ ActorBase3D::~ActorBase3D()
 
 void ActorBase3D::Init()
 {
+	InitParam();
+
 	InitModel();
 
 	InitAnim();

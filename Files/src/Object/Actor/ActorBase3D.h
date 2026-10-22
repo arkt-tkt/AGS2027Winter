@@ -16,12 +16,17 @@ public:
 
 	// 初期化処理
 	void Init();
+	
 	// 更新処理
 	virtual void Update() = 0;
 	// コライダ更新処理
 	void UpdateColliders();
+	// 二次更新処理
+	virtual void LateUpdate() {}
+
 	// 描画処理
 	virtual void Draw() = 0;
+
 	// 解放処理
 	void Release();
 
@@ -51,6 +56,8 @@ protected:
 	// 移動量
 	Vector3 velocity_;
 
+	// パラメータ初期化
+	virtual void InitParam() = 0;
 	// モデル初期化
 	virtual void InitModel() = 0;
 	// アニメ初期化
@@ -62,6 +69,9 @@ protected:
 	virtual void Move() {}
 
 	virtual void Collision() {}
+
+	// 見た目上での回転処理
+	virtual void TurnVisual() {}
 
 };
 

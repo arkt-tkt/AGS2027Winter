@@ -73,7 +73,7 @@ void Animation::AddFromOther(ResourceManager::SRC src, int type, float speed)
 void Animation::Update()
 {
 	// Œo‰ßŠÔ‚Ìæ“¾
-	float dt = SceneManager::GetInstance().GetDeltaTime();
+	const float dt = SceneManager::GetInstance().GetDeltaTime();
 
 	// Ä¶
 	playAnim_.step += (dt * playAnim_.speed);

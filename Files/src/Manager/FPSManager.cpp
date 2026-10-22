@@ -98,22 +98,25 @@ bool FPSManager::Release()
 }
 
 template<typename T>
-T FPSManager::GetDeltaTime() const
+const T FPSManager::GetDeltaTime() const
 {
-    if (timeList_.empty()) return 0.0;
+    static_assert(std::is_floating_point<T>::value);
+
+    if (timeList_.empty()) return T(0.0);
 
     // 可変フレームレート制御用のデルタタイム
-    if (timeList_.back() < idealFrameSecond_ * 2)
+    if (timeList_.back() < idealFrameSecond_ * DELTA_TIME_DELAY_MULT_MAX)
     {
         // IDEAL_FRAME_SECONDの2倍までは、可変フレームレートで対応する
         return static_cast<T>(timeList_.back());
     }
     // それ以上の場合、固定でIDEAL_FRAME_SECONDの2倍を返す（処理落ちする）
     // ※瞬間移動や判定抜けを防止するため
-    return static_cast<T>(idealFrameSecond_ * 2);
+    return static_cast<T>(idealFrameSecond_ * DELTA_TIME_DELAY_MULT_MAX);
 }
-template float FPSManager::GetDeltaTime() const;
-template double FPSManager::GetDeltaTime() const;
+template const float FPSManager::GetDeltaTime() const;
+template const double FPSManager::GetDeltaTime() const;
+template const long double FPSManager::GetDeltaTime() const;
 
 void FPSManager::SetDrawFont(int handle)
 {
@@ -122,7 +125,7 @@ void FPSManager::SetDrawFont(int handle)
 
 void FPSManager::Initialize(unsigned int fps)
 {
-    targetFPS_ = fps < MAX_FPS ? fps : MAX_FPS;
+    targetFPS_ = fps < FPS_MAX ? fps : FPS_MAX;
     idealFrameSecond_ = 1.0 / targetFPS_;
     timeList_.clear();
     prevTime_ = {};
