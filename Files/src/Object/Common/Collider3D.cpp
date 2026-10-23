@@ -122,6 +122,7 @@ void Collider3D::Release()
 	}
 }
 
+#ifdef _DEBUG
 void Collider3D::DrawDebug() const
 {
 	constexpr unsigned int color = 0xff8000u;
@@ -157,6 +158,7 @@ void Collider3D::DrawDebug() const
 		);
 	}
 }
+#endif
 
 const Collider3D::COLLIDER_DATA& Collider3D::GetColliderData() const
 {
