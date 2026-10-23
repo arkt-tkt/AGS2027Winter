@@ -23,11 +23,17 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
+	std::string titleMessage = "Project: UNKNOWN\n";
+    titleMessage += "ver. alpha\n";
+    titleMessage += "\n";
+	titleMessage += "各決定キーでゲーム画面に移動します　各キャンセルキーでゲームを終了します\n";
+	titleMessage += "ゲーム画面中、各キャンセルキーでタイトル画面に戻ります\n";
+
+    DrawString(100, 100, titleMessage.c_str(), 0xffffffu);
 }
 
 void TitleScene::DrawUI()
 {
-    DrawString(20, 20, "Project: UNKNOWN\nver. alpha", 0xffffffu);
 }
 
 bool TitleScene::Release()

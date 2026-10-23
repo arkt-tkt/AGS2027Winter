@@ -45,6 +45,11 @@ public:
 		MOVE_RIGHT,
 		MOVE_UP,
 
+		VIEW_UP,
+		VIEW_DOWN,
+		VIEW_LEFT,
+		VIEW_RIGHT,
+
 		JUMP,
 		SPRINT,
 
@@ -65,7 +70,7 @@ public:
 	};
 
 	using KEY_STATE_ARRAY = std::array<char, 256ULL>;
-	using MOUSE_STATE_MAP = std::map<int, bool>;
+	using MOUSE_STATE_ARRAY = std::map<int, bool>;
 
 	using PAD_MAP_ARRAY = std::array<Gamepad::PAD_INPUT, 2ULL>;
 	using KEY_MAP_ARRAY = std::array<int, 2ULL>;
@@ -74,6 +79,7 @@ public:
 	{
 		PAD_MAP_ARRAY padMap;
 		KEY_MAP_ARRAY keyMap;
+		int mouse;
 	};
 
 	void Update();
@@ -125,8 +131,8 @@ private:
 
 	Vector2 prevMousePos_; // マウスポインタの座標
 	Vector2 nowMousePos_; // マウスポインタの座標
-	MOUSE_STATE_MAP nowMouse_; // 現在のマウスボタン情報
-	MOUSE_STATE_MAP prevMouse_; // 直前のマウスボタン情報
+	MOUSE_STATE_ARRAY nowMouse_; // 現在のマウスボタン情報
+	MOUSE_STATE_ARRAY prevMouse_; // 直前のマウスボタン情報
 
 	void InitInputMap(); // 入力マップの初期設定
 

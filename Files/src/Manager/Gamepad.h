@@ -126,6 +126,13 @@ public:
 		"RSボタン"
 	};
 
+	// DirectInputのスティック入力最大値
+	static constexpr double DINPUT_STICK_MAX = 1000;
+	// XInputのスティック入力最大値
+	static constexpr double XINPUT_STICK_MAX = SHRT_MAX;
+	// XInputのスティック入力値をDirectInputに代入するための掛け率
+	static constexpr double XINPUT_STICK_MULT = DINPUT_STICK_MAX / XINPUT_STICK_MAX;
+
 	Gamepad(int pad_num);
 	~Gamepad();
 
@@ -144,13 +151,6 @@ public:
 	bool IsNintendoJoypad() const;
 
 private:
-	// DirectInputのスティック入力最大値
-	static constexpr double DINPUT_STICK_MAX = 1000;
-	// XInputのスティック入力最大値
-	static constexpr double XINPUT_STICK_MAX = SHRT_MAX;
-	// XInputのスティック入力値をDirectInputに代入するための掛け率
-	static constexpr double XINPUT_STICK_MULT = DINPUT_STICK_MAX / XINPUT_STICK_MAX;
-
 	// スティック入力のデッドゾーン割合
 	static constexpr double DEADZONE_PERCENTILE = 0.25;
 	// DirectInputのデッドゾーン実数値

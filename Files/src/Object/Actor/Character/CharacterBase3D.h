@@ -68,10 +68,12 @@ protected:
 
 	// カプセルコライダの衝突判定
 	bool CollisionCapsule();
+	// カプセルコライダ衝突時のみ発生する移動処理
+	virtual void CollisionMove() {}
 	// 重力方向の衝突判定
 	void CollisionGravity();
-	// 衝突時のみ発生する移動処理
-	virtual void CollisionMove() {}
+	// 攻撃の衝突判定
+	void CollisionAttack();
 
 	// その他下位クラスの処理
 	virtual void SubClass() {}

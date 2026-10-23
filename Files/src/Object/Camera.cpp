@@ -75,12 +75,6 @@ void Camera::BeforeDraw()
 	// 画面の揺れを計算して反映させる
 	ShakeScreen(finalPos, finalTarget);
 
-	// カメラの回転行列を作成
-	//Matrix4x4 mat = RotationMatrixYXZ(angles_);
-
-	// カメラの上方向を計算
-	//Vector3 up = mat * Vector3(0.0f, 1.0f, 0.0f);
-
 	// カメラの設定(位置と注視点による制御)
 	SetCameraPositionAndTargetAndUpVec(
 		Vec3ToVEC(finalPos), Vec3ToVEC(finalTarget), VGet(0, 1, 0));
@@ -263,10 +257,22 @@ void Camera::UpdateAngles()
 	auto& ins = InputManager::GetInstance();
 	const float dt = SceneManager::GetInstance().GetDeltaTime();
 
-	auto vec = ins.GetMouseMoveLength();
+	Vector2 mVec = ins.GetMouseMoveLength() * mouseSensitivity_ * dt;
+	angles_.x += mVec.y;
+	angles_.y += mVec.x;
 
-	angles_.x += mouseSensitivity_ * dt * vec.y;
-	angles_.y += mouseSensitivity_ * dt * vec.x;
+	const float stickSensitivity = 1.8f / float(Gamepad::DINPUT_STICK_MAX) * dt;
+	Vector2 pVec(0, 0);
+	pVec.y -= ins.CheckNowMap(1, InputManager::TAGS::VIEW_UP) * stickSensitivity;
+	pVec.y += ins.CheckNowMap(1, InputManager::TAGS::VIEW_DOWN) * stickSensitivity;
+	pVec.x -= ins.CheckNowMap(1, InputManager::TAGS::VIEW_LEFT) * stickSensitivity;
+	pVec.x += ins.CheckNowMap(1, InputManager::TAGS::VIEW_RIGHT) * stickSensitivity;
+	float pLen = pVec.Length();
+	pVec.Normalize();
+	pVec *= pLen;
+
+	angles_.x += pVec.y;
+	angles_.y += pVec.x;
 
 	angles_.x = MathUtil::Clamp(angles_.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
 	angles_.y = MathUtil::RadIn2PI(angles_.y);

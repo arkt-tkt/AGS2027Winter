@@ -40,8 +40,8 @@ private:
 	void InitOther() override;
 
 	void Move() override;
-
 	void AnimationSwitch() override;
+	void SubClass() override;
 
 	void TurnVisual() override;
 

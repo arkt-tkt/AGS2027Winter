@@ -1051,10 +1051,6 @@ Quaternion LookRotation(Vector3 dir, Vector3 up)
 		quaternion.z = 0.5 * num5;
 		quaternion.w = ((double)m01 - m10) * num2;
 	}
-
-	//quaternion.x = -quaternion.x; // 左手座標系用の改良
-	//quaternion.y = -quaternion.y; // 左手座標系用の改良
-	//quaternion.z = -quaternion.z; // 左手座標系用の改良
 	
 	return quaternion.Normalized();
 }

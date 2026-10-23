@@ -1,4 +1,6 @@
 #include "../../../Common/DxLibUtil.h"
+#include "../../../Common/MathUtil.h"
+#include "../../../Manager/ProjectileManager.h"
 #include "../../../Manager/SceneManager.h"
 #include "CharacterBase3D.h"
 
@@ -26,6 +28,8 @@ void CharacterBase3D::Update()
 		}
 
 		CollisionGravity();
+
+		CollisionAttack();
 	}
 
 	// 更新
@@ -230,5 +234,99 @@ void CharacterBase3D::CollisionGravity()
 
 		// 検出した地面ポリゴン情報の後始末
 		MV1CollResultPolyDimTerminate(hits);
+	}
+}
+
+void CharacterBase3D::CollisionAttack()
+{
+	using C_TY = Collider3D::TYPE;
+
+	for (auto& collider : colliders_)
+	{
+		auto cType = collider->GetColliderData().type;
+
+		if (!(cType == C_TY::PLAYER || cType == C_TY::ENEMY))
+		{
+			continue;
+		}
+
+		auto col = collider.get();
+
+		const auto& actProj = ProjectileManager::GetInstance().GetActives();
+
+		if (cType == C_TY::ENEMY)
+		{
+			for (auto& p : actProj)
+			{
+				for (auto& pCol : p->GetTypedColliders(C_TY::PROJECTILE_PLAYER))
+				{
+					auto& pDat = pCol->GetColliderData();
+
+					auto hits = MV1CollCheck_Capsule(
+						col->GetColliderData().modelId, -1,
+						Vec3ToVEC(pDat.pos1),
+						Vec3ToVEC(pDat.pos2),
+						pDat.r);
+
+					if (hits.HitNum)
+					{
+						// 衝突したらHPを減らす
+						float dMult = 1.0f;
+
+						auto headPos = MV1GetFramePosition(transform_.modelId, 5);
+
+						// 弱点ヒット時の判定(後で拡張するかも)
+						for (int i = 0; i < hits.HitNum; ++i)
+						{
+							// フレーム番号5 = 頭
+							if (HitCheck_Sphere_Capsule(headPos, 6.0f,
+								Vec3ToVEC(pDat.pos1), Vec3ToVEC(pDat.pos2), pDat.r))
+							{
+								dMult = 1.5f;
+								break;
+							}
+						}
+
+						CalcHP(-p->GetData().damage * dMult);
+
+						p->Hit();
+
+						if (!p->IsAlive()) break;
+					}
+
+					MV1CollResultPolyDimTerminate(hits);
+
+					if (!p->IsAlive()) break;
+				}
+			}
+		}
+		else
+		{
+			for (auto& p : actProj)
+			{
+				for (auto& pCol : p->GetTypedColliders(C_TY::PROJECTILE_ENEMY))
+				{
+					auto hits = MV1CollCheck_Capsule(
+						col->GetColliderData().modelId, -1,
+						Vec3ToVEC(pCol->GetColliderData().pos1),
+						Vec3ToVEC(pCol->GetColliderData().pos2),
+						pCol->GetColliderData().r);
+
+					if (hits.HitNum)
+					{
+						// 衝突したらHPを減らす
+						CalcHP(-p->GetData().damage);
+
+						p->Hit();
+
+						if (!p->IsAlive()) break;
+					}
+
+					MV1CollResultPolyDimTerminate(hits);
+
+					if (!p->IsAlive()) break;
+				}
+			}
+		}
 	}
 }

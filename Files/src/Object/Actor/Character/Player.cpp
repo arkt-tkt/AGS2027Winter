@@ -29,9 +29,6 @@ void Player::Draw()
 		Vec3ToVEC(transform_.position + lineCollider_.second),
 		0xff8000u);
 
-	auto lHPos = MV1GetFramePosition(transform_.modelId, 11);
-	DrawLine3D(lHPos, Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xffff00u);
-
 	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
 		velocity_.XZ().Length(), velocity_.x, velocity_.z);
 
@@ -47,6 +44,8 @@ void Player::Draw()
 void Player::DrawUI()
 {
 	DrawFormatString(20, 700, 0xffffffu, "HP %3d", MathUtil::Round(hp_));
+
+	wpn_->DrawUI();
 }
 
 void Player::InitParam()
@@ -70,8 +69,8 @@ void Player::InitModel()
 	colliders_.emplace_back(
 		std::make_shared<Collider3D>(
 			Collider3D::TYPE::COLLIDER,
-			transform_.position + Vector3(0, 24, 0),
-			transform_.position + Vector3(0, 60, 0),
+			Vector3(0, 24, 0),
+			Vector3(0, 60, 0),
 			8.0f));
 
 	colliders_.emplace_back(
@@ -184,7 +183,7 @@ void Player::AnimationSwitch()
 
 	if (!animation_->IsPlaying(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0))
 	{
-		if (ins.CheckDownMap(INPUT_NUM, tag::RELOAD))
+		if (ins.CheckDownMap(INPUT_NUM, tag::RELOAD) || wpn_->GetReloadProg())
 		{
 			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, false);
 		}
@@ -198,6 +197,26 @@ void Player::AnimationSwitch()
 		}
 	}
 
+}
+
+void Player::SubClass()
+{
+	wpn_->Update();
+
+	const auto& INS = InputManager::GetInstance();
+
+	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::RELOAD))
+	{
+		wpn_->Reload();
+	}
+	else if (INS.CheckNowMap(INPUT_NUM, InputManager::TAGS::ATTACK_SUB))
+	{
+		wpn_->Sub();
+	}
+	else if (INS.CheckNowMap(INPUT_NUM, InputManager::TAGS::ATTACK_MAIN))
+	{
+		wpn_->Main();
+	}
 }
 
 void Player::TurnVisual()

@@ -18,11 +18,12 @@ void Projectile::Update()
 
 	transform_.position2nd = transform_.position;
 
-	velocity_.y -= dat_.gravity * scnMng_.GetDeltaTime();
+	velocity_.y -= dat_.gravity;
 
-	transform_.position += velocity_;
+	transform_.position += velocity_ * dt;
 
 	transform_.Update();
+	UpdateColliders();
 }
 
 void Projectile::Draw()
@@ -30,7 +31,16 @@ void Projectile::Draw()
 	if (!IsAlive()) return;
 
 	DrawCapsule3D(Vec3ToVEC(transform_.position), Vec3ToVEC(transform_.position2nd),
-		dat_.radius, 8, 0x00ffffu, 0xffffffu, TRUE);
+		dat_.radius, 16, 0x00ffffu, 0xffffffu, TRUE);
+}
+
+void Projectile::InitParam()
+{
+	transform_.position = transform_.position2nd = dat_.position;
+	velocity_ = dat_.velocity;
+
+	hp_ = 1;
+	aliveTimer_ = 0.0f;
 }
 
 void Projectile::InitModel()
@@ -40,11 +50,4 @@ void Projectile::InitModel()
 			dat_.type,
 			dat_.radius)
 	);
-}
-
-void Projectile::InitOther()
-{
-	velocity_ = dat_.velocity;
-
-	hp_ = 1;
 }

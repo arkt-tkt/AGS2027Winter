@@ -24,6 +24,7 @@ private:
 
 	EnemyManager& enmMng_;
 	float damage_ = 5.0f;
+	bool jumpNextFrame_ = false;
 
 	void InitParam() override;
 	void InitModel() override;

@@ -45,8 +45,8 @@ public:
 	Player* GetPlayerPtr() const { return player_.lock().get(); }
 
 private:
-	static constexpr int POOL_SIZE = 10;
-	static constexpr float SPAWN_INTERVAL = 1.6f;
+	static constexpr int POOL_SIZE = 3;
+	static constexpr float SPAWN_INTERVAL = 5.0f;
 
 	GameScene* gameScene_ = nullptr;
 	std::weak_ptr<Player> player_;

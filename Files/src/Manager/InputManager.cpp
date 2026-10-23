@@ -30,6 +30,8 @@ InputManager::InputManager(int pad_max)
 	InitInputMap();
 
 	SetMouseDispFlag(FALSE);
+
+	Update();
 }
 
 void InputManager::Update()
@@ -133,7 +135,9 @@ int InputManager::CheckNowMap(int padNum, TAGS tag) const
 		}
 		auto k1 = CheckNowKey((*it).second.keyMap[0]) ? KEY_MOUSE_POWER : 0;
 		auto k2 = CheckNowKey((*it).second.keyMap[1]) ? KEY_MOUSE_POWER : 0;
-		return (std::max)({ p1, p2, k1, k2 });
+
+		auto m = CheckNowMouse((*it).second.mouse) ? KEY_MOUSE_POWER : 0;
+		return (std::max)({ p1, p2, k1, k2, m });
 	}
 
 	return 0;
@@ -157,7 +161,9 @@ int InputManager::CheckPrevMap(int padNum, TAGS tag) const
 		}
 		auto k1 = CheckPrevKey((*it).second.keyMap[0]) ? KEY_MOUSE_POWER : 0;
 		auto k2 = CheckPrevKey((*it).second.keyMap[1]) ? KEY_MOUSE_POWER : 0;
-		return (std::max)({ p1, p2, k1, k2 });
+
+		auto m = CheckPrevMouse((*it).second.mouse) ? KEY_MOUSE_POWER : 0;
+		return (std::max)({ p1, p2, k1, k2, m });
 	}
 
 	return 0;
@@ -268,34 +274,49 @@ void InputManager::InitInputMap()
 		}
 
 		AddorReplaceMap(i, TAGS::MOVE_UP,
-			{ { btn::DPAD_U, btn::LSTICK_U }, { KEY_INPUT_W, KEY_INPUT_UP } });
+			{ { btn::LSTICK_U, btn::DPAD_U }, { KEY_INPUT_W, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::MOVE_DOWN,
-			{ { btn::DPAD_D, btn::LSTICK_D }, { KEY_INPUT_S, KEY_INPUT_DOWN } });
+			{ { btn::LSTICK_D, btn::DPAD_D }, { KEY_INPUT_S, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::MOVE_LEFT,
-			{ { btn::DPAD_L, btn::LSTICK_L }, { KEY_INPUT_A, KEY_INPUT_LEFT } });
+			{ { btn::LSTICK_L, btn::DPAD_L }, { KEY_INPUT_A, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::MOVE_RIGHT,
-			{ { btn::DPAD_R, btn::LSTICK_R }, { KEY_INPUT_D, KEY_INPUT_RIGHT } });
+			{ { btn::LSTICK_R, btn::DPAD_R }, { KEY_INPUT_D, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::VIEW_UP,
+			{ { btn::RSTICK_U, btn::NONE }, { KEY_INPUT_UP, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::VIEW_DOWN,
+			{ { btn::RSTICK_D, btn::NONE }, { KEY_INPUT_DOWN, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::VIEW_LEFT,
+			{ { btn::RSTICK_L, btn::NONE }, { KEY_INPUT_LEFT, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::VIEW_RIGHT,
+			{ { btn::RSTICK_R, btn::NONE }, { KEY_INPUT_RIGHT, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_OK,
-			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_RETURN, KEY_INPUT_SPACE } });
+			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_RETURN, KEY_INPUT_SPACE }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_NG,
-			{ { btn::BUTTON_B, btn::NONE }, { KEY_INPUT_ESCAPE, KEY_INPUT_BACK } });
+			{ { btn::BUTTON_B, btn::NONE }, { KEY_INPUT_ESCAPE, KEY_INPUT_BACK }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_PAUSE,
-			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_ESCAPE, 0x00 } });
+			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_ESCAPE, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::JUMP,
-			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_SPACE, 0x00 } });
+			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_SPACE, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::SPRINT,
-			{ { btn::BUTTON_L3, btn::NONE }, { KEY_INPUT_LSHIFT, 0x00 } });
+			{ { btn::BUTTON_L3, btn::NONE }, { KEY_INPUT_LSHIFT, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::RELOAD,
-			{ { btn::BUTTON_X, btn::NONE }, { KEY_INPUT_R, 0x00 } });
+			{ { btn::BUTTON_X, btn::NONE }, { KEY_INPUT_R, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::ATTACK_MAIN,
+			{ { btn::BUTTON_R2, btn::NONE }, { KEY_INPUT_F, 0x00 }, MOUSE_INPUT_LEFT });
 	}
 }
 
@@ -320,6 +341,7 @@ void InputManager::UpdateMouse()
 	auto mb = GetMouseInput();
 	
 	// とりあえず標準的なボタン3つ＋サイドボタン2つまで対応
+	nowMouse_[0] = false;
 	for (int i = MOUSE_INPUT_LEFT; i <= MOUSE_INPUT_5; i *= 2)
 	{
 		nowMouse_[i] = mb & i;

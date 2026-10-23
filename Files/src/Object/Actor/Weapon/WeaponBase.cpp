@@ -1,15 +1,22 @@
 #include "../../../Common/DxLibUtil.h"
 #include "../../../Common/MathUtil.h"
+#include "../../../Manager/ProjectileManager.h"
 #include "../../../Manager/ResourceManager.h"
 #include "../../../Manager/SceneManager.h"
+#include "../Projectile/Projectile.h"
 #include "WeaponBase.h"
 
 void WeaponBase::Update()
 {
+	auto dt = SceneManager::GetInstance().GetDeltaTime();
+
+	if (editData_.fireRate < baseData_.fireRate)
+	{
+		editData_.fireRate += dt;
+	}
+
 	if (editData_.reloadTime)
 	{
-		auto dt = SceneManager::GetInstance().GetDeltaTime();
-
 		editData_.reloadTime -= dt;
 
 		if (editData_.reloadTime <= 0.0f)
@@ -17,6 +24,8 @@ void WeaponBase::Update()
 			editData_.reloadTime = 0.0f;
 			editData_.clipSize = baseData_.clipSize;
 		}
+
+		return;
 	}
 }
 
@@ -33,6 +42,9 @@ void WeaponBase::Draw()
 
 	transform_.Draw();
 
+#ifdef _DEBUG
+	DrawLine3D(Vec3ToVEC(transform_.position), Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xff0000u);
+
 	auto basePos = MV1GetFramePosition(parent_->modelId, 35);
 	auto vx35 = VTransformSR(VECTOR(40, 0, 0), MV1GetFrameLocalWorldMatrix(parent_->modelId, 35));
 	auto vy35 = VTransformSR(VECTOR(0, 40, 0), MV1GetFrameLocalWorldMatrix(parent_->modelId, 35));
@@ -41,15 +53,33 @@ void WeaponBase::Draw()
 	DrawLine3D(basePos, VAdd(basePos, vx35), 0xff0000u);
 	DrawLine3D(basePos, VAdd(basePos, vy35), 0xff00u);
 	DrawLine3D(basePos, VAdd(basePos, vz35), 0xffu);
+#endif
+}
+
+void WeaponBase::DrawUI()
+{
+	DrawFormatString(20, 720, 0xffffffu, "AM %3d", editData_.clipSize);
 }
 
 void WeaponBase::Main()
 {
-	if (editData_.reloadTime) return;
+	if (editData_.fireRate < baseData_.fireRate ||
+		editData_.reloadTime) return;
 
-	editData_.clipSize = MathUtil::Clamp(editData_.clipSize - 1, 0, baseData_.clipSize);
+	if (--editData_.clipSize == 0)
+	{
+		Reload();
+	}
 
+	editData_.fireRate -= baseData_.fireRate;
 
+	Projectile::Data dat;
+	dat.type = Collider3D::TYPE::PROJECTILE_PLAYER;
+	dat.position = transform_.position;
+	dat.velocity = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized() * baseData_.velocity;
+	dat.damage = editData_.damage;
+
+	ProjectileManager::GetInstance().Create(dat);
 }
 
 void WeaponBase::Sub()

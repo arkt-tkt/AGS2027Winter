@@ -7,9 +7,11 @@ class WeaponBase : public ActorBase3D
 public:
 	struct WeaponData
 	{
-		float damage = 40;
+		float damage = 36;
 		int clipSize = 30;
 		int reserve = 120;
+		float fireRate = 0.1f;
+		float velocity = 3000.0f;
 		float reloadTime = 2.5f;
 		float moveSpeedMult = 1.0f;
 	};
@@ -19,6 +21,7 @@ public:
 	void Update() override;
 	void LateUpdate() override;
 	void Draw() override;
+	void DrawUI();
 
 	virtual void Main();
 	virtual void Sub();
