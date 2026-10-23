@@ -118,7 +118,7 @@ int Application::GetPreDrawScreen() const
 bool Application::InitSystem()
 {
 	// ウインドウの名称
-	(SetWindowText)("DOUBLE FORCE CRISIS");
+	(SetWindowText)("Project: UNKNOWN");
 
 	// 画面設定
 	int w = GetSystemMetrics(SM_CXSCREEN), h = GetSystemMetrics(SM_CYSCREEN);
