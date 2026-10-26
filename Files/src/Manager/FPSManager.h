@@ -44,7 +44,7 @@ private:
 	static constexpr unsigned int FPS_STANDARD = 60U;
 	// 最大目標FPS
 	static constexpr unsigned int FPS_MAX = 300U;
-	// デルタタイム遅延上限
+	// デルタタイム遅延倍率上限
 	static constexpr float DELTA_TIME_DELAY_MULT_MAX = 2.0f;
 
 	// 目標FPS

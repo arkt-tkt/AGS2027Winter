@@ -53,6 +53,7 @@
     <ClCompile Include="src\Shader\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
     <ClInclude Include="src\Common\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />

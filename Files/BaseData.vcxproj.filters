@@ -68,6 +68,7 @@
     <ClInclude Include="src\Object\Actor\Projectile\Projectile.h" />
     <ClInclude Include="src\Object\Actor\Character\Enemy\EnemyBase.h" />
     <ClInclude Include="src\Manager\EnemyManager.h" />
+    <ClInclude Include="src\Object\Actor\CapturePoint.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />
