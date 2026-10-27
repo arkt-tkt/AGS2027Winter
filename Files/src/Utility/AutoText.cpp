@@ -13,10 +13,7 @@ AutoText::~AutoText()
 void AutoText::Update(float delta_time)
 {
 	timer_ += delta_time;
-}
 
-const char* AutoText::GetShowText()
-{
 	if (timer_ >= interval_)
 	{
 		timer_ -= interval_;
@@ -40,12 +37,28 @@ const char* AutoText::GetShowText()
 		else if (loopFlag_)
 		{
 			// _Dstが示すアドレスから_Sizeバイトまでを_Valで埋める
-			memset(drawText_, 0, sizeof(char) * TEXT_LENGTH_MAX);
+			memset(drawText_, '\0', sizeof(char) * TEXT_LENGTH_MAX - 1);
 			// 添え字を0にセット
 			drawCount_ = 0;
 		}
 	}
+	else if (timer_ < 0.0f)
+	{
+		timer_ += interval_;
 
+		if (drawCount_ > 0)
+		{
+			// 添え字をデクリメントする
+			--drawCount_;
+
+			// 文字を消す
+			drawText_[drawCount_] = '\0';
+		}
+	}
+}
+
+const char* AutoText::GetShowText()
+{
 	// 描画用テキストを返す
 	return drawText_;
 }
@@ -53,7 +66,7 @@ const char* AutoText::GetShowText()
 void AutoText::ResetText(const char* text, float interval)
 {
 	// テキスト長が上限を突破していたら処理を中断
-	if ((int)strlen(text) >= TEXT_LENGTH_MAX) return;
+	if (strlen(text) >= TEXT_LENGTH_MAX - 1) return;
 
 	baseText_ = text;
 

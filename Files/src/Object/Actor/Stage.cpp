@@ -1,7 +1,9 @@
 #include <DxLib.h>
 #include <cstdio>
+#include "../../Common/DxLibUtil.h"
 #include "../../Common/Geometry.h"
 #include "../../Common/MathUtil.h"
+#include "../../Manager/ProjectileManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/InputManager.h"
@@ -24,6 +26,8 @@ void Stage::Update()
 	skyDome_.Update();
 
 	transform_.Update();
+
+	Collision();
 }
 
 void Stage::Draw()
@@ -43,7 +47,7 @@ void Stage::InitParam()
 void Stage::InitModel()
 {
 	// ステージ
-	transform_.modelId = ResourceManager::GetInstance().Load(ResourceManager::SRC::MODEL_STAGE).handleId_;
+	transform_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE);
 
 	for (const int& IDX : INVIS_FRAME_ARR)
 	{
@@ -76,4 +80,44 @@ void Stage::InitModel()
 
 void Stage::InitAnim()
 {
+}
+
+void Stage::Collision()
+{
+	using C_TY = Collider3D::TYPE;
+
+	auto cols = GetTypedWeakColliders(C_TY::STAGE);
+
+	for (auto& col : cols)
+	{
+		auto colPtr = col.lock();
+		auto& projs = ProjectileManager::GetInstance().GetActives();
+
+		for (auto& proj : projs)
+		{
+			C_TY cTyArr[] = { C_TY::PROJECTILE_PLAYER, C_TY::PROJECTILE_ENEMY };
+
+			for (int i = 0; i < _countof(cTyArr); ++i)
+			{
+				auto projCols = proj->GetTypedWeakColliders(cTyArr[i]);
+
+				for (auto& projCol : projCols)
+				{
+					auto hits = MV1CollCheck_Capsule(
+						colPtr->GetColliderData().modelId, -1,
+						Vec3ToVEC(projCol.lock()->GetColliderData().pos1),
+						Vec3ToVEC(projCol.lock()->GetColliderData().pos2),
+						projCol.lock()->GetColliderData().r);
+
+					if (hits.HitNum)
+					{
+						proj->Hit();
+					}
+
+					// 検出した地面ポリゴン情報の後始末
+					MV1CollResultPolyDimTerminate(hits);
+				}
+			}
+		}
+	}
 }

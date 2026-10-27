@@ -19,9 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Common\Utility.cpp" />
+    <ClCompile Include="src\Utility\Utility.cpp" />
     <ClCompile Include="src\Manager\ScoreManager.cpp" />
     <ClCompile Include="src\Object\Actor\ActorBase3D.cpp" />
+    <ClCompile Include="src\Object\Actor\CapturePoint.cpp" />
     <ClCompile Include="src\Object\Actor\Character\Enemy\EnemyBase.cpp" />
     <ClCompile Include="src\Manager\EnemyManager.cpp" />
     <ClCompile Include="src\Object\Actor\Projectile\Projectile.cpp" />
@@ -51,11 +52,12 @@
     <ClCompile Include="src\Scene\SceneBase.cpp" />
     <ClCompile Include="src\Scene\TitleScene\TitleScene.cpp" />
     <ClCompile Include="src\Shader\PostEffect.cpp" />
+    <ClCompile Include="src\Utility\AutoText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
-    <ClInclude Include="src\Common\Utility.h" />
+    <ClInclude Include="src\Utility\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />
     <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
     <ClInclude Include="src\Object\Actor\Character\Enemy\EnemyBase.h" />
@@ -85,6 +87,7 @@
     <ClInclude Include="src\Scene\SceneBase.h" />
     <ClInclude Include="src\Scene\TitleScene\TitleScene.h" />
     <ClInclude Include="src\Shader\PostEffect.h" />
+    <ClInclude Include="src\Utility\AutoText.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\StarrySky.hlsl">

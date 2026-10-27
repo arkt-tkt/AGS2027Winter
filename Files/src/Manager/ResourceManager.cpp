@@ -31,7 +31,7 @@ void ResourceManager::Init()
 
 	std::unique_ptr<Resource> res;
 
-	// ó·
+	// ãLèqó·
 	//res = std::make_unique<RES>(RES_T::IMAGE, "Image.png");
 	//resourcesMap_.emplace(SRC::IMAGE, std::move(res));
 	

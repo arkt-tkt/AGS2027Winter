@@ -1,6 +1,7 @@
 #include <algorithm>
 #include "../Application.h"
 #include "../Common/Geometry.h"
+#include "../Common/MathUtil.h"
 #include "InputManager.h"
 
 InputManager* InputManager::instance_ = nullptr;
@@ -8,7 +9,7 @@ InputManager* InputManager::instance_ = nullptr;
 
 InputManager::InputManager(int pad_max)
 	:
-	PAD_NUM_MAX(std::clamp(pad_max, pad_max + 1, DX_INPUT_PAD16 + 1))
+	PAD_NUM_MAX(MathUtil::Clamp(pad_max, 0, DX_INPUT_PAD16) + PAD_NUM_MIN)
 {
 	// inputMap_[0]はキーボード操作専用としてデバッグで使う
 	inputMap_.resize(PAD_NUM_MAX);

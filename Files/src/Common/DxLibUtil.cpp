@@ -169,6 +169,9 @@ VECTOR DxLibUtil::GetScreenPosToWorldPos(const VECTOR& worldPos, int scr_x, int 
 	return screenPos;
 }
 
-void DxLibUtil::DrawStringToCenterPos(int center_x, int y, const char* string, unsigned int color)
+void DxLibUtil::DrawStringToCenterPos(int x, int y, const char* string, unsigned int color)
 {
+	int handleId = GetDefaultFontHandle();
+
+	DrawString(x - MathUtil::Round(GetFontSizeToHandle(handleId) * GetStringLength(string) * 0.5f), y, string, color);
 }

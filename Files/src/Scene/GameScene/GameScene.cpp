@@ -61,9 +61,9 @@ void GameScene::Update()
         scnMng_.GetCameraPtr().SwitchFollowMode();
     }
 
-    stage_->Update();
-
     ProjectileManager::GetInstance().Update();
+
+    stage_->Update();
 
 	EnemyManager::GetInstance().Update();
 

@@ -252,7 +252,7 @@ void CharacterBase3D::CollisionAttack()
 
 		auto col = collider.get();
 
-		const auto& actProj = ProjectileManager::GetInstance().GetActives();
+		auto& actProj = ProjectileManager::GetInstance().GetActives();
 
 		if (cType == C_TY::ENEMY)
 		{

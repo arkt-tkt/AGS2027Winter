@@ -33,7 +33,7 @@ public:
 	void Draw();
 
 	void Create(Projectile::Data);
-	std::vector<Projectile*> GetActives() { return active_; }
+	const std::vector<Projectile*>& GetActives() { return active_; }
 
 private:
 	static constexpr size_t POOL_SIZE = 120;

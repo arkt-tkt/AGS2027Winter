@@ -26,7 +26,7 @@ public:
 
 private:
 	// 許容される最大文字列長(複数バイト文字がある事に注意)
-	static constexpr int TEXT_LENGTH_MAX = 512;
+	static constexpr size_t TEXT_LENGTH_MAX = 512;
 
 	float timer_ = 0.0f;
 	float interval_ = 0.0f;

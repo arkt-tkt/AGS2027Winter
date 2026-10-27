@@ -17,7 +17,6 @@ public:
 	void LateUpdate() override final;
 
 	void Draw() override;
-	virtual void DrawUI() {}
 
 	// ¶‘¶ƒtƒ‰ƒO‚ğæ“¾
 	virtual const bool& IsAlive() const { return isAlive_; }

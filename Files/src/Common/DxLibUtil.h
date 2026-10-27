@@ -60,7 +60,7 @@ namespace DxLibUtil
 
 	VECTOR GetScreenPosToWorldPos(const VECTOR& worldPos, int scr_x, int scr_y);
 
-	void DrawStringToCenterPos(int center_x, int y, const char* string, unsigned int color);
+	void DrawStringToCenterPos(int x, int y, const char* string, unsigned int color);
 };
 
 using namespace DxLibUtil;

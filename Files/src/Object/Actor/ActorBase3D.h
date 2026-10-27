@@ -26,6 +26,8 @@ public:
 
 	// 描画処理
 	virtual void Draw() = 0;
+	// UI描画処理
+	virtual void DrawUI() {}
 
 	// 解放処理
 	void Release();
@@ -34,11 +36,16 @@ public:
 	void AddAwayCollider(std::weak_ptr<Collider3D> col) { awayColliders_.push_back(col); }
 	// 衝突判定を取る相手を追加
 	void AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols);
+	// 衝突判定を取る相手を追加(weak_ptr版)
+	void AddAwayColliders(std::vector<std::weak_ptr<Collider3D>> cols);
 
 	// Object3Dを取得
 	const Transform3D& GetTransform() const { return transform_; }
 
+	// 特定タイプのコライダを取得
 	std::vector<std::shared_ptr<Collider3D>> GetTypedColliders(Collider3D::TYPE type) const;
+	// 特定タイプのコライダを取得(weak_ptr版)
+	std::vector<std::weak_ptr<Collider3D>> GetTypedWeakColliders(Collider3D::TYPE type) const;
 
 protected:
 	// シングルトン参照

@@ -58,15 +58,37 @@ void ActorBase3D::Release()
 
 void ActorBase3D::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)
 {
+	awayColliders_.reserve(awayColliders_.size() + cols.size());
+
 	for (auto& col : cols)
 	{
 		awayColliders_.push_back(col);
 	}
 }
 
+void ActorBase3D::AddAwayColliders(std::vector<std::weak_ptr<Collider3D>> cols)
+{
+	awayColliders_.reserve(awayColliders_.size() + cols.size());
+
+	awayColliders_.insert(awayColliders_.end(), cols.begin(), cols.end());
+}
+
 std::vector<std::shared_ptr<Collider3D>> ActorBase3D::GetTypedColliders(Collider3D::TYPE type) const
 {
 	std::vector<std::shared_ptr<Collider3D>> ret;
+
+	for (auto& collider : colliders_)
+	{
+		if (collider->GetColliderData().type == type)
+			ret.push_back(collider);
+	}
+
+	return ret;
+}
+
+std::vector<std::weak_ptr<Collider3D>> ActorBase3D::GetTypedWeakColliders(Collider3D::TYPE type) const
+{
+	std::vector<std::weak_ptr<Collider3D>> ret;
 
 	for (auto& collider : colliders_)
 	{
