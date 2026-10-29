@@ -222,19 +222,15 @@ void CharacterBase3D::CollisionGravity()
 			}
 			else
 			{
-				velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * scnMng_.GetDeltaTime(), MAX_FALL_VELOCITY);
 				isLanding_ = false;
 			}
-		}
-		else
-		{
-			velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * scnMng_.GetDeltaTime(), MAX_FALL_VELOCITY);
-			isLanding_ = false;
 		}
 
 		// 検出した地面ポリゴン情報の後始末
 		MV1CollResultPolyDimTerminate(hits);
 	}
+
+	velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * scnMng_.GetDeltaTime(), MAX_FALL_VELOCITY);
 }
 
 void CharacterBase3D::CollisionAttack()

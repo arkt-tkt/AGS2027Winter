@@ -78,10 +78,7 @@ void Player::InitModel()
 			Collider3D::TYPE::PLAYER,
 			transform_.modelId));
 
-	lineCollider_ = {
-		Vector3(0, -4, 0),
-		Vector3(0, 68, 0),
-	};
+	lineCollider_ = { Vector3(0, -4, 0), Vector3(0, 68, 0) };
 
 	MV1SetMaterialEmiColor(transform_.modelId, 0, COLOR_F(0.2f, 0.2f, 0.2f, 1.0f));
 }

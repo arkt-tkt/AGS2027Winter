@@ -298,14 +298,20 @@ void InputManager::InitInputMap()
 		AddorReplaceMap(i, TAGS::VIEW_RIGHT,
 			{ { btn::RSTICK_R, btn::NONE }, { KEY_INPUT_RIGHT, 0x00 }, 0 });
 
+		AddorReplaceMap(i, TAGS::CHANGE_VIEW,
+			{ { btn::BUTTON_R3, btn::NONE }, { KEY_INPUT_C, 0x00 }, 0 });
+
 		AddorReplaceMap(i, TAGS::SYSTEM_OK,
-			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_RETURN, KEY_INPUT_SPACE }, 0 });
+			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_RETURN, KEY_INPUT_SPACE }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_NG,
-			{ { btn::BUTTON_B, btn::NONE }, { KEY_INPUT_ESCAPE, KEY_INPUT_BACK }, 0 });
+			{ { btn::BUTTON_SELECT, btn::NONE }, { KEY_INPUT_ESCAPE, KEY_INPUT_BACK }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_PAUSE,
 			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_ESCAPE, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::INTERACT,
+			{ { btn::BUTTON_B, btn::NONE }, { KEY_INPUT_E, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::JUMP,
 			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_SPACE, 0x00 }, 0 });

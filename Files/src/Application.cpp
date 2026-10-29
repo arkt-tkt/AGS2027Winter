@@ -1,8 +1,6 @@
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
-#include <random>
 #include <stdio.h>
-#include "Common/Geometry.h"
 #include "Manager/AudioManager.h"
 #include "Manager/FPSManager.h"
 #include "Manager/InputManager.h"

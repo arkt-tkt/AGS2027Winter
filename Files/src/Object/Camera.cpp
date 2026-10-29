@@ -157,6 +157,13 @@ void Camera::SwitchFollowMode()
 	mode_ = (Camera::MODE)intMode;
 }
 
+bool Camera::IsInCameraBounds(Vector3 pos)
+{
+	return MathUtil::Within(pos.x, 0.0f, Application::RESOLUTION.x) &&
+		MathUtil::Within(pos.y, 0.0f, Application::RESOLUTION.y) &&
+		MathUtil::Within(pos.z, 0.0f, 1.0f);
+}
+
 void Camera::StartShake(float intensity, float duration)
 {
 	shakeIntensity_ = intensity;

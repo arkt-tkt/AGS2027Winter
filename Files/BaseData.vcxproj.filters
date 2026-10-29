@@ -25,7 +25,7 @@
     <ClCompile Include="src\Utility\Utility.cpp" />
     <ClCompile Include="src\Shader\PostEffect.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
-    <ClCompile Include="src\Object\Actor\Stage.cpp" />
+    <ClCompile Include="src\Object\Actor\Platform.cpp" />
     <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
@@ -35,6 +35,7 @@
     <ClCompile Include="src\Manager\EnemyManager.cpp" />
     <ClCompile Include="src\Object\Actor\CapturePoint.cpp" />
     <ClCompile Include="src\Utility\AutoText.cpp" />
+    <ClCompile Include="src\Object\Actor\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -62,7 +63,7 @@
     <ClInclude Include="src\Utility\Utility.h" />
     <ClInclude Include="src\Shader\PostEffect.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
-    <ClInclude Include="src\Object\Actor\Stage.h" />
+    <ClInclude Include="src\Object\Actor\Platform.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
@@ -72,6 +73,7 @@
     <ClInclude Include="src\Manager\EnemyManager.h" />
     <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Utility\AutoText.h" />
+    <ClInclude Include="src\Object\Actor\Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

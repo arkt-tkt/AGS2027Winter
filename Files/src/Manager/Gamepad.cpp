@@ -75,13 +75,24 @@ void Gamepad::Update()
 		// X軸
 		if (dIn.Rx < -DINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_L] = std::abs(dIn.Rx);
-		else if (dIn.X > DINPUT_DEADZONE)
+		else if (dIn.Rx > DINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_R] = std::abs(dIn.Rx);
+
+		if (dIn.Z < -DINPUT_DEADZONE)
+			nowButton_[(int)PAD_INPUT::RSTICK_L] = std::abs(dIn.Z);
+		else if (dIn.Z > DINPUT_DEADZONE)
+			nowButton_[(int)PAD_INPUT::RSTICK_R] = std::abs(dIn.Z);
+
 		// Y軸
 		if (dIn.Ry < -DINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_U] = std::abs(dIn.Ry);
 		else if (dIn.Ry > DINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_D] = std::abs(dIn.Ry);
+
+		if (dIn.Rz < -DINPUT_DEADZONE)
+			nowButton_[(int)PAD_INPUT::RSTICK_U] = std::abs(dIn.Rz);
+		else if (dIn.Rz > DINPUT_DEADZONE)
+			nowButton_[(int)PAD_INPUT::RSTICK_D] = std::abs(dIn.Rz);
 	}
 	else
 	{
@@ -104,6 +115,7 @@ void Gamepad::Update()
 		// POVは、出力に弧度×100のunsigned int型1つを用いているため
 		// 取り出した値を100で割った後、弧度からラジアンに変換すると良い
 		double rad = MathUtil::DegToRad(dIn.POV[0] / 100.0);
+
 		// 計算時の誤差に対するマージン
 		double margin = 0.01;
 

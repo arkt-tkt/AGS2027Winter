@@ -37,6 +37,9 @@ void ResourceManager::Init()
 	
 	res = std::make_unique<RES>(RES_T::MODEL, "Stage/fruzer-city/city.mv1");
 	resourcesMap_.emplace(SRC::MODEL_STAGE, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Object/low-poly-generator-v1.1/Generator.mv1");
+	resourcesMap_.emplace(SRC::MODEL_GENERATOR, std::move(res));
 	
 	res = std::make_unique<RES>(RES_T::MODEL, "Stage/SkyDome/Skydome.mv1");
 	resourcesMap_.emplace(SRC::MODEL_SKYDOME, std::move(res));

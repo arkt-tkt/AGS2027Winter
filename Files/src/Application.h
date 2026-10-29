@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Common/Geometry.h"
 
 class Application {
 public:
@@ -19,9 +20,10 @@ private:
 	Application& operator=(Application&&) = delete;
 
 public:
-	// 入力解像度
-	static const int RESOLUTION_WIDTH = 1920;
-	static const int RESOLUTION_HEIGHT = 1080;
+	// 出力解像度
+	static constexpr int RESOLUTION_WIDTH = 1920;
+	static constexpr int RESOLUTION_HEIGHT = 1080;
+	static constexpr Vector2 RESOLUTION = { RESOLUTION_WIDTH, RESOLUTION_HEIGHT };
 
 	// 機能使用フラグ
 	static const bool USE_3D_FLAG;

@@ -60,10 +60,7 @@ void EnemyBase::InitModel()
 			Collider3D::TYPE::ENEMY,
 			transform_.modelId));
 
-	lineCollider_ = {
-		Vector3(0, -4, 0),
-		Vector3(0, 68, 0),
-	};
+	lineCollider_ = { Vector3(0, -4, 0), Vector3(0, 68, 0) };
 }
 
 void EnemyBase::InitAnim()

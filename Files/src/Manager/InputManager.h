@@ -38,6 +38,8 @@ public:
 		SYSTEM_NG,
 		SYSTEM_PAUSE,
 
+		INTERACT,
+
 		MOVE_BACK,
 		MOVE_DOWN,
 		MOVE_FRONT,
@@ -49,6 +51,7 @@ public:
 		VIEW_DOWN,
 		VIEW_LEFT,
 		VIEW_RIGHT,
+		CHANGE_VIEW,
 
 		JUMP,
 		SPRINT,

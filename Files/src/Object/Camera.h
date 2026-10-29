@@ -39,6 +39,9 @@ public:
 	void SetFollowTarget(const Transform3D* = nullptr);
 	void ChangeCameraMode(MODE mode);
 	void SwitchFollowMode();
+	
+	// ÉJÉÅÉâóÃàÊì‡Ç…ç¿ïWì_Ç™ë∂ç›Ç∑ÇÈÇ©Ç«Ç§Ç©ÇîªíË
+	bool IsInCameraBounds(Vector3 pos);
 
 	const Vector3& GetPosition() const { return pos_; }
 	const Vector3& GetTargetPosition() const { return targetPos_; }
@@ -49,10 +52,10 @@ public:
 
 private:
 	static constexpr float CAMERA_NEAR_RANGE = 1.0f;
-	static constexpr float CAMERA_FAR_RANGE = 1500.0f;
+	static constexpr float CAMERA_FAR_RANGE = 3000.0f;
 
-	static constexpr float FOG_START_RANGE = CAMERA_FAR_RANGE / 3.0f * 2.0f;
-	static constexpr float FOG_END_RANGE = CAMERA_FAR_RANGE;
+	static constexpr float FOG_START_RANGE = 1333.0f;
+	static constexpr float FOG_END_RANGE = 2000.0f;
 	static constexpr int FOG_COLOR[3] = { 0x08, 0x00, 0x10 };
 
 	static constexpr float CAMERA_FOV = 75.0f * DX_PI_F / 180.0f;

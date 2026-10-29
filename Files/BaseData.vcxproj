@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Object\Actor\Stage.cpp" />
     <ClCompile Include="src\Utility\Utility.cpp" />
     <ClCompile Include="src\Manager\ScoreManager.cpp" />
     <ClCompile Include="src\Object\Actor\ActorBase3D.cpp" />
@@ -46,7 +47,7 @@
     <ClCompile Include="src\Manager\FPSManager.cpp" />
     <ClCompile Include="src\Manager\InputManager.cpp" />
     <ClCompile Include="src\Manager\SceneManager.cpp" />
-    <ClCompile Include="src\Object\Actor\Stage.cpp" />
+    <ClCompile Include="src\Object\Actor\Platform.cpp" />
     <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="src\Scene\SceneBase.cpp" />
@@ -57,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
+    <ClInclude Include="src\Object\Actor\Stage.h" />
     <ClInclude Include="src\Utility\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />
     <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
@@ -81,7 +83,7 @@
     <ClInclude Include="src\Manager\FPSManager.h" />
     <ClInclude Include="src\Manager\InputManager.h" />
     <ClInclude Include="src\Manager\SceneManager.h" />
-    <ClInclude Include="src\Object\Actor\Stage.h" />
+    <ClInclude Include="src\Object\Actor\Platform.h" />
     <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
     <ClInclude Include="src\Scene\SceneBase.h" />

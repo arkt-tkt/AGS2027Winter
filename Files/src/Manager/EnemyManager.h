@@ -48,7 +48,7 @@ private:
 	static constexpr int POOL_SIZE = 3;
 	static constexpr float SPAWN_INTERVAL = 5.0f;
 
-	GameScene* gameScene_ = nullptr;
+	GameScene* gameScene_;
 	std::weak_ptr<Player> player_;
 	std::vector<std::weak_ptr<Collider3D>> awayColliders_;
 

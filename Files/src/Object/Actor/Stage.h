@@ -1,29 +1,46 @@
 #pragma once
-#include "ActorBase3D.h"
+#include <memory>
+#include <vector>
+#include "../../Common/Geometry.h"
 
-class Stage : public ActorBase3D
+class CapturePoint;
+class Collider3D;
+class GameScene;
+class Platform;
+class Player;
+
+class Stage
 {
 public:
-	Stage();
-	virtual ~Stage();
+	Stage(GameScene* ptr);
 
-	void Update() override;
-	void Draw() override;
+	void Init();
+	void Update();
+	void Draw();
+	void DrawUI();
+
+	std::vector<std::shared_ptr<Collider3D>> GetColliders() const;
+	int GetCaptureCount();
+
+	void SetPlayerPtr(std::weak_ptr<Player> player) { player_ = player; }
+	Player* GetPlayerPtr() const { return player_.lock().get(); }
 
 private:
-	static constexpr int INVIS_FRAME_ARR[] = {
-		468, 493
+	static constexpr int CAPTURE_POINT_NUM = 5;
+
+	static constexpr Vector3 CAPTURE_POINT_POS[CAPTURE_POINT_NUM] = 
+	{
+		{ -700, 0, 1650 },
+		{ -2100, 0, 350 },
+		{ -700, 0, -2400 },
+		{ 1050, 0, -600 },
+		{ 150, 0, 900 }
 	};
 
-	Transform3D skyDome_;
+	GameScene* gameScene_;
+	std::weak_ptr<Player> player_;
 
-	// パラメータ初期化
-	void InitParam() override;
-	// モデル初期化
-	void InitModel() override;
-	// アニメ初期化
-	void InitAnim() override;
-
-	void Collision() override;
+	std::shared_ptr<Platform> platform_;
+	std::vector<std::shared_ptr<CapturePoint>> capturePoints_;
 
 };
