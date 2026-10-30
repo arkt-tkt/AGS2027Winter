@@ -145,10 +145,13 @@ bool CharacterBase3D::CollisionCapsule()
 					continue;
 				}
 
-				// 移動方向と法線のズレに反比例して最大移動速度を決定
-				auto vec = (std::min)(Dot(velocity_, VECToVec3(hit.Normal)) + 1.0f, 1.0f);
-				velocity_.x *= vec;
-				velocity_.z *= vec;
+				if (!fullSpeedParallel)
+				{
+					// 移動方向と法線のズレに反比例して最大移動速度を決定
+					auto vec = (std::min)(Dot(velocity_, VECToVec3(hit.Normal)) + 1.0f, 1.0f);
+					velocity_.x *= vec;
+					velocity_.z *= vec;
+				}
 
 				// 移動方向を法線と平行にする
 				velocity_ = Parallel(velocity_, VECToVec3(hit.Normal));

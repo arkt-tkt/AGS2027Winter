@@ -29,13 +29,17 @@ public:
 	void Update();
 	void Draw();
 	bool Release();
-	void ReleaseScene();
+
+	// 一番上(末尾)のシーンを解放
+	void ReleaseTopScene();
 
 	// 最前面(アクティブ状態)のシーンを生ポインタ状態で返す
 	SceneBase* GetTopScene() const;
 
+	// カメラのポインタを返す
 	Camera& GetCameraPtr() const { return *camera_; }
 
+	// フェーダのポインタを返す
 	Fader& GetFaderPtr() const { return *fader_; }
 
 	// float型のデルタタイムを返す
@@ -48,24 +52,33 @@ public:
 	unsigned int GetNextSceneVariable() const;
 
 private:
+	// シーン管理用リスト
 	std::list<std::unique_ptr<SceneBase>> sceneList_;
+	
+	// カメラ
 	std::unique_ptr<Camera> camera_;
+	// フェーダ
 	std::unique_ptr<Fader> fader_;
 
-	int postEffectScreen_;
-
+	// 次シーン用変数
 	unsigned int nextSceneVariable_;
+
 	bool isPause_;
 	bool prevPause_;
+	
+	// 切り替え待ち中のシーンのID
 	SceneBase::SCENE waitSceneId_;
 
+	// クラス初期化
 	bool InitClass();
+	// パラメータ初期化
 	void InitParam();
 
 	// シーン切り替え処理の準備
 	void ChangeScene(SceneBase::SCENE);
 
-	// Faderの状態に合わせて他の処理に繋げる
+	// Faderが動き終わっている場合にtrueを返す
+	// (例外を作れば稼働中でもtrueを返せる)
 	bool CheckFader();
 
 	// シーン切り替え処理

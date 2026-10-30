@@ -8,21 +8,21 @@ class Collider3D
 public:
 	enum class TYPE
 	{
-		COLLIDER,
-		PLAYER,
-		ENEMY,
-		PROJECTILE_PLAYER,
-		PROJECTILE_ENEMY,
-		STAGE,
+		COLLIDER,			// コライダ(対ステージ用)
+		PLAYER,				// プレイヤー
+		ENEMY,				// 敵
+		PROJECTILE_PLAYER,	// プレイヤー側の弾
+		PROJECTILE_ENEMY,	// 敵側の弾
+		STAGE,				// ステージ
 	};
 
 	enum class SHAPE
 	{
-		SPHERE,
-		LINE,
-		CAPSULE,
-		CAPSULE_ALT,
-		MODEL,
+		SPHERE,			// 球
+		LINE,			// 線分
+		CAPSULE,		// カプセル
+		CAPSULE_ALT,	// カプセル(座標追従)
+		MODEL,			// 3Dモデル
 	};
 
 	struct COLLIDER_DATA
@@ -35,32 +35,39 @@ public:
 		int modelId;
 	};
 
-	// SPHERE
-	Collider3D(TYPE type, Position3 local_pos, float r);
-	// LINE
-	Collider3D(TYPE type, Position3 local_pos1, Position3 local_pos2);
-	// CAPSULE
-	Collider3D(TYPE type, Position3 local_pos1, Position3 local_pos2, float r);
-	// CAPSULE_ALT
+	// SPHERE コンストラクタ
+	Collider3D(TYPE type, const Position3& local_pos, float r);
+	// LINE コンストラクタ
+	Collider3D(TYPE type, const Position3& local_pos1, const Position3& local_pos2);
+	// CAPSULE コンストラクタ
+	Collider3D(TYPE type, const Position3& local_pos1, const Position3& local_pos2, float r);
+	// CAPSULE_ALT コンストラクタ
+	// (座標をTransformから直接取得して更新する。移動の軌跡を追いかけるため発射物に特化)
 	Collider3D(TYPE type, float r);
-	// MODEL
+	// MODEL コンストラクタ
 	Collider3D(TYPE type, int handle_id);
 
-	virtual ~Collider3D();
+	// デストラクタ
+	virtual ~Collider3D() {}
 
-	void Update(Position3 world_pos, Vector3 world_rot);
-	void UpdateAlt(Position3 world_pos1, Vector3 world_pos2);
+	// 更新
+	void Update(const Position3& world_pos, const Vector3& world_rot);
+	// 更新(CAPSULE_ALT専用)、Transform3D側で分岐制御
+	void UpdateAlt(const Position3& world_pos1, const Position3& world_pos2);
+	// 解放
 	void Release();
 
 #ifdef _DEBUG
+	// デバッグ用描画
 	void DrawDebug() const;
 #endif
 
-	const COLLIDER_DATA& GetColliderData() const;
+	// データを取得させる
+	const COLLIDER_DATA& GetColliderData() const { return data_; }
 
-	MV1_COLL_RESULT_POLY GetNearestHitPolyLine(
-		const Vector3& start,
-		const Vector3& end);
+	// このコライダに対する線分コライダの、一番近い衝突点を探す
+	// (SHAPE::MODEL以外で使っても効果は無いので注意)
+	MV1_COLL_RESULT_POLY GetNearestHitPolyLine(const Position3& start, const Position3& end);
 
 private:
 #ifdef _DEBUG
@@ -70,9 +77,12 @@ private:
 
 	// 基礎データ
 	COLLIDER_DATA baseData_;
-	// 基礎データに座標や回転情報をブレンドしたもの
+
+	// 外部取得用データ
+	// (基礎データに座標や回転情報をブレンドしたもの)
 	COLLIDER_DATA data_;
 
+	// 共通コンストラクタ
 	void SharedConstructor();
 
 };

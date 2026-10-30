@@ -93,7 +93,7 @@ void SceneManager::Draw()
 bool SceneManager::Release()
 {
 	// シーンが無くなるまで解放する
-	while (sceneList_.size() > 0) ReleaseScene();
+	while (sceneList_.size() > 0) ReleaseTopScene();
 
 	// リストの後始末
 	sceneList_.clear();
@@ -101,7 +101,7 @@ bool SceneManager::Release()
 	return true;
 }
 
-void SceneManager::ReleaseScene()
+void SceneManager::ReleaseTopScene()
 {
 	// 現在アクティブなシーンを解放して削除
 	sceneList_.back()->Release();
@@ -261,7 +261,7 @@ void SceneManager::DoChangeScene(SceneBase::SCENE scene)
 			}
 
 			// 現在のシーンを解放
-			else ReleaseScene();
+			else ReleaseTopScene();
 		}
 
 		// シーンを切り替える

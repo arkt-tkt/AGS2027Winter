@@ -3,7 +3,7 @@
 #include "../../Common/DxLibUtil.h"
 #include "Collider3D.h"
 
-Collider3D::Collider3D(TYPE type, Position3 local_pos, float r)
+Collider3D::Collider3D(TYPE type, const Position3& local_pos, float r)
 	:
 	baseData_(
 		type,
@@ -17,7 +17,7 @@ Collider3D::Collider3D(TYPE type, Position3 local_pos, float r)
 	SharedConstructor();
 }
 
-Collider3D::Collider3D(TYPE type, Position3 local_pos1, Position3 local_pos2)
+Collider3D::Collider3D(TYPE type, const Position3& local_pos1, const Position3& local_pos2)
 	:
 	baseData_(
 		type,
@@ -31,7 +31,7 @@ Collider3D::Collider3D(TYPE type, Position3 local_pos1, Position3 local_pos2)
 	SharedConstructor();
 }
 
-Collider3D::Collider3D(TYPE type, Position3 local_pos1, Position3 local_pos2, float r)
+Collider3D::Collider3D(TYPE type, const Position3& local_pos1, const Position3& local_pos2, float r)
 	:
 	baseData_(
 		type,
@@ -74,12 +74,10 @@ Collider3D::Collider3D(TYPE type, int handle_id)
 	SharedConstructor();
 }
 
-Collider3D::~Collider3D()
+void Collider3D::Update(const Position3& world_pos, const Vector3& world_rot)
 {
-}
+	if (data_.shape == SHAPE::CAPSULE_ALT) return;
 
-void Collider3D::Update(Position3 world_pos, Vector3 world_rot)
-{
 	if (baseData_.shape == SHAPE::MODEL)
 	{
 		MV1RefreshCollInfo(baseData_.modelId);
@@ -97,14 +95,14 @@ void Collider3D::Update(Position3 world_pos, Vector3 world_rot)
 	case SHAPE::SPHERE:
 		data_.pos1 = (mRot * baseData_.pos1) + world_pos;
 		break;
-	case SHAPE::CAPSULE:
+	case SHAPE::LINE: case SHAPE::CAPSULE:
 		data_.pos1 = (mRot * baseData_.pos1) + world_pos;
 		data_.pos2 = (mRot * baseData_.pos2) + world_pos;
 		break;
 	}
 }
 
-void Collider3D::UpdateAlt(Position3 world_pos1, Vector3 world_pos2)
+void Collider3D::UpdateAlt(const Position3& world_pos1, const Position3& world_pos2)
 {
 	if (data_.shape != SHAPE::CAPSULE_ALT) return;
 
@@ -116,7 +114,8 @@ void Collider3D::UpdateAlt(Position3 world_pos1, Vector3 world_pos2)
 
 void Collider3D::Release()
 {
-	if (baseData_.modelId != -1)
+	if (baseData_.shape == SHAPE::MODEL &&
+		baseData_.modelId != -1)
 	{
 		MV1TerminateCollInfo(baseData_.modelId);
 	}
@@ -125,8 +124,6 @@ void Collider3D::Release()
 #ifdef _DEBUG
 void Collider3D::DrawDebug() const
 {
-	constexpr unsigned int color = 0xff8000u;
-
 	switch (data_.shape)
 	{
 	case SHAPE::SPHERE:
@@ -134,17 +131,15 @@ void Collider3D::DrawDebug() const
 			DxLibUtil::Vec3ToVEC(data_.pos1),
 			data_.r,
 			COLLIDER_DIV,
-			color,
-			color,
-			FALSE
-		);
+			COLLIDER_COLOR,
+			COLLIDER_COLOR,
+			FALSE);
 		break;
 	case SHAPE::LINE:
 		DrawLine3D(
 			DxLibUtil::Vec3ToVEC(data_.pos1),
 			DxLibUtil::Vec3ToVEC(data_.pos2),
-			color
-		);
+			COLLIDER_COLOR);
 		break;
 	case SHAPE::CAPSULE: case SHAPE::CAPSULE_ALT:
 		DrawCapsule3D(
@@ -152,30 +147,24 @@ void Collider3D::DrawDebug() const
 			DxLibUtil::Vec3ToVEC(data_.pos2),
 			data_.r,
 			COLLIDER_DIV,
-			color,
-			color,
-			FALSE
-		);
+			COLLIDER_COLOR,
+			COLLIDER_COLOR,
+			FALSE);
+		break;
 	}
 }
 #endif
 
-const Collider3D::COLLIDER_DATA& Collider3D::GetColliderData() const
-{
-	return data_;
-}
-
-MV1_COLL_RESULT_POLY Collider3D::GetNearestHitPolyLine(const Vector3& start, const Vector3& end)
+MV1_COLL_RESULT_POLY Collider3D::GetNearestHitPolyLine(const Position3& start, const Position3& end)
 {
 	MV1_COLL_RESULT_POLY ret = {};
 
+	// ëÅä˙return
+	if (baseData_.shape != SHAPE::MODEL) return ret;
+
 	// ê¸ï™Ç≈è’ìÀîªíË
-	auto hits = MV1CollCheck_LineDim(
-		data_.modelId,
-		-1,
-		Vec3ToVEC(end),
-		Vec3ToVEC(start)
-	);
+	auto hits = MV1CollCheck_LineDim(data_.modelId, -1,
+		Vec3ToVEC(end), Vec3ToVEC(start));
 
 	// í«è]ëŒè€Ç…àÍî‘ãﬂÇ¢è’ìÀì_ÇíTÇ∑
 	bool isCollision = false;

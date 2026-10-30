@@ -6,6 +6,8 @@
 Animation::Animation(int modelId)
 {
 	modelId_ = modelId;
+
+	playDatas_.reserve(PLAYDATA_RESERVE);
 }
 
 Animation::~Animation()
@@ -75,8 +77,9 @@ void Animation::Update()
 	// 経過時間の取得
 	const float dt = SceneManager::GetInstance().GetDeltaTime();
 
+#if false
 	// 再生
-	playAnim_.step += (dt * playAnim_.speed);
+	playAnim_.step += (playAnim_.speed * dt * speed_);
 
 	// アニメーション終了判定
 	bool isEnd = false;
@@ -102,10 +105,70 @@ void Animation::Update()
 
 	// アニメーション設定
 	MV1SetAttachAnimTime(modelId_, playAnim_.attachIdx, playAnim_.step);
+#else
+	int count = 0;
+
+	for (auto it = playDatas_.begin(); it != playDatas_.end(); )
+	{
+		auto& playData = (*it);
+
+		// 再生
+		(*it).playAnim.step += ((*it).playAnim.speed * dt * speed_);
+
+		// アニメーション終了判定
+		bool isEnd = false;
+		if ((*it).playAnim.step >= (*it).playAnim.totalTime)
+		{
+			isEnd = true;
+		}
+
+		if (isEnd)
+		{
+			// アニメーションが終了したら
+			if ((*it).isLoop)
+			{
+				// ループ再生
+				(*it).playAnim.step -= (*it).playAnim.totalTime;
+			}
+			else
+			{
+				// ループしない
+				(*it).playAnim.step = (*it).playAnim.totalTime;
+			}
+		}
+
+		if (playDatas_.size() > 1 && count == 0)
+		{
+			(*it).blendRate -= dt / TRANSITION_TIME;
+
+			if ((*it).blendRate <= 0.0f)
+			{
+				// モデルからアニメーションを外す
+				MV1DetachAnim(modelId_, (*it).playAnim.attachIdx);
+
+				it = playDatas_.erase(it);
+				continue;
+			}
+		}
+		else
+		{
+			(*it).blendRate = (std::min)((*it).blendRate + dt / TRANSITION_TIME, 1.0f);
+		}
+
+		// アニメーション設定
+		MV1SetAttachAnimTime(modelId_, (*it).playAnim.attachIdx, (*it).playAnim.step);
+
+		MV1SetAttachAnimBlendRate(modelId_, (*it).playAnim.attachIdx, (*it).blendRate);
+
+		++it;
+		++count;
+	}
+#endif
 }
 
 void Animation::Play(ResourceManager::SRC src, int type, bool isLoop)
 {
+#if false
 	if (playType_ == std::pair{ src, type }) return;
 
 	if (playType_.second != -1)
@@ -130,6 +193,35 @@ void Animation::Play(ResourceManager::SRC src, int type, bool isLoop)
 
 	// アニメーションループ
 	isLoop_ = isLoop;
+#else
+	if (playDatas_.size() >= PLAYDATA_RESERVE) return;
+
+	if (playDatas_.size() > 0 &&
+		playDatas_.back().playType == std::pair{src, type}) return;
+
+	PlayData playData;
+
+	// アニメーション種別を変更
+	playData.playType.first = src;
+	playData.playType.second = type;
+	playData.playAnim = anims_[src][type];
+
+	// 初期化
+	playData.playAnim.step = 0.0f;
+
+	// モデルにアニメーションを付ける
+	playData.playAnim.attachIdx = AttachAnim(playData.playAnim.model);
+
+	// アニメーション総時間の取得
+	playData.playAnim.totalTime = MV1GetAttachAnimTotalTime(modelId_, playData.playAnim.attachIdx);
+
+	// アニメーションループ
+	playData.isLoop = isLoop;
+
+	playData.blendRate = playDatas_.empty() ? 1.0f : 0.0f;
+
+	playDatas_.push_back(playData);
+#endif
 }
 
 bool Animation::IsPlaying() const
@@ -171,4 +263,9 @@ int Animation::AttachAnim(int anim_model)
 	}
 
 	return attachIdx;
+}
+
+int Animation::DetachAnim(int anim_model)
+{
+	return 0;
 }

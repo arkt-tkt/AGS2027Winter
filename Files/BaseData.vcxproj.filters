@@ -36,6 +36,7 @@
     <ClCompile Include="src\Object\Actor\CapturePoint.cpp" />
     <ClCompile Include="src\Utility\AutoText.cpp" />
     <ClCompile Include="src\Object\Actor\Stage.cpp" />
+    <ClCompile Include="src\Utility\Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -74,6 +75,7 @@
     <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Utility\AutoText.h" />
     <ClInclude Include="src\Object\Actor\Stage.h" />
+    <ClInclude Include="src\Utility\Debug.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

@@ -47,8 +47,8 @@ public:
 		BUTTON_R1,
 		BUTTON_L2,
 		BUTTON_R2,
-		BUTTON_L3,
-		BUTTON_R3,
+		BUTTON_L3, // 左ジョイスティック・押し込み
+		BUTTON_R3, // 右ジョイスティック・押し込み
 
 		END
 	};
