@@ -10,6 +10,7 @@ void CharacterBase3D::Update()
 	{
 		Move();
 
+		// この位置を変数次第で変えて、Collisionとイイ感じに組み合わせられれば、敵も壁と平行に移動させられそう
 		transform_.position += velocity_;
 	}
 
