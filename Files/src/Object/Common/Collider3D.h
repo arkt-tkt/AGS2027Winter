@@ -27,12 +27,13 @@ public:
 
 	struct COLLIDER_DATA
 	{
-		TYPE type;
-		SHAPE shape;
-		Position3 pos1;
-		Position3 pos2;
-		float r;
-		int modelId;
+		TYPE type;		// 識別
+		SHAPE shape;	// 形状
+		Position3 pos1;	// 座標
+		Position3 pos2;	// 座標2(カプセル専用)
+		float r;		// 半径
+		int modelId;	// モデルID
+		std::vector<int> excludeFrame; // 衝突無効フレーム(モデル専用)
 	};
 
 	// SPHERE コンストラクタ

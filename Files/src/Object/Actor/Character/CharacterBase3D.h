@@ -59,7 +59,7 @@ protected:
 	// ダッシュ状態
 	bool isSprinting_ = false;
 	// 衝突時の対法線平行移動速度をフルスピードで可能にするかどうか
-	bool fullSpeedParallel = false;
+	bool fullSpeedParallel_ = false;
 
 	// ジャンプ入力への反応
 	void Jump();
@@ -77,5 +77,5 @@ protected:
 	void CollisionAttack();
 
 	// その他下位クラスの処理
-	virtual void SubClass() {}
+	virtual void LateMove() {}
 };

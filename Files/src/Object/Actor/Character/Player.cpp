@@ -165,6 +165,9 @@ void Player::Move()
 		Jump();
 	}
 
+	// 本移動
+	transform_.position += velocity_;
+
 	// マップから落下した場合
 	if (transform_.position.y <= -1000.0f ||
 		transform_.position.y >= 1000.0f)
@@ -196,7 +199,7 @@ void Player::AnimationSwitch()
 
 }
 
-void Player::SubClass()
+void Player::LateMove()
 {
 	wpn_->Update();
 

@@ -24,7 +24,7 @@ private:
 
 	EnemyManager& enmMng_;
 	float damage_ = 5.0f;
-	bool jumpNextFrame_ = false;
+	bool hitWall_ = false;
 
 	void InitParam() override;
 	void InitModel() override;
@@ -32,6 +32,7 @@ private:
 	void InitOther() override;
 
 	void Move() override;
+	void LateMove() override;
 	void AnimationSwitch() override;
 
 	void CollisionMove() override;

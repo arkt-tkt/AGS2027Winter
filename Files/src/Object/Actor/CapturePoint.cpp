@@ -114,4 +114,7 @@ void CapturePoint::Move()
 	}
 
 	activeTimer_ = (std::max)(activeTimer_ - scnMng_.GetDeltaTime(), 0.0f);
+
+	// –{ˆÚ“®
+	transform_.position += velocity_;
 }

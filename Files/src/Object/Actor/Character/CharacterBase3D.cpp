@@ -9,9 +9,6 @@ void CharacterBase3D::Update()
 	// 移動
 	{
 		Move();
-
-		// この位置を変数次第で変えて、Collisionとイイ感じに組み合わせられれば、敵も壁と平行に移動させられそう
-		transform_.position += velocity_;
 	}
 
 	// アニメーション
@@ -40,9 +37,9 @@ void CharacterBase3D::Update()
 		UpdateColliders();
 	}
 
-	// その他下位クラスの処理
+	// 最終処理
 	{
-		SubClass();
+		LateMove();
 	}
 }
 
@@ -146,7 +143,7 @@ bool CharacterBase3D::CollisionCapsule()
 					continue;
 				}
 
-				if (!fullSpeedParallel)
+				if (!fullSpeedParallel_)
 				{
 					// 移動方向と法線のズレに反比例して最大移動速度を決定
 					auto vec = (std::min)(Dot(velocity_, VECToVec3(hit.Normal)) + 1.0f, 1.0f);

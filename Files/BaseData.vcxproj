@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Algorithm\PathFind.cpp" />
     <ClCompile Include="src\Object\Actor\Stage.cpp" />
     <ClCompile Include="src\Utility\Debug.cpp" />
     <ClCompile Include="src\Utility\Utility.cpp" />
@@ -57,6 +58,7 @@
     <ClCompile Include="src\Utility\AutoText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Algorithm\PathFind.h" />
     <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
     <ClInclude Include="src\Object\Actor\Stage.h" />

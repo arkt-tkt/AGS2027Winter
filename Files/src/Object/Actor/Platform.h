@@ -16,6 +16,11 @@ private:
 		468, 493
 	};
 
+	static constexpr Vector3 PATHFIND_NODE[] =
+	{
+		{ 0, 0, 0 }
+	};
+
 	// スカイドーム
 	Transform3D skyDome_;
 

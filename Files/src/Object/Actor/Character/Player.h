@@ -41,7 +41,7 @@ private:
 
 	void Move() override;
 	void AnimationSwitch() override;
-	void SubClass() override;
+	void LateMove() override;
 
 	void TurnVisual() override;
 

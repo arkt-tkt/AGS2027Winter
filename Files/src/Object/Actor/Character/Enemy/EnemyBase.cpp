@@ -39,7 +39,7 @@ void EnemyBase::InitParam()
 	isAlive_ = true;
 	maxHp_ = hp_ = 150;
 	maxSpeed_ = 132.0f;
-	fullSpeedParallel = true;
+	fullSpeedParallel_ = true;
 }
 
 void EnemyBase::InitModel()
@@ -79,18 +79,26 @@ void EnemyBase::InitOther()
 
 void EnemyBase::Move()
 {
-	auto player = enmMng_.GetPlayerPtr();
-	Vector2 moveDir = (player->GetTransform().position.XZ() - transform_.position.XZ()).Normalized();
-
-	moveDir *= maxSpeed_ * scnMng_.GetDeltaTime();
-
-	velocity_.x = moveDir.x;
-	velocity_.z = moveDir.y;
-
-	if (jumpNextFrame_)
+	if (hitWall_)
 	{
-		jumpNextFrame_ = false;
+		hitWall_ = false;
 		Jump();
+	}
+
+	transform_.position += velocity_;
+}
+
+void EnemyBase::LateMove()
+{
+	if (!hitWall_)
+	{
+		auto player = enmMng_.GetPlayerPtr();
+		Vector2 moveDir = (player->GetTransform().position.XZ() - transform_.position.XZ()).Normalized();
+
+		moveDir *= maxSpeed_ * scnMng_.GetDeltaTime();
+
+		velocity_.x = moveDir.x;
+		velocity_.z = moveDir.y;
 	}
 }
 
@@ -100,7 +108,7 @@ void EnemyBase::AnimationSwitch()
 
 void EnemyBase::CollisionMove()
 {
-	jumpNextFrame_ = true;
+	hitWall_ = true;
 }
 
 void EnemyBase::TurnVisual()
