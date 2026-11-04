@@ -52,6 +52,8 @@ public:
 		ANIME_PL_RF_MOVE,
 		ANIME_PL_RF_RELOAD,
 
+		JSON_PATHFIND,
+
 		MAX
 	};
 

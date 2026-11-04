@@ -1,4 +1,5 @@
 #include "CapturePoint.h"
+#include "../../Algorithm/PathFind.h"
 #include "Platform.h"
 #include "Stage.h"
 
@@ -22,6 +23,8 @@ void Stage::Init()
 		capPoint->AddAwayColliders(platform_->GetTypedColliders(Collider3D::TYPE::STAGE));
 		capturePoints_.push_back(std::move(capPoint));
 	}
+
+	pathFind_ = std::make_shared<PathFind>();
 }
 
 void Stage::Update()
@@ -42,6 +45,10 @@ void Stage::Draw()
 	{
 		capPoint->Draw();
 	}
+
+#ifdef _DEBUG
+	pathFind_->DrawDebug();
+#endif
 }
 
 void Stage::DrawUI()

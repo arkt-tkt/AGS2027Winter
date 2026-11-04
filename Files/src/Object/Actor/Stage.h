@@ -6,6 +6,7 @@
 class CapturePoint;
 class Collider3D;
 class GameScene;
+class PathFind;
 class Platform;
 class Player;
 
@@ -41,6 +42,7 @@ private:
 	std::weak_ptr<Player> player_;
 
 	std::shared_ptr<Platform> platform_;
+	std::shared_ptr<PathFind> pathFind_;
 	std::vector<std::shared_ptr<CapturePoint>> capturePoints_;
 
 };

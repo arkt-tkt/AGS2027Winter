@@ -1,0 +1,112 @@
+{
+    "Nodes" :
+    {
+        "Node_0" :
+        {
+            "Position" : [ -700, 0, -2150 ],
+            "Link" : [1]
+        },
+        "Node_1" :
+        {
+            "Position" : [ -700, 0, -1765 ],
+            "Link" : [2]
+        },
+        "Node_2" :
+        {
+            "Position" : [ -700, 0, -890 ],
+            "Link" : [3]
+        },
+        "Node_3" :
+        {
+            "Position" : [ -700, 0, 70 ],
+            "Link" : [4]
+        },
+        "Node_4" :
+        {
+            "Position" : [ -700, 0, 670 ],
+            "Link" : [5, 9, 11]
+        },
+        "Node_5" :
+        {
+            "Position" : [ -700, 0, 980 ],
+            "Link" : [6, 9]
+        },
+        "Node_6" :
+        {
+            "Position" : [ -700, 0, 1420 ],
+            "Link" : [7, 8, 9, 11]
+        },
+
+        "Node_7" :
+        {
+            "Position" : [ -1100, 0, 1700 ],
+            "Link" : [8]
+        },
+        "Node_8" :
+        {
+            "Position" : [ -700, 0, 1700 ],
+            "Link" : [10]
+        },
+        "Node_9" :
+        {
+            "Position" : [ 0, 0, 1370 ],
+            "Link" : [10]
+        },
+        "Node_10" :
+        {
+            "Position" : [ 0, 0, 1820 ],
+            "Link" : []
+        },
+        "Node_11" :
+        {
+            "Position" : [ 225, 0, 825 ],
+            "Link" : []
+        },
+        "Node_12" :
+        {
+            "Position" : [ 225, 0, 1820 ],
+            "Link" : []
+        },
+
+        "Node_13" :
+        {
+            "Position" : [ -300, 0, -890 ],
+            "Link" : []
+        },
+        "Node_14" :
+        {
+            "Position" : [ -300, 0, -50 ],
+            "Link" : []
+        },
+        "Node_15" :
+        {
+            "Position" : [ 120, 0, -890 ],
+            "Link" : []
+        },
+        "Node_16" :
+        {
+            "Position" : [ 120, 0, -50 ],
+            "Link" : []
+        },
+        "Node_17" :
+        {
+            "Position" : [ 255, 0, -890 ],
+            "Link" : []
+        },
+        "Node_18" :
+        {
+            "Position" : [ 450, 0, -100 ],
+            "Link" : []
+        },
+        "Node_19" :
+        {
+            "Position" : [ 570, 0, -890 ],
+            "Link" : []
+        },
+        "Node_20" :
+        {
+            "Position" : [ 570, 0, -235 ],
+            "Link" : []
+        }
+    }
+}

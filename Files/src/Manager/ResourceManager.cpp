@@ -67,6 +67,9 @@ void ResourceManager::Init()
 
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/reloading.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_RELOAD, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::JSON, "PathFind.json");
+	resourcesMap_.emplace(SRC::JSON_PATHFIND, std::move(res));
 }
 
 void ResourceManager::Release()
@@ -98,13 +101,18 @@ const Resource& ResourceManager::Load(SRC src)
 
 const Resource& ResourceManager::Reload(SRC src)
 {
-	const auto& lPair = loadedMap_.find(src);
-	if (lPair == loadedMap_.end())
+	const auto& lPair = resourcesMap_.find(src);
+	if (lPair == resourcesMap_.end())
 	{
 		return dummy_;
 	}
 
-	lPair->second.Release();
+	const auto& rPair = loadedMap_.find(src);
+	if (rPair != loadedMap_.end())
+	{
+		rPair->second.Release();
+		loadedMap_.erase(rPair);
+	}
 
 	const Resource& res = Load(src);
 	return res;
