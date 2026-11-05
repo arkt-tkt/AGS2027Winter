@@ -36,6 +36,8 @@ public:
 	{
 		NONE = -1,
 
+		FONT_UI,
+
 		IMAGE_LOGO,
 		IMAGE_TITLE,
 

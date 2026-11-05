@@ -1,112 +1,208 @@
 {
-    "Nodes" :
-    {
-        "Node_0" :
-        {
-            "Position" : [ -700, 0, -2150 ],
-            "Link" : [1]
-        },
-        "Node_1" :
-        {
-            "Position" : [ -700, 0, -1765 ],
-            "Link" : [2]
-        },
-        "Node_2" :
-        {
-            "Position" : [ -700, 0, -890 ],
-            "Link" : [3]
-        },
-        "Node_3" :
-        {
-            "Position" : [ -700, 0, 70 ],
-            "Link" : [4]
-        },
-        "Node_4" :
-        {
-            "Position" : [ -700, 0, 670 ],
-            "Link" : [5, 9, 11]
-        },
-        "Node_5" :
-        {
-            "Position" : [ -700, 0, 980 ],
-            "Link" : [6, 9]
-        },
-        "Node_6" :
-        {
-            "Position" : [ -700, 0, 1420 ],
-            "Link" : [7, 8, 9, 11]
-        },
-
-        "Node_7" :
-        {
-            "Position" : [ -1100, 0, 1700 ],
-            "Link" : [8]
-        },
-        "Node_8" :
-        {
-            "Position" : [ -700, 0, 1700 ],
-            "Link" : [10]
-        },
-        "Node_9" :
-        {
-            "Position" : [ 0, 0, 1370 ],
-            "Link" : [10]
-        },
-        "Node_10" :
-        {
-            "Position" : [ 0, 0, 1820 ],
-            "Link" : []
-        },
-        "Node_11" :
-        {
-            "Position" : [ 225, 0, 825 ],
-            "Link" : []
-        },
-        "Node_12" :
-        {
-            "Position" : [ 225, 0, 1820 ],
-            "Link" : []
-        },
-
-        "Node_13" :
-        {
-            "Position" : [ -300, 0, -890 ],
-            "Link" : []
-        },
-        "Node_14" :
-        {
-            "Position" : [ -300, 0, -50 ],
-            "Link" : []
-        },
-        "Node_15" :
-        {
-            "Position" : [ 120, 0, -890 ],
-            "Link" : []
-        },
-        "Node_16" :
-        {
-            "Position" : [ 120, 0, -50 ],
-            "Link" : []
-        },
-        "Node_17" :
-        {
-            "Position" : [ 255, 0, -890 ],
-            "Link" : []
-        },
-        "Node_18" :
-        {
-            "Position" : [ 450, 0, -100 ],
-            "Link" : []
-        },
-        "Node_19" :
-        {
-            "Position" : [ 570, 0, -890 ],
-            "Link" : []
-        },
-        "Node_20" :
-        {
-            "Position" : [ 570, 0, -235 ],
-            "Link" : []
-        }
-    }
+	"0_street": {
+		"Node_0": {
+			"Position": [ -700, 0, -2150 ],
+			"Link": [ 1, 21 ]
+		},
+		"Node_1": {
+			"Position": [ -700, 0, -1765 ],
+			"Link": [ 2, 21 ]
+		},
+		"Node_2": {
+			"Position": [ -700, 0, -890 ],
+			"Link": [ 3, 13, 14, 21, 41 ]
+		},
+		"Node_3": {
+			"Position": [ -700, 0, 70 ],
+			"Link": [ 4, 13, 14, 32 ]
+		},
+		"Node_4": {
+			"Position": [ -700, 0, 670 ],
+			"Link": [ 5, 9, 11, 14, 33 ]
+		},
+		"Node_5": {
+			"Position": [ -700, 0, 980 ],
+			"Link": [ 6, 7, 9, 33, 36 ]
+		},
+		"Node_6": {
+			"Position": [ -700, 0, 1420 ],
+			"Link": [ 7, 8, 9, 11 ]
+		}
+	},
+	"1_vacant": {
+		"Node_7": {
+			"Position": [ -1100, 0, 1700 ],
+			"Link": [ 8, 42 ]
+		},
+		"Node_8": {
+			"Position": [ -700, 0, 1700 ],
+			"Link": [ 10 ]
+		},
+		"Node_9": {
+			"Position": [ 0, 0, 1370 ],
+			"Link": [ 10, 11, 12 ]
+		},
+		"Node_10": {
+			"Position": [ 0, 0, 1820 ],
+			"Link": [ 12 ]
+		},
+		"Node_11": {
+			"Position": [ 225, 0, 825 ],
+			"Link": [ 12 ]
+		},
+		"Node_12": {
+			"Position": [ 225, 0, 1820 ],
+			"Link": [ 26 ]
+		}
+	},
+	"2_parking": {
+		"Node_13": {
+			"Position": [ -300, 0, -890 ],
+			"Link": [ 14, 15, 16 ]
+		},
+		"Node_14": {
+			"Position": [ -300, 0, -50 ],
+			"Link": [ 15, 16 ]
+		},
+		"Node_15": {
+			"Position": [ 120, 0, -890 ],
+			"Link": [ 16, 17 ]
+		},
+		"Node_16": {
+			"Position": [ 120, 0, -50 ],
+			"Link": [ 18 ]
+		},
+		"Node_17": {
+			"Position": [ 255, 0, -890 ],
+			"Link": [ 19, 24 ]
+		},
+		"Node_18": {
+			"Position": [ 450, 0, -100 ],
+			"Link": [ 20 ]
+		},
+		"Node_19": {
+			"Position": [ 570, 0, -890 ],
+			"Link": [ 20, 24, 28 ]
+		},
+		"Node_20": {
+			"Position": [ 570, 0, -235 ],
+			"Link": []
+		}
+	},
+	"3_park": {
+		"Node_21": {
+			"Position": [ -465, 0, -1765 ],
+			"Link": [ 23 ]
+		},
+		"Node_22": {
+			"Position": [ -100, 0, -1430 ],
+			"Link": [ 24 ]
+		},
+		"Node_23": {
+			"Position": [ 255, 0, -1765 ],
+			"Link": [ 24 ]
+		},
+		"Node_24": {
+			"Position": [ 255, 0, -1200 ],
+			"Link": []
+		}
+	},
+	"4_backalleyx+": {
+		"Node_25": {
+			"Position": [ 660, 0, 650 ],
+			"Link": [ 27 ]
+		},
+		"Node_26": {
+			"Position": [ 850, 0, 1820 ],
+			"Link": [ 31 ]
+		},
+		"Node_27": {
+			"Position": [ 940, 0, 650 ],
+			"Link": [ 29, 30 ]
+		},
+		"Node_28": {
+			"Position": [ 1150, 0, -550 ],
+			"Link": [ 29 ]
+		},
+		"Node_29": {
+			"Position": [ 1150, 0, 550 ],
+			"Link": [ 30 ]
+		},
+		"Node_30": {
+			"Position": [ 1150, 0, 740 ],
+			"Link": [ 31 ]
+		},
+		"Node_31": {
+			"Position": [ 1150, 0, 1500 ],
+			"Link": []
+		}
+	},
+	"5_gasstation": {
+		"Node_32": {
+			"Position": [ -1050, 0, 90 ],
+			"Link": [ 33, 34 ]
+		},
+		"Node_33": {
+			"Position": [ -1050, 0, 670 ],
+			"Link": [ 36 ]
+		},
+		"Node_34": {
+			"Position": [ -1280, 0, 100 ],
+			"Link": [ 35, 37 ]
+		},
+		"Node_35": {
+			"Position": [ -1280, 0, 520 ],
+			"Link": [ 36, 39 ]
+		},
+		"Node_36": {
+			"Position": [ -1280, 0, 670 ],
+			"Link": [ 38 ]
+		},
+		"Node_37": {
+			"Position": [ -1450, 0, 110 ],
+			"Link": [ 38, 39 ]
+		},
+		"Node_38": {
+			"Position": [ -1600, 0, 420 ],
+			"Link": [ 39, 40 ]
+		},
+		"Node_39": {
+			"Position": [ -1660, 0, 120 ],
+			"Link": [ 43 ]
+		},
+		"Node_40": {
+			"Position": [ -1750, 0, 420 ],
+			"Link": []
+		}
+	},
+	"6_backalleyx-": {
+		"Node_41": {
+			"Position": [ -1050, 0, -890 ],
+			"Link": []
+		},
+		"Node_42": {
+			"Position": [ -1400, 0, 1700 ],
+			"Link": [ 44, 47 ]
+		},
+		"Node_43": {
+			"Position": [ -1700, 0, -140 ],
+			"Link": [ 45 ]
+		},
+		"Node_44": {
+			"Position": [ -1920, 0, 1080 ],
+			"Link": [ 46, 47 ]
+		},
+		"Node_45": {
+			"Position": [ -2150, 0, -140 ],
+			"Link": [ 46 ]
+		},
+		"Node_46": {
+			"Position": [ -2220, 0, 350 ],
+			"Link": [ 47 ]
+		},
+		"Node_47": {
+			"Position": [ -2220, 0, 1700 ],
+			"Link": []
+		}
+	}
 }

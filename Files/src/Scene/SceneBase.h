@@ -7,9 +7,13 @@ class SceneBase {
 public:
 	enum class SCENE {
 		NONE = -1,
+
 		PAUSE,
+
 		TITLE,
 		GAME,
+		END,
+
 		MAX
 	};
 

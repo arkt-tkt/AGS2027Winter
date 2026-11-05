@@ -25,6 +25,7 @@ public:
 
 	void SetPlayerPtr(std::weak_ptr<Player> player) { player_ = player; }
 	Player* GetPlayerPtr() const { return player_.lock().get(); }
+	std::shared_ptr<PathFind> GetPathFindPtr() const { return pathFind_; }
 
 private:
 	static constexpr int CAPTURE_POINT_NUM = 5;

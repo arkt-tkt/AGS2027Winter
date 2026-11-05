@@ -231,7 +231,7 @@ void Camera::UpdateFollow1()
 		return;
 	}
 
-	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), angles_.x) * AngleAxis(Vector3(0, 1, 0), angles_.y);
 
 	auto fPos = followTarget_->position;
 
@@ -249,7 +249,7 @@ void Camera::UpdateFollow2()
 		return;
 	}
 
-	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), angles_.x) * AngleAxis(Vector3(0, 1, 0), angles_.y);
 
 	auto fPos = followTarget_->position;
 	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->modelId, 5));
@@ -287,7 +287,7 @@ void Camera::UpdateAngles()
 
 void Camera::CollisionStage()
 {
-	Quaternion qRot = AngleAxis(Vector3(0, 1, 0), angles_.y) * AngleAxis(Vector3(1, 0, 0), angles_.x);
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), angles_.x) * AngleAxis(Vector3(0, 1, 0), angles_.y);
 
 	for (const auto& c : awayColliders_)
 	{

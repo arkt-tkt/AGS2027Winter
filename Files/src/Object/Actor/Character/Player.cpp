@@ -201,6 +201,8 @@ void Player::AnimationSwitch()
 
 void Player::LateMove()
 {
+	if (!isAlive_) return;
+
 	wpn_->Update();
 
 	const auto& INS = InputManager::GetInstance();

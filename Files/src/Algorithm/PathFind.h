@@ -1,6 +1,6 @@
 #pragma once
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include "../Common/Geometry.h"
 
@@ -8,6 +8,19 @@ struct Node
 {
 	Vector3 pos;
 	std::list<unsigned int> link;
+};
+
+// 優先度付きキューで管理するレコード
+struct NodeRecord
+{
+	unsigned int id;
+	float f_cost; // f(n) = g(n) + h(n)
+
+	// 優先度付きキューを昇順（最小値を取り出す）にするための比較演算子
+	bool operator>(const NodeRecord& other) const
+	{
+		return f_cost > other.f_cost;
+	}
 };
 
 // ダイクストラ法ベース
@@ -20,7 +33,14 @@ public:
 	void DrawDebug();
 #endif
 
-	Vector3 PathGet(const Vector3& pos);
+	std::vector<int> PathGet(const Vector3& start_pos, const Vector3& goal_pos);
+
+	Vector3 NodeToPos(unsigned int node_id)
+	{
+		return nodes_.at(node_id).pos;
+	}
+
+	unsigned int GetNearestNode(const Vector3& pos);
 
 private:
 	static constexpr Vector3 PATHFIND_NODE_LOC[] =
@@ -59,13 +79,13 @@ private:
 		{ 255, 0, -1765 },
 
 		// 路地裏(X+)
-		{ 850, 0, 1820 },
-		{ 1150, 0, 1500 },
-		{ 1150, 0, 740 },
-		{ 1150, 0, 550 },
-		{ 940, 0, 650 },
 		{ 660, 0, 650 },
+		{ 850, 0, 1820 },
+		{ 940, 0, 650 },
 		{ 1150, 0, -550 },
+		{ 1150, 0, 550 },
+		{ 1150, 0, 740 },
+		{ 1150, 0, 1500 },
 
 		// ガソスタ
 		{ -1050, 0, 90 },
@@ -91,7 +111,7 @@ private:
 	static constexpr float INF = 1.0e9f;
 
 	// 各ノードの座標点
-	std::vector<Node> nodes_;
+	std::unordered_map<int, Node> nodes_;
 	// 各ノード間の距離
 	std::vector<std::vector<float>> dists_;
 

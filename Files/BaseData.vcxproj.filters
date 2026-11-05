@@ -38,6 +38,7 @@
     <ClCompile Include="src\Object\Actor\Stage.cpp" />
     <ClCompile Include="src\Utility\Debug.cpp" />
     <ClCompile Include="src\Algorithm\PathFind.cpp" />
+    <ClCompile Include="src\Scene\EndScene\EndScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -78,6 +79,7 @@
     <ClInclude Include="src\Object\Actor\Stage.h" />
     <ClInclude Include="src\Utility\Debug.h" />
     <ClInclude Include="src\Algorithm\PathFind.h" />
+    <ClInclude Include="src\Scene\EndScene\EndScene.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

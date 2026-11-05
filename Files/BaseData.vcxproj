@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\Algorithm\PathFind.cpp" />
     <ClCompile Include="src\Object\Actor\Stage.cpp" />
+    <ClCompile Include="src\Scene\EndScene\EndScene.cpp" />
     <ClCompile Include="src\Utility\Debug.cpp" />
     <ClCompile Include="src\Utility\Utility.cpp" />
     <ClCompile Include="src\Manager\ScoreManager.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="src\Object\Actor\CapturePoint.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
     <ClInclude Include="src\Object\Actor\Stage.h" />
+    <ClInclude Include="src\Scene\EndScene\EndScene.h" />
     <ClInclude Include="src\Utility\Debug.h" />
     <ClInclude Include="src\Utility\Utility.h" />
     <ClInclude Include="src\Manager\ScoreManager.h" />

@@ -27,7 +27,7 @@ void CharacterBase3D::Update()
 
 		CollisionGravity();
 
-		CollisionAttack();
+		CollisionProjectile();
 	}
 
 	// 更新
@@ -234,7 +234,7 @@ void CharacterBase3D::CollisionGravity()
 	velocity_.y = (std::max)(velocity_.y - GRAVITY_POW * scnMng_.GetDeltaTime(), MAX_FALL_VELOCITY);
 }
 
-void CharacterBase3D::CollisionAttack()
+void CharacterBase3D::CollisionProjectile()
 {
 	using C_TY = Collider3D::TYPE;
 
@@ -326,4 +326,29 @@ void CharacterBase3D::CollisionAttack()
 			}
 		}
 	}
+}
+
+bool CharacterBase3D::CheckLOS(int away_model_id)
+{
+	// 頭(フレーム[5])同士で線を結べるかどうか
+	auto headPos = MV1GetFramePosition(transform_.modelId, 5);
+	auto awayHeadPos = MV1GetFramePosition(away_model_id, 5);
+
+	for (const auto& c : awayColliders_)
+	{
+		auto& dat = c.lock()->GetColliderData();
+
+		if (dat.type != Collider3D::TYPE::STAGE) continue;
+
+		auto hit = MV1CollCheck_Line(
+			dat.modelId, -1,
+			headPos, awayHeadPos, -1);
+
+		if (hit.HitFlag)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

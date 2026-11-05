@@ -1,8 +1,9 @@
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
 #include "../Application.h"
-#include "../Scene/TitleScene/TitleScene.h"
+#include "../Scene/EndScene/EndScene.h"
 #include "../Scene/GameScene/GameScene.h"
+#include "../Scene/TitleScene/TitleScene.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "ScoreManager.h"
@@ -272,6 +273,9 @@ void SceneManager::DoChangeScene(SceneBase::SCENE scene)
 			break;
 		case SceneBase::SCENE::GAME:
 			ret = std::make_unique<GameScene>();
+			break;
+		case SceneBase::SCENE::END:
+			ret = std::make_unique<EndScene>();
 			break;
 		}
 	}

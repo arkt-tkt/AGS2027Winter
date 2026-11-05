@@ -73,8 +73,11 @@ protected:
 	virtual void CollisionMove() {}
 	// d—Í•ûŒü‚ÌÕ“Ë”»’è
 	void CollisionGravity();
-	// UŒ‚‚ÌÕ“Ë”»’è
-	void CollisionAttack();
+	// ”­Ë•¨‚ÌÕ“Ë”»’è
+	void CollisionProjectile();
+
+	// ‹ü”»’è
+	bool CheckLOS(int away_model_id);
 
 	// ‚»‚Ì‘¼‰ºˆÊƒNƒ‰ƒX‚Ìˆ—
 	virtual void LateMove() {}

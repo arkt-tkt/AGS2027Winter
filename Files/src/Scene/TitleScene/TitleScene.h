@@ -1,6 +1,7 @@
 #include "../SceneBase.h"
 
-class TitleScene : public SceneBase {
+class TitleScene : public SceneBase
+{
 public:
     bool Init() override;
     void Update() override;

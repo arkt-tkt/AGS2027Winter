@@ -28,6 +28,7 @@ bool GameScene::Init()
 
     EnemyManager::CreateInstance(this);
     EnemyManager::GetInstance().SetPlayerPtr(player_);
+    EnemyManager::GetInstance().SetPathFindPtr(stage_->GetPathFindPtr());
     EnemyManager::GetInstance().AddAwayColliders(stage_->GetColliders());
 
     ProjectileManager::CreateInstance();
@@ -40,6 +41,10 @@ void GameScene::Update()
     if (InputManager::GetInstance().CheckDownMap(1, InputManager::TAGS::SYSTEM_NG))
     {
         nextScene_ = SceneBase::SCENE::TITLE;
+    }
+    else if (!player_->IsAlive())
+    {
+        nextScene_ = SceneBase::SCENE::END;
     }
 
     activeDevice_ = stage_->GetCaptureCount();

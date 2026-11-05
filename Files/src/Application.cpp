@@ -37,6 +37,8 @@ bool Application::Init()
 	ResourceManager::CreateInstance();
 	ResourceManager::GetInstance().Init();
 
+	ChangeFontFromHandle(ResourceManager::GetInstance().Load(ResourceManager::SRC::FONT_UI).handleId_);
+
 	// AudioManager
 	AudioManager::CreateInstance();
 

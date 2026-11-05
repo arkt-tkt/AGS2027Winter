@@ -926,9 +926,9 @@ Vector3 operator*(const Quaternion& q, const Vector3& v)
 	// 位置情報に回転情報を反映させる
 	// pos' = q・pos・q(-1)
 	Quaternion tmp = Quaternion();
-	tmp *= q;
-	tmp *= Quaternion(0.0f, v.x, v.y, v.z);
 	tmp *= q.Inversed();
+	tmp *= Quaternion(0.0f, v.x, v.y, v.z);
+	tmp *= q;
 	return { (float)tmp.x, (float)tmp.y, (float)tmp.z };
 }
 
@@ -966,8 +966,8 @@ Quaternion AngleAxis(Vector3 axis, double rad)
 	axis.z = (float)(axis.z * norm);
 
 	c = cos(0.5f * rad);
-	s = sin(0.5f * rad);
-	//s = -sin(0.5f * rad); // 左手座標系用の改良？
+	//s = sin(0.5f * rad);
+	s = -sin(0.5f * rad); // 左手座標系用の改良？
 
 	ret.w = c;
 	ret.x = s * axis.x;

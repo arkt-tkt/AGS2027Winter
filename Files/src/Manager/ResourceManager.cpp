@@ -35,6 +35,9 @@ void ResourceManager::Init()
 	//res = std::make_unique<RES>(RES_T::IMAGE, "Image.png");
 	//resourcesMap_.emplace(SRC::IMAGE, std::move(res));
 	
+	res = std::make_unique<RES>(RES_T::FONT, "851Gkktt_005.ttf", "851ゴチカクット", 20, -1, 1);
+	resourcesMap_.emplace(SRC::FONT_UI, std::move(res));
+
 	res = std::make_unique<RES>(RES_T::MODEL, "Stage/fruzer-city/city.mv1");
 	resourcesMap_.emplace(SRC::MODEL_STAGE, std::move(res));
 
