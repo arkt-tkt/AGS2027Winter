@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "../../Common/Geometry.h"
+#include "../../../Common/Geometry.h"
 
 class CapturePoint;
 class Collider3D;
@@ -9,6 +9,7 @@ class GameScene;
 class PathFind;
 class Platform;
 class Player;
+class Resupply;
 
 class Stage
 {
@@ -32,8 +33,8 @@ private:
 
 	static constexpr Vector3 CAPTURE_POINT_POS[CAPTURE_POINT_NUM] = 
 	{
-		{ -700, 0, 1650 },
-		{ -2100, 0, 350 },
+		{ -1850, 0, 350 },
+		{ -1950, 0, 700 },
 		{ -700, 0, -2400 },
 		{ 1050, 0, -600 },
 		{ 150, 0, 900 }
@@ -44,6 +45,7 @@ private:
 
 	std::shared_ptr<Platform> platform_;
 	std::shared_ptr<PathFind> pathFind_;
+	std::shared_ptr<Resupply> resupply_;
 	std::vector<std::shared_ptr<CapturePoint>> capturePoints_;
 
 };

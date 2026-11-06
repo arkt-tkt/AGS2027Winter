@@ -2,6 +2,7 @@
 #include <fstream>
 #include <map>
 #include <Windows.h>
+#include "../Common/Geometry.h"
 #include "ResourceManager.h"
 
 class AudioManager {
@@ -27,6 +28,11 @@ public:
 		Resource::TYPE type;
 		float volMult;
 		int playType;
+
+		// 3D‰¹Œ¹’ÇÕ—p
+		bool use3d;
+		Position3 pos;
+		float range;
 	};
 
 	// ƒŠƒ\[ƒX“o˜^
@@ -34,8 +40,14 @@ public:
 	// ƒŠƒ\[ƒXˆêÄ“o˜^
 	void RegisterAll();
 
+	void Set3DListenerPos(const Vector3& pos, const Vector3& front, const Vector3& up);
+
+	void Update();
+
 	// ‰¹Œ¹‚ğÄ¶
 	void Play(ResourceManager::SRC src, int play_from_top = TRUE);
+	// 3D‹óŠÔã‚Å‰¹Œ¹‚ğÄ¶
+	void Play3D(ResourceManager::SRC src, const Vector3& pos, float range = 1000.0f, int play_from_top = TRUE);
 	// Ä¶’†‚Ì‰¹Œ¹‚ğ’â~
 	void Stop(ResourceManager::SRC src);
 
@@ -56,10 +68,17 @@ private:
 
 	std::map<ResourceManager::SRC, SOUND_DATA> soundMap_;
 
+	Vector3 listenerPos_;
+	Vector3 listenerFront_;
+	Vector3 listenerUp_;
+
 	float volumeBGM_;
 	float volumeSE_;
 
-	int VolumeMultiplication(float f);
+	// “à•”Ä¶
+	void _Play(std::map<ResourceManager::SRC, SOUND_DATA>::iterator it, int play_from_top = TRUE);
+
+	int SoundVolumeMult(float f);
 
 	void ApplyBGMVolume();
 	void ApplySEVolume();

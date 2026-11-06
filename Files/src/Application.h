@@ -1,6 +1,9 @@
 #pragma once
+#include <memory>
 #include <string>
 #include "Common/Geometry.h"
+
+class RNG;
 
 class Application {
 public:
@@ -28,17 +31,6 @@ public:
 	// 機能使用フラグ
 	static const bool USE_3D_FLAG;
 
-	// リソースファイルパス
-	static const std::string PATH_RESOURCE;
-	static const std::string PATH_BGM;
-	static const std::string PATH_EFFECT;
-	static const std::string PATH_FONT;
-	static const std::string PATH_IMAGE;
-	static const std::string PATH_MODEL;
-	static const std::string PATH_SE;
-	static const std::string PATH_SHADER;
-	static const std::string PATH_TEXT;
-
 	// 初期化
 	bool Init();
 
@@ -54,7 +46,11 @@ public:
 	// 入力解像度のスクリーンを取得
 	int GetPreDrawScreen() const;
 
+	RNG& GetRNGPointer() const;
+
 private:
+	std::shared_ptr<RNG> rng_;
+
 	// ゲームループの離脱フラグ
 	bool exit_ = false;
 

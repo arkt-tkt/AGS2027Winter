@@ -29,10 +29,12 @@ void Player::Draw()
 		Vec3ToVEC(transform_.position + lineCollider_.second),
 		0xff8000u);
 
-	DrawFormatString(200, 200, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
+	const int POS_X = 1200;
+
+	DrawFormatString(POS_X, 400, 0xffffffu, "Velocity: %.3f\n(X: %.3f, Z: %.3f)",
 		velocity_.XZ().Length(), velocity_.x, velocity_.z);
 
-	DrawFormatString(200, 240, 0xffffffu, "Rotation: %.3f, %.3f, %.3f",
+	DrawFormatString(POS_X, 480, 0xffffffu, "Rotation: %.3f, %.3f, %.3f",
 		transform_.rotation.x, transform_.rotation.y, transform_.rotation.z);
 #endif
 
@@ -43,7 +45,7 @@ void Player::Draw()
 
 void Player::DrawUI()
 {
-	DrawFormatString(20, 700, 0xffffffu, "HP %3d", MathUtil::Round(hp_));
+	DrawFormatString(100, 700, 0xffffffu, "HP %3d", MathUtil::Round(hp_));
 
 	wpn_->DrawUI();
 }
@@ -107,6 +109,9 @@ void Player::Move()
 
 	auto dt = scnMng_.GetDeltaTime();
 
+	// –ˆ•b1HP‰ñ•œ
+	hp_ = std::clamp(hp_ + dt, 0.0f, maxHp_);
+
 	// •Ê–¼
 	using tag = InputManager::TAGS;
 
@@ -116,14 +121,23 @@ void Player::Move()
 
 	// ˆÚ“®•ûŒü
 	Vector3 moveDir;
-	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_UP)) moveDir.z++; // ãˆÚ“®‚Ìˆ—
-	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_DOWN)) moveDir.z--; // ‰ºˆÚ“®‚Ìˆ—
-	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT)) moveDir.x--; // ¶ˆÚ“®‚Ìˆ—
-	if (INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT)) moveDir.x++; // ‰EˆÚ“®‚Ìˆ—
 
+	// ãˆÚ“®‚Ìˆ—
+	moveDir.z += INS.CheckNowMap(INPUT_NUM, tag::MOVE_UP);
+	// ‰ºˆÚ“®‚Ìˆ—
+	moveDir.z -= INS.CheckNowMap(INPUT_NUM, tag::MOVE_DOWN);
+	// ¶ˆÚ“®‚Ìˆ—
+	moveDir.x -= INS.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT);
+	// ‰EˆÚ“®‚Ìˆ—
+	moveDir.x += INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT);
 
-	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) && moveDir.XZ().LengthSquare() ?
-		true : false;
+	// ’·‚³‚ð“¾‚é
+	auto len = moveDir.Length();
+	// ³‹K‰»
+	moveDir.Normalize();
+
+	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) && moveDir.XZ().LengthSquare() ? true : false;
+	
 	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
 	const auto MAX_SPD = maxSpeed_ * SPRINT_MULT * dt;
 	Vector3 moveSpeed;
@@ -133,8 +147,9 @@ void Player::Move()
 	{
 		// ˆÚ“®•ûŒü‚ðƒJƒƒ‰‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]
 		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
-		moveSpeed = (quaMat * moveDir).Normalized() * accel_ * dt;
+		moveSpeed = (quaMat * moveDir).Normalized() * len * accel_ * dt;
 
+		// ˆÚ“®•ûŒü‚Æ‘¬“x‚Ì“àÏ‚ðŒvŽZ‚µ‚ÄAŒ¸‘¬—¦‚ð’²®
 		dotRate = Dot(moveSpeed.XZ(), velocity_.XZ()) + 1.0f * 0.5f;
 	}
 
@@ -183,7 +198,7 @@ void Player::AnimationSwitch()
 
 	if (!animation_->IsPlaying(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0))
 	{
-		if (ins.CheckDownMap(INPUT_NUM, tag::RELOAD) || wpn_->GetReloadProg())
+		if (wpn_->GetReloadProg())
 		{
 			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, false);
 		}

@@ -31,11 +31,20 @@ private:
 	virtual ~EnemyManager() {}
 
 public:
+	enum class SOUND_EVENT
+	{
+		FOOTSTEP = 75,
+		CP_ACTIVATE = 2000,
+		GUNFIRE = 4000,
+	};
+
 	void Update();
 	void LateUpdate();
 	void Draw();
 
 	void Spawn();
+	// サウンドイベントを発生、敵を誘導する
+	void TriggerSoundEvent(const Position3& pos, SOUND_EVENT event);
 
 	// 衝突判定を取る相手を追加
 	void AddAwayCollider(std::weak_ptr<Collider3D> col) { awayColliders_.push_back(col); }
@@ -48,7 +57,7 @@ public:
 	Player* GetPlayerPtr() const { return player_.lock().get(); }
 
 private:
-	static constexpr int POOL_SIZE = 3;
+	static constexpr int POOL_SIZE = 12;
 	static constexpr float SPAWN_INTERVAL = 5.0f;
 
 	GameScene* gameScene_;

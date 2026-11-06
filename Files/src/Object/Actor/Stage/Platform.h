@@ -1,5 +1,5 @@
 #pragma once
-#include "ActorBase3D.h"
+#include "../ActorBase3D.h"
 
 class Platform : public ActorBase3D
 {
@@ -14,11 +14,6 @@ private:
 	// 透過させるフレームの番号
 	static constexpr int INVIS_FRAME_ARR[] = {
 		468, 493
-	};
-
-	static constexpr Vector3 PATHFIND_NODE[] =
-	{
-		{ 0, 0, 0 }
 	};
 
 	// スカイドーム

@@ -75,6 +75,19 @@ void EnemyManager::Spawn()
 	}
 }
 
+void EnemyManager::TriggerSoundEvent(const Position3& pos, SOUND_EVENT event)
+{
+	float range = static_cast<float>(event);
+
+	for (auto& cell : active_)
+	{
+		if ((cell->GetTransform().position - pos).LengthSquare() <= range * range)
+		{
+			cell->MemoryPos(pos);
+		}
+	}
+}
+
 void EnemyManager::AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols)
 {
 	for (auto& col : cols)

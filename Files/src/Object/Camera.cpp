@@ -6,6 +6,7 @@
 #include "../Application.h"
 #include "../Common/DxLibUtil.h"
 #include "../Common/MathUtil.h"
+#include "../Manager/AudioManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/ResourceManager.h"
 #include "../Manager/SceneManager.h"
@@ -79,6 +80,11 @@ void Camera::BeforeDraw()
 	SetCameraPositionAndTargetAndUpVec(
 		Vec3ToVEC(finalPos), Vec3ToVEC(finalTarget), VGet(0, 1, 0));
 
+	auto front = (finalTarget - finalPos).Normalized();
+
+	AudioManager::GetInstance().Set3DListenerPos(
+			finalPos, front, Vector3(0, 1, 0));
+
 	// カメラの座標と回転を適用した後、Effekseerとの同期を行う
 	Effekseer_Sync3DSetting();
 }
@@ -88,7 +94,9 @@ void Camera::DebugDraw()
 {
 	using namespace MathUtil;
 
-	DrawFormatString(900, 100, 0xffffff,
+	const int POS_X = 1200;
+
+	DrawFormatString(POS_X, 100, 0xffffff,
 		"Camera: %.1f, %.1f, %.1f\nAngle : %.1f, %.1f, %.1f\nTarget: %.1f, %.1f, %.1f",
 		pos_.x, pos_.y, pos_.z,
 		RadToDeg(angles_.x), RadToDeg(angles_.y), RadToDeg(angles_.z),
@@ -96,11 +104,11 @@ void Camera::DebugDraw()
 
 	if (!followTarget_)
 	{
-		DrawFormatString(900, 160, 0xffffff, "Follow: nil");
+		DrawFormatString(POS_X, 240, 0xffffff, "Follow: nil");
 	}
 	else
 	{
-		DrawFormatString(900, 160, 0xffffff,
+		DrawFormatString(POS_X, 240, 0xffffff,
 			"Follow: %.1f, %.1f, %.1f",
 			followTarget_->position.x, followTarget_->position.y, followTarget_->position.z);
 	}

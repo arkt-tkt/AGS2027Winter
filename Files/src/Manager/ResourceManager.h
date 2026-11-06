@@ -42,22 +42,44 @@ public:
 		IMAGE_TITLE,
 
 		MODEL_STAGE,
-		MODEL_GENERATOR,
 		MODEL_SKYDOME,
+		MODEL_AMMO_CRATE,
+		MODEL_GENERATOR,
 		MODEL_PLAYER,
 		MODEL_ENEMY1,
-		MODEL_WPN_AR_AR15,
-		MODEL_WPN_AR_AR1,
+		MODEL_WPN_AR_STG556,
 
 		ANIME_PL_IDLE,
 		ANIME_PL_RF_IDLE,
 		ANIME_PL_RF_MOVE,
 		ANIME_PL_RF_RELOAD,
 
+		MUSIC_BGM,
+		MUSIC_CP_ACTIVATE_0,
+		MUSIC_CP_ACTIVATE_1,
+		MUSIC_CP_ACTIVATE_2,
+		MUSIC_CP_ACTIVATE_3,
+		MUSIC_CP_ACTIVATE_4,
+
+		SE_FIRE_AR,
+
 		JSON_PATHFIND,
 
 		MAX
 	};
+
+	// リソースファイルパス
+	static const std::string PATH_RESOURCE;
+	static const std::string PATH_SOUND;
+
+	static const std::string PATH_FONT;
+	static const std::string PATH_IMAGE;
+	static const std::string PATH_MODEL;
+	static const std::string PATH_MUSIC;
+	static const std::string PATH_SE;
+	static const std::string PATH_SHADER;
+	static const std::string PATH_TEXT;
+	static const std::string PATH_VE;
 
 	// 初期化
 	void Init();

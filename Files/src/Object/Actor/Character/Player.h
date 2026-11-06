@@ -18,9 +18,11 @@ public:
 	const int& GetPlayerNumber() const { return PLAYER_NUM; }
 	const int& GetInputNumber() const { return INPUT_NUM; }
 
+	WeaponBase* GetEquippedWeaponPtr() const { return wpn_.get(); }
+
 private:
 	static constexpr float PLAYER_SCALE = 0.4f;
-	static constexpr Position3 PLAYER_POSITION_INIT = { 0.0f, 0.0f, 0.0f };
+	static constexpr Position3 PLAYER_POSITION_INIT = { -700, 0, 1700 };
 	static constexpr Position3 PLAYER_POSITION_LOCAL = { 0.0f, 0.0f, 0.0f };
 
 	static constexpr int ROTATABLE_FRAME_INDEX[] = { 2, 3, 4 };

@@ -40,13 +40,15 @@ void ProjectileManager::Draw()
 	}
 }
 
-void ProjectileManager::Create(Projectile::Data dat)
+bool ProjectileManager::Create(Projectile::Data dat)
 {
 	for (auto& cell : pool_) if (!cell->IsAlive())
 	{
 		cell->SetData(dat);
 		cell->Init();
 		active_.push_back(cell.get());
-		return;
+		return true;
 	}
+
+	return false;
 }

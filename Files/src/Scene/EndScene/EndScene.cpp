@@ -30,7 +30,18 @@ void EndScene::Draw()
         message = "工作員: URS-US_026\n";
         message += "ステータス: 作戦行動中に死亡\n";
         message += "\n";
-        message += "ゲームオーバー\n";
+        message += "ゲームオーバー。\n";
+        message += "\n";
+        message += "\n";
+        message += "\n";
+        message += "各決定キーでゲームをやり直します　各キャンセルキーでタイトル画面に戻ります\n";
+    }
+    else if (variable_ >= 1)
+    {
+        message = "工作員: URS-US_026\n";
+        message += "ステータス: 作戦行動中、生存の兆候あり\n";
+        message += "\n";
+        message += "ゲームクリアー。\n";
         message += "\n";
         message += "\n";
         message += "\n";

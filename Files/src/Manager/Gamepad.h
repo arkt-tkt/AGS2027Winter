@@ -152,7 +152,7 @@ public:
 
 private:
 	// スティック入力のデッドゾーン割合
-	static constexpr double DEADZONE_PERCENTILE = 0.25;
+	static constexpr double DEADZONE_PERCENTILE = 0.125;
 	// DirectInputのデッドゾーン実数値
 	static constexpr int DINPUT_DEADZONE = static_cast<int>(DINPUT_STICK_MAX * DEADZONE_PERCENTILE);
 	// XInputのデッドゾーン実数値

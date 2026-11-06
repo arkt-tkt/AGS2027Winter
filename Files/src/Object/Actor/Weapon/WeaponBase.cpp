@@ -1,5 +1,7 @@
 #include "../../../Common/DxLibUtil.h"
 #include "../../../Common/MathUtil.h"
+#include "../../../Manager/AudioManager.h"
+#include "../../../Manager/EnemyManager.h"
 #include "../../../Manager/ProjectileManager.h"
 #include "../../../Manager/ResourceManager.h"
 #include "../../../Manager/SceneManager.h"
@@ -22,7 +24,15 @@ void WeaponBase::Update()
 		if (editData_.reloadTime <= 0.0f)
 		{
 			editData_.reloadTime = 0.0f;
-			editData_.clipSize = baseData_.clipSize;
+			
+			int ammo = editData_.reserve < baseData_.clipSize ?
+				editData_.reserve : baseData_.clipSize;
+
+			int resSub = (std::min)(baseData_.clipSize + 1 - editData_.clipSize, baseData_.clipSize);
+
+			editData_.reserve = (std::max)(editData_.reserve - resSub, 0);
+
+			editData_.clipSize = (std::min)(editData_.clipSize + ammo, baseData_.clipSize + 1);
 		}
 
 		return;
@@ -58,18 +68,16 @@ void WeaponBase::Draw()
 
 void WeaponBase::DrawUI()
 {
-	DrawFormatString(20, 720, 0xffffffu, "AM %3d", editData_.clipSize);
+	DrawFormatString(100, 720, 0xffffffu, "AM %3d/%3d", editData_.clipSize, editData_.reserve);
 }
 
 void WeaponBase::Main()
 {
 	if (editData_.fireRate < baseData_.fireRate ||
-		editData_.reloadTime) return;
+		editData_.reloadTime ||
+		editData_.clipSize == 0) return;
 
-	if (--editData_.clipSize == 0)
-	{
-		Reload();
-	}
+	--editData_.clipSize;
 
 	editData_.fireRate -= baseData_.fireRate;
 
@@ -79,7 +87,12 @@ void WeaponBase::Main()
 	dat.velocity = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized() * baseData_.velocity;
 	dat.damage = editData_.damage;
 
-	ProjectileManager::GetInstance().Create(dat);
+	if (ProjectileManager::GetInstance().Create(dat))
+	{
+		AudioManager::GetInstance().Play(ResourceManager::SRC::SE_FIRE_AR);
+
+		EnemyManager::GetInstance().TriggerSoundEvent(transform_.position, EnemyManager::SOUND_EVENT::GUNFIRE);
+	}
 }
 
 void WeaponBase::Sub()
@@ -95,10 +108,18 @@ void WeaponBase::Alt()
 
 void WeaponBase::Reload()
 {
+	if (editData_.clipSize > baseData_.clipSize ||
+		editData_.reserve == 0) return;
+
 	if (!editData_.reloadTime)
 	{
 		editData_.reloadTime = baseData_.reloadTime;
 	}
+}
+
+void WeaponBase::Refill()
+{
+	editData_.reserve = baseData_.reserve;
 }
 
 float WeaponBase::GetReloadProg() const
@@ -113,9 +134,15 @@ float WeaponBase::GetReloadProg() const
 	}
 }
 
+void WeaponBase::InitParam()
+{
+	++editData_.clipSize;
+	editData_.reloadTime = 0.0f;
+}
+
 void WeaponBase::InitModel()
 {
-	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_WPN_AR_AR1);
+	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_WPN_AR_STG556);
 	transform_.scale = 0.04f;
 	transform_.position = 0.0f;
 	transform_.localPosition = Position3(-1, -1, 10);

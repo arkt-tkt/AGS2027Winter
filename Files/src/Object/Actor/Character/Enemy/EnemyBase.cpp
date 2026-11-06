@@ -2,6 +2,8 @@
 #include "../../../../Common/DxLibUtil.h"
 #include "../../../../Manager/EnemyManager.h"
 #include "../../../../Manager/SceneManager.h"
+#include "../../../../Utility/RNG.h"
+#include "../../../../Application.h"
 #include "../Player.h"
 #include "EnemyBase.h"
 
@@ -42,6 +44,11 @@ void EnemyBase::DrawUI()
 {
 }
 
+void EnemyBase::MemoryPos(const Position3& pos)
+{
+	chasePos_ = pos;
+}
+
 void EnemyBase::InitParam()
 {
 	isAlive_ = true;
@@ -52,9 +59,14 @@ void EnemyBase::InitParam()
 
 void EnemyBase::InitModel()
 {
+	Position3 pos;
+	pos.x = Application::GetInstance().GetRNGPointer().GetRandReal(-1600.0f, 1600.0f);
+	pos.y = 800.0f;
+	pos.z = Application::GetInstance().GetRNGPointer().GetRandReal(-1600.0f, 1600.0f);
+
 	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_ENEMY1);
 	transform_.scale = SCALE;
-	transform_.position = Position3(0, 800, 0);
+	transform_.position = pos;
 	transform_.localRotation.y = DX_PI_F;
 
 	colliders_.emplace_back(

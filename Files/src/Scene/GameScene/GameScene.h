@@ -1,6 +1,6 @@
 #include <memory>
 #include "../SceneBase.h"
-#include "../../Object/Actor/Stage.h"
+#include "../../Object/Actor/Stage/Stage.h"
 
 class Player;
 
@@ -15,16 +15,18 @@ public:
     bool Release() override;
 
 private:
-    static constexpr float MIN_Z_POS = -1000.0f;
-
-    static constexpr float LOSS_STABILITY_PER_SECOND = -0.675f;
-    static constexpr float GAIN_STABILITY_PER_SECOND = 0.2f;
+    static constexpr float LOSS_STABILITY_PER_SECOND = -0.5f;
+    static constexpr float GAIN_STABILITY_PER_SECOND = 0.15f;
     static constexpr float MAX_STABILITY = 100.0f;
+
+    static constexpr float SURVIVAL_TIME = 240.0f;
 
     std::shared_ptr<Player> player_;
     std::unique_ptr<Stage> stage_;
 
     float stability_ = MAX_STABILITY;
     int activeDevice_ = 0;
+
+    float surviveTime_ = 0.0f;
 
 };

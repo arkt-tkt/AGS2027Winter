@@ -12,16 +12,16 @@ Resource::Resource(TYPE type, const std::string& path)
 	switch (type_)
 	{
 	case Resource::TYPE::IMAGE:
-		path_ = Application::PATH_IMAGE + path;
+		path_ = ResourceManager::PATH_IMAGE + path;
 		break;
 	case Resource::TYPE::MODEL:
-		path_ = Application::PATH_MODEL + path;
+		path_ = ResourceManager::PATH_MODEL + path;
 		break;
 	case Resource::TYPE::EFFEKSEER:
-		path_ = Application::PATH_EFFECT + path;
+		path_ = ResourceManager::PATH_VE + path;
 		break;
 	case Resource::TYPE::JSON:
-		path_ = Application::PATH_TEXT + path;
+		path_ = ResourceManager::PATH_TEXT + path;
 		break;
 	}
 }
@@ -29,7 +29,7 @@ Resource::Resource(TYPE type, const std::string& path)
 Resource::Resource(TYPE type, const std::string& path, int fontEdge)
 {
 	type_ = type;
-	path_ = Application::PATH_FONT + path;
+	path_ = ResourceManager::PATH_FONT + path;
 
 	fontEdge_ = fontEdge;
 }
@@ -37,7 +37,7 @@ Resource::Resource(TYPE type, const std::string& path, int fontEdge)
 Resource::Resource(TYPE type, const std::string& path, const std::string& fontName, int fontSize, int fontThick, int fontEdge)
 {
 	type_ = type;
-	path_ = Application::PATH_FONT + path;
+	path_ = ResourceManager::PATH_FONT + path;
 	fontName_ = fontName;
 
 	fontSize_ = fontSize;
@@ -48,7 +48,7 @@ Resource::Resource(TYPE type, const std::string& path, const std::string& fontNa
 Resource::Resource(TYPE type, const std::string& path, int numX, int numY, int sizeX, int sizeY)
 {
 	type_ = type;
-	path_ = Application::PATH_IMAGE + path;
+	path_ = ResourceManager::PATH_IMAGE + path;
 
 	numX_ = numX;
 	numY_ = numY;
@@ -63,10 +63,10 @@ Resource::Resource(TYPE type, const std::string& path, float volumeMult, bool pl
 	switch (type_)
 	{
 	case Resource::TYPE::MUSIC:
-		path_ = Application::PATH_BGM + path;
+		path_ = ResourceManager::PATH_MUSIC + path;
 		break;
 	case Resource::TYPE::SE:
-		path_ = Application::PATH_SE + path;
+		path_ = ResourceManager::PATH_SE + path;
 		break;
 	}
 
@@ -79,7 +79,7 @@ Resource::Resource(TYPE type, const std::string& path, float volumeMult, bool pl
 Resource::Resource(TYPE type, const std::string& path, unsigned int constBufferSize)
 {
 	type_ = type;
-	path_ = Application::PATH_SHADER + path;
+	path_ = ResourceManager::PATH_SHADER + path;
 
 	constBufferSize_ = constBufferSize;
 }

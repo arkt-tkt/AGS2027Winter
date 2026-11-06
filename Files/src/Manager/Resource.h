@@ -67,7 +67,7 @@ public:
 	std::string path_ = ""; // リソースの読み込み先
 	int handleId_ = -1; // リソースのハンドルID
 
-	// AUDIO用
+	// MUSIC/SE用
 	float volumeMult_ = 0; // 音量
 	int playType_ = 0; // 再生タイプ
 

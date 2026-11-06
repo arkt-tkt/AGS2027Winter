@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <DxLib.h>
+#include "../Common/DxLibUtil.h"
 #include "../Common/MathUtil.h"
 #include "AudioManager.h"
 
@@ -43,10 +44,10 @@ void AudioManager::Register(ResourceManager::SRC src)
 	switch ((*it).second.type_)
 	{
 	case Resource::TYPE::MUSIC:
-		ChangeVolumeSoundMem(VolumeMultiplication(volumeBGM_ * data.volMult), data.handle);
+		ChangeVolumeSoundMem(SoundVolumeMult(volumeBGM_ * data.volMult), data.handle);
 		break;
 	case Resource::TYPE::SE:
-		ChangeVolumeSoundMem(VolumeMultiplication(volumeSE_ * data.volMult), data.handle);
+		ChangeVolumeSoundMem(SoundVolumeMult(volumeSE_ * data.volMult), data.handle);
 		break;
 	}
 
@@ -80,23 +81,72 @@ void AudioManager::RegisterAll()
 	ApplySEVolume();
 }
 
+void AudioManager::Set3DListenerPos(const Vector3& pos, const Vector3& front, const Vector3& up)
+{
+	Set3DSoundListenerPosAndFrontPosAndUpVec(Vec3ToVEC(pos), Vec3ToVEC(front), Vec3ToVEC(up));
+
+	listenerPos_ = pos;
+	listenerFront_ = front;
+	listenerUp_ = up;
+}
+
+void AudioManager::Update()
+{
+	for (auto& sound : soundMap_)
+	{
+		if (sound.second.use3d)
+		{
+			if (CheckSoundMem(sound.second.handle))
+			{
+				bool isLeft = false;
+
+				auto right = Cross(listenerFront_, listenerUp_);
+
+				auto vec = (sound.second.pos - listenerPos_).Normalized();
+
+				auto pan = MathUtil::Round(Dot(vec, right) * 255.0f);
+
+				ChangePanSoundMem(sound.second.handle, pan);
+
+				auto len = (sound.second.pos - listenerPos_).Length();
+
+				auto vol = (std::max)((sound.second.range - len) / sound.second.range, 0.0f);
+
+				ChangeVolumeSoundMem(SoundVolumeMult(volumeBGM_ * sound.second.volMult * vol), sound.second.handle);
+			}
+			else
+			{
+				ChangePanSoundMem(sound.second.handle, 0);
+
+				sound.second.use3d = false;
+				sound.second.pos = Vector3();
+				sound.second.range = 0.0f;
+			}
+		}
+	}
+}
+
 void AudioManager::Play(ResourceManager::SRC src, int play_from_top)
 {
 	auto it = soundMap_.find(src);
 	if (it == soundMap_.end()) return;
 
-	switch ((*it).second.type)
-	{
-	case Resource::TYPE::MUSIC:
-		if (!CheckSoundMem((*it).second.handle))
-		{
-			PlaySoundMem((*it).second.handle, (*it).second.playType, play_from_top);
-		}
-		break;
-	case Resource::TYPE::SE:
-		PlaySoundMem((*it).second.handle, (*it).second.playType);
-		break;
-	}
+	_Play(it, play_from_top);
+}
+
+void AudioManager::Play3D(ResourceManager::SRC src, const Vector3& pos, float range, int play_from_top)
+{
+	auto it = soundMap_.find(src);
+	if (it == soundMap_.end()) return;
+
+	//Set3DPositionSoundMem(Vec3ToVEC(pos), (*it).second.handle);
+	//Set3DRadiusSoundMem(range, (*it).second.handle);
+
+	(*it).second.use3d = true;
+	(*it).second.pos = pos;
+	(*it).second.range = range;
+
+	_Play(it, play_from_top);
 }
 
 void AudioManager::Stop(ResourceManager::SRC src)
@@ -154,7 +204,27 @@ void AudioManager::SetSEVolumeLevel(int level)
 	ApplySEVolume();
 }
 
-int AudioManager::VolumeMultiplication(float f)
+void AudioManager::_Play(std::map<ResourceManager::SRC, SOUND_DATA>::iterator it, int play_from_top)
+{
+	switch ((*it).second.type)
+	{
+	case Resource::TYPE::MUSIC:
+		if (CheckSoundMem((*it).second.handle))
+		{
+			PlaySoundMem((*it).second.handle, (*it).second.playType, FALSE);
+		}
+		else
+		{
+			PlaySoundMem((*it).second.handle, (*it).second.playType, play_from_top);
+		}
+		break;
+	case Resource::TYPE::SE:
+		PlaySoundMem((*it).second.handle, (*it).second.playType);
+		break;
+	}
+}
+
+int AudioManager::SoundVolumeMult(float f)
 {
 	return int(VOLUME_MULT * f);
 }
@@ -165,7 +235,7 @@ void AudioManager::ApplyBGMVolume()
 	{
 		if (pair.second.type == Resource::TYPE::MUSIC)
 		{
-			ChangeVolumeSoundMem(VolumeMultiplication(volumeBGM_ * pair.second.volMult), pair.second.handle);
+			ChangeVolumeSoundMem(SoundVolumeMult(volumeBGM_ * pair.second.volMult), pair.second.handle);
 		}
 	}
 }
@@ -176,7 +246,7 @@ void AudioManager::ApplySEVolume()
 	{
 		if (pair.second.type == Resource::TYPE::SE)
 		{
-			ChangeVolumeSoundMem(VolumeMultiplication(volumeSE_ * pair.second.volMult), pair.second.handle);
+			ChangeVolumeSoundMem(SoundVolumeMult(volumeSE_ * pair.second.volMult), pair.second.handle);
 		}
 	}
 }

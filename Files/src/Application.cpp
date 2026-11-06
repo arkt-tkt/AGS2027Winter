@@ -7,19 +7,10 @@
 #include "Manager/ResourceManager.h"
 #include "Manager/SceneManager.h"
 #include "Manager/ScoreManager.h"
+#include "Utility/RNG.h"
 #include "Application.h"
 
 Application* Application::instance_ = nullptr;
-
-const std::string Application::PATH_RESOURCE = "Data/";
-const std::string Application::PATH_BGM = Application::PATH_RESOURCE + "BGM/";
-const std::string Application::PATH_EFFECT = Application::PATH_RESOURCE + "Effect/";
-const std::string Application::PATH_FONT = Application::PATH_RESOURCE + "Font/";
-const std::string Application::PATH_IMAGE = Application::PATH_RESOURCE + "Image/";
-const std::string Application::PATH_MODEL = Application::PATH_RESOURCE + "Model/";
-const std::string Application::PATH_SE = Application::PATH_RESOURCE + "SE/";
-const std::string Application::PATH_SHADER = Application::PATH_RESOURCE + "Shader/";
-const std::string Application::PATH_TEXT = Application::PATH_RESOURCE + "Text/";
 
 const bool Application::USE_3D_FLAG = false;
 
@@ -33,14 +24,18 @@ bool Application::Init()
 
 	preDrawScreen_ = MakeScreen(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, TRUE);
 
+	rng_ = std::make_shared<RNG>();
+
 	// ResourceManager
 	ResourceManager::CreateInstance();
 	ResourceManager::GetInstance().Init();
+	ResourceManager::GetInstance().LoadAllResourcesAsync();
 
 	ChangeFontFromHandle(ResourceManager::GetInstance().Load(ResourceManager::SRC::FONT_UI).handleId_);
 
 	// AudioManager
 	AudioManager::CreateInstance();
+	AudioManager::GetInstance().RegisterAll();
 
 	// FPSManager
 	FPSManager::CreateInstance(GetRefreshRate());
@@ -113,6 +108,11 @@ void Application::Exit()
 int Application::GetPreDrawScreen() const
 {
 	return preDrawScreen_;
+}
+
+RNG& Application::GetRNGPointer() const
+{
+	return *rng_;
 }
 
 bool Application::InitSystem()
@@ -191,6 +191,8 @@ void Application::Update()
 		InputManager::GetInstance().CheckDownMap(0, InputManager::TAGS::DEBUG));
 
 	SceneManager::GetInstance().Update();
+
+	AudioManager::GetInstance().Update();
 
 	ScoreManager::GetInstance().Update();
 }

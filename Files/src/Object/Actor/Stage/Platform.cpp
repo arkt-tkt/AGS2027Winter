@@ -1,12 +1,12 @@
 #include <DxLib.h>
 #include <cstdio>
-#include "../../Common/DxLibUtil.h"
-#include "../../Common/Geometry.h"
-#include "../../Common/MathUtil.h"
-#include "../../Manager/ProjectileManager.h"
-#include "../../Manager/ResourceManager.h"
-#include "../../Manager/SceneManager.h"
-#include "../../Manager/InputManager.h"
+#include "../../../Common/DxLibUtil.h"
+#include "../../../Common/Geometry.h"
+#include "../../../Common/MathUtil.h"
+#include "../../../Manager/ProjectileManager.h"
+#include "../../../Manager/ResourceManager.h"
+#include "../../../Manager/SceneManager.h"
+#include "../../../Manager/InputManager.h"
 #include "Platform.h"
 
 Platform::Platform()

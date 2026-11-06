@@ -32,7 +32,7 @@ public:
 	void Update();
 	void Draw();
 
-	void Create(Projectile::Data);
+	bool Create(Projectile::Data);
 	const std::vector<Projectile*>& GetActives() { return active_; }
 
 private:

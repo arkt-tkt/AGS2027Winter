@@ -25,7 +25,7 @@
     <ClCompile Include="src\Utility\Utility.cpp" />
     <ClCompile Include="src\Shader\PostEffect.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
-    <ClCompile Include="src\Object\Actor\Platform.cpp" />
+    <ClCompile Include="src\Object\Actor\Stage\Platform.cpp" />
     <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
     <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
@@ -33,12 +33,14 @@
     <ClCompile Include="src\Object\Actor\Projectile\Projectile.cpp" />
     <ClCompile Include="src\Object\Actor\Character\Enemy\EnemyBase.cpp" />
     <ClCompile Include="src\Manager\EnemyManager.cpp" />
-    <ClCompile Include="src\Object\Actor\CapturePoint.cpp" />
+    <ClCompile Include="src\Object\Actor\Stage\CapturePoint.cpp" />
     <ClCompile Include="src\Utility\AutoText.cpp" />
-    <ClCompile Include="src\Object\Actor\Stage.cpp" />
+    <ClCompile Include="src\Object\Actor\Stage\Stage.cpp" />
     <ClCompile Include="src\Utility\Debug.cpp" />
     <ClCompile Include="src\Algorithm\PathFind.cpp" />
     <ClCompile Include="src\Scene\EndScene\EndScene.cpp" />
+    <ClCompile Include="src\Utility\RNG.cpp" />
+    <ClCompile Include="src\Object\Actor\Stage\Resupply.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -66,7 +68,7 @@
     <ClInclude Include="src\Utility\Utility.h" />
     <ClInclude Include="src\Shader\PostEffect.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
-    <ClInclude Include="src\Object\Actor\Platform.h" />
+    <ClInclude Include="src\Object\Actor\Stage\Platform.h" />
     <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
@@ -74,12 +76,14 @@
     <ClInclude Include="src\Object\Actor\Projectile\Projectile.h" />
     <ClInclude Include="src\Object\Actor\Character\Enemy\EnemyBase.h" />
     <ClInclude Include="src\Manager\EnemyManager.h" />
-    <ClInclude Include="src\Object\Actor\CapturePoint.h" />
+    <ClInclude Include="src\Object\Actor\Stage\CapturePoint.h" />
     <ClInclude Include="src\Utility\AutoText.h" />
-    <ClInclude Include="src\Object\Actor\Stage.h" />
+    <ClInclude Include="src\Object\Actor\Stage\Stage.h" />
     <ClInclude Include="src\Utility\Debug.h" />
     <ClInclude Include="src\Algorithm\PathFind.h" />
     <ClInclude Include="src\Scene\EndScene\EndScene.h" />
+    <ClInclude Include="src\Utility\RNG.h" />
+    <ClInclude Include="src\Object\Actor\Stage\Resupply.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

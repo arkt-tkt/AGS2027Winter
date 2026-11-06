@@ -9,9 +9,9 @@ public:
 	{
 		float damage = 36;
 		int clipSize = 30;
-		int reserve = 120;
+		int reserve = 150;
 		float fireRate = 0.1f;
-		float velocity = 3000.0f;
+		float velocity = 5000.0f;
 		float reloadTime = 2.5f;
 		float moveSpeedMult = 1.0f;
 	};
@@ -28,6 +28,8 @@ public:
 	virtual void Alt();
 	virtual void Reload();
 
+	void Refill();
+
 	void SetParentTransform(Transform3D& parent) { parent_ = &parent; }
 	float GetReloadProg() const;
 
@@ -39,7 +41,7 @@ protected:
 	WeaponData baseData_;
 	WeaponData editData_;
 
-	void InitParam() override {}
+	void InitParam() override;
 	void InitModel() override;
 	void InitAnim() override {}
 

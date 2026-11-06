@@ -103,9 +103,9 @@ void Gamepad::Update()
 		else if (xIn.ThumbRX > XINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_R] = (int)std::abs(xIn.ThumbRX * XINPUT_STICK_MULT);
 		// YŽ²
-		if (xIn.ThumbRY < -XINPUT_DEADZONE)
+		if (xIn.ThumbRY > -XINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_U] = (int)std::abs(xIn.ThumbRY * XINPUT_STICK_MULT);
-		else if (xIn.ThumbRY > XINPUT_DEADZONE)
+		else if (xIn.ThumbRY < XINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_D] = (int)std::abs(xIn.ThumbRY * XINPUT_STICK_MULT);
 	}
 
@@ -292,7 +292,7 @@ int Gamepad::GetPadTypeModel() const
 		break;
 	}
 
-	return 0;
+	return static_cast<int>(ret);
 }
 
 bool Gamepad::IsNintendoJoypad() const

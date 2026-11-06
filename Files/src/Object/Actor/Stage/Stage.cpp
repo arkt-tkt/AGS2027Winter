@@ -1,6 +1,7 @@
+#include "../../../Algorithm/PathFind.h"
 #include "CapturePoint.h"
-#include "../../Algorithm/PathFind.h"
 #include "Platform.h"
+#include "Resupply.h"
 #include "Stage.h"
 
 Stage::Stage(GameScene* ptr)
@@ -17,7 +18,7 @@ void Stage::Init()
 	capturePoints_.reserve(CAPTURE_POINT_NUM);
 	for (int i = 0; i < CAPTURE_POINT_NUM; ++i)
 	{
-		auto capPoint = std::make_shared<CapturePoint>(this);
+		auto capPoint = std::make_shared<CapturePoint>(this, i);
 		capPoint->Init();
 		capPoint->transform_.position = CAPTURE_POINT_POS[i];
 		capPoint->AddAwayColliders(platform_->GetTypedColliders(Collider3D::TYPE::STAGE));
@@ -25,6 +26,10 @@ void Stage::Init()
 	}
 
 	pathFind_ = std::make_shared<PathFind>();
+
+	resupply_ = std::make_shared<Resupply>(this);
+	resupply_->AddAwayColliders(platform_->GetTypedColliders(Collider3D::TYPE::STAGE));
+	resupply_->Init();
 }
 
 void Stage::Update()
@@ -35,20 +40,24 @@ void Stage::Update()
 	{
 		capPoint->Update();
 	}
+
+	resupply_->Update();
 }
 
 void Stage::Draw()
 {
 	platform_->Draw();
 
+#ifdef _DEBUG
+	pathFind_->DrawDebug();
+#endif
+
 	for (auto& capPoint : capturePoints_)
 	{
 		capPoint->Draw();
 	}
 
-#ifdef _DEBUG
-	pathFind_->DrawDebug();
-#endif
+	resupply_->Draw();
 }
 
 void Stage::DrawUI()
@@ -57,6 +66,8 @@ void Stage::DrawUI()
 	{
 		capPoint->DrawUI();
 	}
+
+	resupply_->DrawUI();
 }
 
 std::vector<std::shared_ptr<Collider3D>> Stage::GetColliders() const
@@ -73,6 +84,9 @@ std::vector<std::shared_ptr<Collider3D>> Stage::GetColliders() const
 		auto capColliders = capPoint->GetTypedColliders(GET_COL_TYPE);
 		ret.insert(ret.end(), capColliders.begin(), capColliders.end());
 	}
+
+	auto resupColliders = resupply_->GetTypedColliders(GET_COL_TYPE);
+	ret.insert(ret.end(), resupColliders.begin(), resupColliders.end());
 
 	return ret;
 }

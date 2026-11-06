@@ -1,5 +1,5 @@
 #pragma once
-#include "Character/CharacterBase3D.h"
+#include "../Character/CharacterBase3D.h"
 
 class Player;
 class Stage;
@@ -12,7 +12,9 @@ public:
 	static constexpr float INTERACT_TIME = 1.0f;
 
 	// コンストラクタ
-	CapturePoint(Stage* ptr);
+	CapturePoint(Stage* ptr, int index);
+	// デストラクタ
+	~CapturePoint();
 
 	// 描画処理
 	void Draw() override;
@@ -34,17 +36,20 @@ private:
 	static constexpr unsigned int COLOR_STANDBY = 0x808080u;
 	static constexpr unsigned int COLOR_ACTIVE = 0xffff00u;
 
+	const int INDEX;
+
 	Stage& stage_;
+
 	float activeTimer_ = 0.0f;
 	float interactTimer_ = 0.0f;
 	bool inRange_ = false;
 
 	// パラメータ初期化
-	void InitParam() override;
+	void InitParam() override {}
 	// モデル初期化
 	void InitModel() override;
 	// アニメ初期化
-	void InitAnim() override;
+	void InitAnim() override {}
 
 	// 移動処理
 	void Move() override;

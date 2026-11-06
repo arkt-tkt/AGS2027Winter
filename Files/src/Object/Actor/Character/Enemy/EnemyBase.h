@@ -17,6 +17,8 @@ public:
 	void Draw() override;
 	void DrawUI() override;
 
+	void MemoryPos(const Position3& pos);
+
 	float GetDamage() const { return damage_; }
 
 private:
@@ -26,7 +28,7 @@ private:
 	EnemyManager& enmMng_;
 
 	// UŒ‚‚Å—^‚¦‚éƒ_ƒ[ƒW—Ê
-	float damage_ = 5.0f;
+	float damage_ = 20.0f;
 	// •Ç‚É“–‚½‚Á‚½‚©
 	bool hitWall_ = false;
 
