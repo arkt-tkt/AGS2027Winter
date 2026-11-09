@@ -62,7 +62,7 @@ void GameScene::Update()
 
         if (stability_ < 15.0f)
         {
-            auto spatialDmg = (15.0f - stability_) / 3.0f;
+            auto spatialDmg = (15.0f - stability_) / 3.0f * dt;
 
             player_->CalcHP(-spatialDmg);
         }

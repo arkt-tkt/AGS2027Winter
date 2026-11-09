@@ -5,6 +5,8 @@
 #include "../../../Manager/ProjectileManager.h"
 #include "../../../Manager/ResourceManager.h"
 #include "../../../Manager/SceneManager.h"
+#include "../../../Utility/RNG.h"
+#include "../../../Application.h"
 #include "../Projectile/Projectile.h"
 #include "WeaponBase.h"
 
@@ -77,14 +79,55 @@ void WeaponBase::Main()
 		editData_.reloadTime ||
 		editData_.clipSize == 0) return;
 
+	// 弾-1
 	--editData_.clipSize;
 
+	// 発射クールタイム
 	editData_.fireRate -= baseData_.fireRate;
+
+	Vector3 dir = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized();
+
+	{
+		// 0.0 ～ 1.0 の一様実数分布
+		auto& RNG = Application::GetInstance().GetRNGPointer();
+
+		// 1. 立体角的に均一に分布させるための z (cos(theta)) の計算
+		// [cosMaxAngle, 1.0] の範囲から線形に選ぶことで、円錐内に均等に点が散る
+		auto cosAngle = std::cos(baseData_.spread);
+		float z = cosAngle + (1.0f - cosAngle) * RNG.GetRandReal();
+		float sinTheta = std::sqrt(1.0f - z * z);
+
+		// 2. 方位角 phi を 0 から 2*PI の間でランダムに決定
+		float phi = 2.0f * MathUtil::PI_F * RNG.GetRandReal();;
+		float x = sinTheta * std::cos(phi);
+		float y = sinTheta * std::sin(phi);
+
+		// 3. 基準ベクトル `dir` を中心としたローカル座標系（直交基底 TBN）を作成
+		Vector3 up = { 0.0f, 1.0f, 0.0f };
+		// 基準ベクトルがワールドの真上・真下を向いている場合のフォールバック
+		if (std::abs(Dot(dir, up)) > 0.9999f)
+		{
+			up = { 0.0f, 0.0f, 1.0f };
+		}
+
+		Vector3 tangent = (Cross(up, dir)).Normalized();
+		Vector3 bitangent = Cross(dir, tangent);
+
+		// 4. ローカル座標 (x, y, z) をワールド座標系の基準ベクトル向きに変形
+		// ローカルの Z軸が dir、X軸が tangent、Y軸が bitangent に対応する
+		Vector3 result = {
+			tangent.x * x + bitangent.x * y + dir.x * z,
+			tangent.y * x + bitangent.y * y + dir.y * z,
+			tangent.z * x + bitangent.z * y + dir.z * z
+		};
+
+		dir = result.Normalized();
+	}
 
 	Projectile::Data dat;
 	dat.type = Collider3D::TYPE::PROJECTILE_PLAYER;
 	dat.position = transform_.position;
-	dat.velocity = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized() * baseData_.velocity;
+	dat.velocity = dir * baseData_.velocity;
 	dat.damage = editData_.damage;
 
 	if (ProjectileManager::GetInstance().Create(dat))

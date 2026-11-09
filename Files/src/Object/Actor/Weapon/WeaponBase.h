@@ -10,6 +10,7 @@ public:
 		float damage = 36;
 		int clipSize = 30;
 		int reserve = 150;
+		float spread = 0.01f;
 		float fireRate = 0.1f;
 		float velocity = 5000.0f;
 		float reloadTime = 2.5f;
