@@ -1,5 +1,6 @@
 #include "../../../Common/DxLibUtil.h"
 #include "../../../Common/MathUtil.h"
+#include "../../../Manager/EnemyManager.h"
 #include "../../../Manager/ProjectileManager.h"
 #include "../../../Manager/SceneManager.h"
 #include "CharacterBase3D.h"
@@ -20,7 +21,7 @@ void CharacterBase3D::Update()
 
 	// 衝突判定
 	{
-		if (CollisionCapsule())
+		if (CollisionStage())
 		{
 			CollisionMove();
 		}
@@ -80,7 +81,7 @@ void CharacterBase3D::Jump()
 	isLanding_ = false;
 }
 
-bool CharacterBase3D::CollisionCapsule()
+bool CharacterBase3D::CollisionStage()
 {
 	bool ret = false;
 
@@ -123,6 +124,7 @@ bool CharacterBase3D::CollisionCapsule()
 				VDot(hit.Normal, VGet(0, 1, 0)) >= 0.8f || // 衝突対象が床と思しき場合
 				VDot(hit.Normal, Vec3ToVEC(velocity_)) >= 0.5f) // 衝突対象の法線が移動方向と近しい場合
 			{
+				// 無視
 				continue;
 			}
 
@@ -251,31 +253,45 @@ void CharacterBase3D::CollisionProjectile()
 
 		auto& actProj = ProjectileManager::GetInstance().GetActives();
 
+		C_TY awayType;
 		if (cType == C_TY::ENEMY)
 		{
-			for (auto& p : actProj)
+			awayType = C_TY::PROJECTILE_PLAYER;
+		}
+		else
+		{
+			awayType = C_TY::PROJECTILE_ENEMY;
+		}
+
+		for (auto& p : actProj)
+		{
+			if (!p->IsAlive()) continue;
+
+			for (auto& pCol : p->GetTypedColliders(awayType))
 			{
-				for (auto& pCol : p->GetTypedColliders(C_TY::PROJECTILE_PLAYER))
+				auto& pDat = pCol->GetColliderData();
+
+				auto hits = MV1CollCheck_Capsule(
+					col->GetColliderData().modelId, -1,
+					Vec3ToVEC(pDat.pos1),
+					Vec3ToVEC(pDat.pos2),
+					pDat.r);
+
+				if (hits.HitNum)
 				{
-					auto& pDat = pCol->GetColliderData();
+					// 衝突したらHPを減らす
+					float dMult = 1.0f;
 
-					auto hits = MV1CollCheck_Capsule(
-						col->GetColliderData().modelId, -1,
-						Vec3ToVEC(pDat.pos1),
-						Vec3ToVEC(pDat.pos2),
-						pDat.r);
-
-					if (hits.HitNum)
+					// 敵専用
+					if (cType == C_TY::ENEMY)
 					{
-						// 衝突したらHPを減らす
-						float dMult = 1.0f;
-
+						// フレーム番号5 = 頭
 						auto headPos = MV1GetFramePosition(transform_.modelId, 5);
 
 						// 弱点ヒット時の判定(後で拡張するかも)
 						for (int i = 0; i < hits.HitNum; ++i)
 						{
-							// フレーム番号5 = 頭
+							// 頭周辺に当たった場合
 							if (HitCheck_Sphere_Capsule(headPos, 6.0f,
 								Vec3ToVEC(pDat.pos1), Vec3ToVEC(pDat.pos2), pDat.r))
 							{
@@ -283,46 +299,18 @@ void CharacterBase3D::CollisionProjectile()
 								break;
 							}
 						}
-
-						CalcHP(-p->GetData().damage * dMult);
-
-						p->Hit();
-
-						if (!p->IsAlive()) break;
 					}
 
-					MV1CollResultPolyDimTerminate(hits);
+					CalcHP(-p->GetData().damage * dMult);
+
+					p->Hit();
 
 					if (!p->IsAlive()) break;
 				}
-			}
-		}
-		else
-		{
-			for (auto& p : actProj)
-			{
-				for (auto& pCol : p->GetTypedColliders(C_TY::PROJECTILE_ENEMY))
-				{
-					auto hits = MV1CollCheck_Capsule(
-						col->GetColliderData().modelId, -1,
-						Vec3ToVEC(pCol->GetColliderData().pos1),
-						Vec3ToVEC(pCol->GetColliderData().pos2),
-						pCol->GetColliderData().r);
 
-					if (hits.HitNum)
-					{
-						// 衝突したらHPを減らす
-						CalcHP(-p->GetData().damage);
+				MV1CollResultPolyDimTerminate(hits);
 
-						p->Hit();
-
-						if (!p->IsAlive()) break;
-					}
-
-					MV1CollResultPolyDimTerminate(hits);
-
-					if (!p->IsAlive()) break;
-				}
+				if (!p->IsAlive()) break;
 			}
 		}
 	}

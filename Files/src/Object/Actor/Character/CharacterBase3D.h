@@ -44,7 +44,7 @@ protected:
 	// 1秒あたりの最大移動速度
 	float maxSpeed_ = 120.0f;
 	// ダッシュ倍率
-	float sprintMult_ = 1.5f;
+	float sprintMult_ = 1.8f;
 	// 加速力
 	float accel_ = 12.0f;
 	// 減速力
@@ -67,9 +67,9 @@ protected:
 	// アニメーション変更
 	virtual void AnimationSwitch() {}
 
-	// カプセルコライダの衝突判定
-	bool CollisionCapsule();
-	// カプセルコライダ衝突時のみ発生する移動処理
+	// ステージに対するカプセルコライダの衝突判定
+	bool CollisionStage();
+	// CollisionStage() = trueの場合のみ発生する移動処理
 	virtual void CollisionMove() {}
 	// 重力方向の衝突判定
 	void CollisionGravity();

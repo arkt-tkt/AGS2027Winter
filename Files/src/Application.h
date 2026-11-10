@@ -46,6 +46,7 @@ public:
 	// 入力解像度のスクリーンを取得
 	int GetPreDrawScreen() const;
 
+	// 乱数生成器の参照ポインタを取得
 	RNG& GetRNGPointer() const;
 
 private:

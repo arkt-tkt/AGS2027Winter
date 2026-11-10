@@ -53,7 +53,7 @@ void EnemyBase::InitParam()
 {
 	isAlive_ = true;
 	maxHp_ = hp_ = 150;
-	maxSpeed_ = 132.0f;
+	maxSpeed_ *= 1.4f;
 	fullSpeedParallel_ = true;
 }
 

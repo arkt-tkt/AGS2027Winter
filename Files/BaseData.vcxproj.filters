@@ -41,6 +41,7 @@
     <ClCompile Include="src\Scene\EndScene\EndScene.cpp" />
     <ClCompile Include="src\Utility\RNG.cpp" />
     <ClCompile Include="src\Object\Actor\Stage\Resupply.cpp" />
+    <ClCompile Include="src\Scene\PauseLayer\PauseLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Manager\ScoreManager.h" />
@@ -83,7 +84,7 @@
     <ClInclude Include="src\Algorithm\PathFind.h" />
     <ClInclude Include="src\Scene\EndScene\EndScene.h" />
     <ClInclude Include="src\Utility\RNG.h" />
-    <ClInclude Include="src\Object\Actor\Stage\Resupply.h" />
+    <ClInclude Include="src\Scene\PauseLayer\PauseLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />

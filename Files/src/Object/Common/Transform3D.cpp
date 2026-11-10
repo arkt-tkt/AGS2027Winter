@@ -30,7 +30,6 @@ Transform3D::Transform3D(int model_id)
 
 Transform3D::~Transform3D()
 {
-	MV1DeleteModel(modelId);
 }
 
 void Transform3D::Update()
@@ -65,4 +64,6 @@ void Transform3D::Release()
 {
 	position = position2nd = localPosition = {};
 	rotation = localRotation = {};
+
+	MV1DeleteModel(modelId);
 }

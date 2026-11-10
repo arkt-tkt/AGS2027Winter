@@ -15,8 +15,8 @@ public:
     bool Release() override;
 
 private:
-    static constexpr float LOSS_STABILITY_PER_SECOND = -0.5f;
-    static constexpr float GAIN_STABILITY_PER_SECOND = 0.15f;
+    static constexpr float LOSS_STABILITY_PER_SECOND = -1.0f;
+    static constexpr float GAIN_STABILITY_PER_SECOND = -LOSS_STABILITY_PER_SECOND / 3.3f;
     static constexpr float MAX_STABILITY = 100.0f;
 
     static constexpr float SURVIVAL_TIME = 240.0f;

@@ -129,10 +129,8 @@ int InputManager::CheckNowMap(int padNum, TAGS tag) const
 		int p1 = 0, p2 = 0;
 		if (padNum > KEYBOARD_NUM)
 		{
-			bool layoutChange = CheckNeedKeepLayout(padNum, tag);
-
-			p1 = gamepads_[padNum]->NowButton((*it).second.padMap[0], layoutChange);
-			p2 = gamepads_[padNum]->NowButton((*it).second.padMap[1], layoutChange);
+			p1 = gamepads_[padNum]->NowButton((*it).second.padMap[0]);
+			p2 = gamepads_[padNum]->NowButton((*it).second.padMap[1]);
 		}
 		auto k1 = CheckNowKey((*it).second.keyMap[0]) ? KEY_MOUSE_POWER : 0;
 		auto k2 = CheckNowKey((*it).second.keyMap[1]) ? KEY_MOUSE_POWER : 0;
@@ -155,10 +153,8 @@ int InputManager::CheckPrevMap(int padNum, TAGS tag) const
 		int p1 = 0, p2 = 0;
 		if (padNum > KEYBOARD_NUM)
 		{
-			bool keepLayout = CheckNeedKeepLayout(padNum, tag);
-
-			p1 = gamepads_[padNum]->PrevButton((*it).second.padMap[0], keepLayout);
-			p2 = gamepads_[padNum]->PrevButton((*it).second.padMap[1], keepLayout);
+			p1 = gamepads_[padNum]->PrevButton((*it).second.padMap[0]);
+			p2 = gamepads_[padNum]->PrevButton((*it).second.padMap[1]);
 		}
 		auto k1 = CheckPrevKey((*it).second.keyMap[0]) ? KEY_MOUSE_POWER : 0;
 		auto k2 = CheckPrevKey((*it).second.keyMap[1]) ? KEY_MOUSE_POWER : 0;
@@ -311,16 +307,16 @@ void InputManager::InitInputMap()
 			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_ESCAPE, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::INTERACT,
-			{ { btn::BUTTON_B, btn::NONE }, { KEY_INPUT_E, 0x00 }, 0 });
+			{ { btn::BUTTON_RIGHT, btn::NONE }, { KEY_INPUT_E, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::JUMP,
-			{ { btn::BUTTON_A, btn::NONE }, { KEY_INPUT_SPACE, 0x00 }, 0 });
+			{ { btn::BUTTON_BOTTOM, btn::NONE }, { KEY_INPUT_SPACE, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::SPRINT,
 			{ { btn::BUTTON_L3, btn::NONE }, { KEY_INPUT_LSHIFT, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::RELOAD,
-			{ { btn::BUTTON_X, btn::NONE }, { KEY_INPUT_R, 0x00 }, 0 });
+			{ { btn::BUTTON_LEFT, btn::NONE }, { KEY_INPUT_R, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::ATTACK_MAIN,
 			{ { btn::BUTTON_R2, btn::NONE }, { KEY_INPUT_F, 0x00 }, MOUSE_INPUT_LEFT });

@@ -66,6 +66,7 @@ void SceneManager::Update()
 
 void SceneManager::Draw()
 {
+	// SetDrawScreen関数をApplicationで呼んだので
 	camera_->BeforeDraw();
 
 	// 非アクティブのシーンも描画する
@@ -77,7 +78,6 @@ void SceneManager::Draw()
 	// フェーダー等の画面エフェクトを挟む
 	fader_->Draw();
 
-	// SetDrawScreen関数を呼んだので
 	camera_->BeforeDraw();
 
 	// ここからUI系描画

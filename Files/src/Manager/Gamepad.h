@@ -40,6 +40,11 @@ public:
 		BUTTON_X, // Xボタン
 		BUTTON_Y, // Yボタン
 
+		BUTTON_TOP,    // 上ボタン
+		BUTTON_BOTTOM, // 下ボタン
+		BUTTON_LEFT,   // 左ボタン
+		BUTTON_RIGHT,  // 右ボタン
+
 		BUTTON_SELECT,
 		BUTTON_START,
 		
@@ -138,10 +143,10 @@ public:
 
 	void Update();
 
-	int NowButton(PAD_INPUT in, bool keepLayout = false) const;
-	int PrevButton(PAD_INPUT in, bool keepLayout = false) const;
-	bool DownButton(PAD_INPUT in, bool keepLayout = false) const;
-	bool UpButton(PAD_INPUT in, bool keepLayout = false) const;
+	int NowButton(PAD_INPUT in) const;
+	int PrevButton(PAD_INPUT in) const;
+	bool DownButton(PAD_INPUT in) const;
+	bool UpButton(PAD_INPUT in) const;
 
 	// padTypeNum_を返す
 	int GetPadTypeNumber() const;
@@ -152,11 +157,11 @@ public:
 
 private:
 	// スティック入力のデッドゾーン割合
-	static constexpr double DEADZONE_PERCENTILE = 0.125;
+	static constexpr double DEADZONE = 0.08;
 	// DirectInputのデッドゾーン実数値
-	static constexpr int DINPUT_DEADZONE = static_cast<int>(DINPUT_STICK_MAX * DEADZONE_PERCENTILE);
+	static constexpr int DINPUT_DEADZONE = static_cast<int>(DINPUT_STICK_MAX * DEADZONE);
 	// XInputのデッドゾーン実数値
-	static constexpr int XINPUT_DEADZONE = static_cast<int>(XINPUT_STICK_MAX * DEADZONE_PERCENTILE);
+	static constexpr int XINPUT_DEADZONE = static_cast<int>(XINPUT_STICK_MAX * DEADZONE);
 
 	// このGamepadの内部番号
 	const int PAD_NUM;
@@ -167,8 +172,6 @@ private:
 	using BUTTON_STATE_ARRAY = std::array<int, static_cast<size_t>(PAD_INPUT::END)>;
 	BUTTON_STATE_ARRAY nowButton_;
 	BUTTON_STATE_ARRAY prevButton_;
-
-	void LayoutConversion(PAD_INPUT& in) const;
 
 };
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Scene\PauseLayer\PauseLayer.cpp" />
     <ClCompile Include="src\Algorithm\PathFind.cpp" />
     <ClCompile Include="src\Object\Actor\Stage\Resupply.cpp" />
     <ClCompile Include="src\Object\Actor\Stage\Stage.cpp" />
@@ -61,6 +62,7 @@
     <ClCompile Include="src\Utility\AutoText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Scene\PauseLayer\PauseLayer.h" />
     <ClInclude Include="src\Algorithm\PathFind.h" />
     <ClInclude Include="src\Object\Actor\Stage\CapturePoint.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />

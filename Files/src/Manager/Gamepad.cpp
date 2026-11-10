@@ -103,9 +103,9 @@ void Gamepad::Update()
 		else if (xIn.ThumbRX > XINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_R] = (int)std::abs(xIn.ThumbRX * XINPUT_STICK_MULT);
 		// YŽ²
-		if (xIn.ThumbRY > -XINPUT_DEADZONE)
+		if (xIn.ThumbRY > XINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_U] = (int)std::abs(xIn.ThumbRY * XINPUT_STICK_MULT);
-		else if (xIn.ThumbRY < XINPUT_DEADZONE)
+		else if (xIn.ThumbRY < -XINPUT_DEADZONE)
 			nowButton_[(int)PAD_INPUT::RSTICK_D] = (int)std::abs(xIn.ThumbRY * XINPUT_STICK_MULT);
 	}
 
@@ -150,8 +150,15 @@ void Gamepad::Update()
 				nowButton_[(int)PAD_INPUT::BUTTON_B] = dIn.Buttons[1]; // B
 				nowButton_[(int)PAD_INPUT::BUTTON_X] = dIn.Buttons[2]; // X
 				nowButton_[(int)PAD_INPUT::BUTTON_Y] = dIn.Buttons[3]; // Y
+
+				nowButton_[(int)PAD_INPUT::BUTTON_TOP] = dIn.Buttons[2];	// X
+				nowButton_[(int)PAD_INPUT::BUTTON_BOTTOM] = dIn.Buttons[1];	// B
+				nowButton_[(int)PAD_INPUT::BUTTON_LEFT] = dIn.Buttons[3];	// Y
+				nowButton_[(int)PAD_INPUT::BUTTON_RIGHT] = dIn.Buttons[0];	// A
+
 				nowButton_[(int)PAD_INPUT::BUTTON_SELECT] = dIn.Buttons[8];
 				nowButton_[(int)PAD_INPUT::BUTTON_START] = dIn.Buttons[9];
+
 				nowButton_[(int)PAD_INPUT::BUTTON_L1] = dIn.Buttons[4];
 				nowButton_[(int)PAD_INPUT::BUTTON_R1] = dIn.Buttons[5];
 				nowButton_[(int)PAD_INPUT::BUTTON_L2] = dIn.Buttons[6];
@@ -165,8 +172,15 @@ void Gamepad::Update()
 				nowButton_[(int)PAD_INPUT::BUTTON_B] = dIn.Buttons[1]; // B
 				nowButton_[(int)PAD_INPUT::BUTTON_X] = dIn.Buttons[2]; // X
 				nowButton_[(int)PAD_INPUT::BUTTON_Y] = dIn.Buttons[3]; // Y
+
+				nowButton_[(int)PAD_INPUT::BUTTON_TOP] = dIn.Buttons[2];	// X
+				nowButton_[(int)PAD_INPUT::BUTTON_BOTTOM] = dIn.Buttons[1];	// B
+				nowButton_[(int)PAD_INPUT::BUTTON_LEFT] = dIn.Buttons[3];	// Y
+				nowButton_[(int)PAD_INPUT::BUTTON_RIGHT] = dIn.Buttons[0];	// A
+
 				nowButton_[(int)PAD_INPUT::BUTTON_SELECT] = dIn.Buttons[8];
 				nowButton_[(int)PAD_INPUT::BUTTON_START] = dIn.Buttons[9];
+
 				nowButton_[(int)PAD_INPUT::BUTTON_L1] = dIn.Buttons[4];
 				nowButton_[(int)PAD_INPUT::BUTTON_R1] = dIn.Buttons[5];
 				nowButton_[(int)PAD_INPUT::BUTTON_L2] = dIn.Buttons[6];
@@ -178,8 +192,15 @@ void Gamepad::Update()
 				nowButton_[(int)PAD_INPUT::BUTTON_B] = dIn.Buttons[1]; // B
 				nowButton_[(int)PAD_INPUT::BUTTON_X] = dIn.Buttons[2]; // X
 				nowButton_[(int)PAD_INPUT::BUTTON_Y] = dIn.Buttons[3]; // Y
+
+				nowButton_[(int)PAD_INPUT::BUTTON_TOP] = dIn.Buttons[2];	// X
+				nowButton_[(int)PAD_INPUT::BUTTON_BOTTOM] = dIn.Buttons[1];	// B
+				nowButton_[(int)PAD_INPUT::BUTTON_LEFT] = dIn.Buttons[3];	// Y
+				nowButton_[(int)PAD_INPUT::BUTTON_RIGHT] = dIn.Buttons[0];	// A
+
 				nowButton_[(int)PAD_INPUT::BUTTON_SELECT] = dIn.Buttons[6];
 				nowButton_[(int)PAD_INPUT::BUTTON_START] = dIn.Buttons[7];
+
 				nowButton_[(int)PAD_INPUT::BUTTON_L1] = dIn.Buttons[4];
 				nowButton_[(int)PAD_INPUT::BUTTON_R1] = dIn.Buttons[5];
 			}
@@ -189,8 +210,15 @@ void Gamepad::Update()
 			nowButton_[(int)PAD_INPUT::BUTTON_B] = dIn.Buttons[2]; // ›
 			nowButton_[(int)PAD_INPUT::BUTTON_X] = dIn.Buttons[0]; //  
 			nowButton_[(int)PAD_INPUT::BUTTON_Y] = dIn.Buttons[3]; // ¢
+
+			nowButton_[(int)PAD_INPUT::BUTTON_TOP] = dIn.Buttons[3];	// ¢
+			nowButton_[(int)PAD_INPUT::BUTTON_BOTTOM] = dIn.Buttons[1];	// ~
+			nowButton_[(int)PAD_INPUT::BUTTON_LEFT] = dIn.Buttons[0];	//  
+			nowButton_[(int)PAD_INPUT::BUTTON_RIGHT] = dIn.Buttons[2];	// ›
+
 			nowButton_[(int)PAD_INPUT::BUTTON_SELECT] = dIn.Buttons[8];
 			nowButton_[(int)PAD_INPUT::BUTTON_START] = dIn.Buttons[9];
+
 			nowButton_[(int)PAD_INPUT::BUTTON_L1] = dIn.Buttons[4];
 			nowButton_[(int)PAD_INPUT::BUTTON_R1] = dIn.Buttons[5];
 			nowButton_[(int)PAD_INPUT::BUTTON_L2] = dIn.Buttons[6];
@@ -209,8 +237,15 @@ void Gamepad::Update()
 		nowButton_[(int)PAD_INPUT::BUTTON_B] = xIn.Buttons[13]; // B
 		nowButton_[(int)PAD_INPUT::BUTTON_X] = xIn.Buttons[14]; // X
 		nowButton_[(int)PAD_INPUT::BUTTON_Y] = xIn.Buttons[15]; // Y
+
+		nowButton_[(int)PAD_INPUT::BUTTON_TOP] = xIn.Buttons[15];	// Y
+		nowButton_[(int)PAD_INPUT::BUTTON_BOTTOM] = xIn.Buttons[12];// A
+		nowButton_[(int)PAD_INPUT::BUTTON_LEFT] = xIn.Buttons[14];	// X
+		nowButton_[(int)PAD_INPUT::BUTTON_RIGHT] = xIn.Buttons[13];	// B
+		
 		nowButton_[(int)PAD_INPUT::BUTTON_SELECT] = xIn.Buttons[5];
 		nowButton_[(int)PAD_INPUT::BUTTON_START] = xIn.Buttons[4];
+
 		nowButton_[(int)PAD_INPUT::BUTTON_L1] = xIn.Buttons[8];
 		nowButton_[(int)PAD_INPUT::BUTTON_R1] = xIn.Buttons[9];
 		nowButton_[(int)PAD_INPUT::BUTTON_L2] = xIn.LeftTrigger;
@@ -220,44 +255,24 @@ void Gamepad::Update()
 	}
 }
 
-int Gamepad::NowButton(PAD_INPUT in, bool keepLayout) const
+int Gamepad::NowButton(PAD_INPUT in) const
 {
-	if (!keepLayout && IsNintendoJoypad())
-	{
-		LayoutConversion(in);
-	}
-
 	return nowButton_[(int)in];
 }
 
-int Gamepad::PrevButton(PAD_INPUT in, bool keepLayout) const
+int Gamepad::PrevButton(PAD_INPUT in) const
 {
-	if (!keepLayout && IsNintendoJoypad())
-	{
-		LayoutConversion(in);
-	}
-
 	return prevButton_[(int)in];
 }
 
-bool Gamepad::DownButton(PAD_INPUT in, bool keepLayout) const
+bool Gamepad::DownButton(PAD_INPUT in) const
 {
-	if (!keepLayout && IsNintendoJoypad())
-	{
-		LayoutConversion(in);
-	}
-
-	return NowButton(in, true) && !PrevButton(in, true);
+	return NowButton(in) && !PrevButton(in);
 }
 
-bool Gamepad::UpButton(PAD_INPUT in, bool keepLayout) const
+bool Gamepad::UpButton(PAD_INPUT in) const
 {
-	if (!keepLayout && IsNintendoJoypad())
-	{
-		LayoutConversion(in);
-	}
-
-	return !NowButton(in, true) && PrevButton(in, true);
+	return !NowButton(in) && PrevButton(in);
 }
 
 int Gamepad::GetPadTypeNumber() const
@@ -298,23 +313,4 @@ int Gamepad::GetPadTypeModel() const
 bool Gamepad::IsNintendoJoypad() const
 {
 	return GetPadTypeModel() == static_cast<int>(PAD_MODEL::NINTENDO);
-}
-
-void Gamepad::LayoutConversion(Gamepad::PAD_INPUT& in) const
-{
-	switch (in)
-	{
-	case PAD_INPUT::BUTTON_A:
-		in = PAD_INPUT::BUTTON_B;
-		break;
-	case PAD_INPUT::BUTTON_B:
-		in = PAD_INPUT::BUTTON_A;
-		break;
-	case PAD_INPUT::BUTTON_X:
-		in = PAD_INPUT::BUTTON_Y;
-		break;
-	case PAD_INPUT::BUTTON_Y:
-		in = PAD_INPUT::BUTTON_X;
-		break;
-	}
 }

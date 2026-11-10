@@ -89,16 +89,16 @@ void WeaponBase::Main()
 
 	{
 		// 0.0 ～ 1.0 の一様実数分布
-		auto& RNG = Application::GetInstance().GetRNGPointer();
+		auto rand = Application::GetInstance().GetRNGPointer().GetRandReal();
 
 		// 1. 立体角的に均一に分布させるための z (cos(theta)) の計算
 		// [cosMaxAngle, 1.0] の範囲から線形に選ぶことで、円錐内に均等に点が散る
 		auto cosAngle = std::cos(baseData_.spread);
-		float z = cosAngle + (1.0f - cosAngle) * RNG.GetRandReal();
+		float z = cosAngle + (1.0f - cosAngle) * rand;
 		float sinTheta = std::sqrt(1.0f - z * z);
 
 		// 2. 方位角 phi を 0 から 2*PI の間でランダムに決定
-		float phi = 2.0f * MathUtil::PI_F * RNG.GetRandReal();;
+		float phi = 2.0f * MathUtil::PI_F * rand;
 		float x = sinTheta * std::cos(phi);
 		float y = sinTheta * std::sin(phi);
 
