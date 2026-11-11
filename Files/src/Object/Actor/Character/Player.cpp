@@ -38,9 +38,9 @@ void Player::Draw()
 		transform_.rotation.x, transform_.rotation.y, transform_.rotation.z);
 #endif
 
-	CharacterBase3D::Draw();
-
 	wpn_->Draw();
+
+	CharacterBase3D::Draw();
 }
 
 void Player::DrawUI()

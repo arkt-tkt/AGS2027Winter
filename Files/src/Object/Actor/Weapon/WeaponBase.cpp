@@ -85,56 +85,58 @@ void WeaponBase::Main()
 	// 発射クールタイム
 	editData_.fireRate -= baseData_.fireRate;
 
-	Vector3 dir = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized();
+	Vector3 dir;
 
+	for (int i = 0; i < baseData_.shots; ++i)
 	{
-		// 0.0 ～ 1.0 の一様実数分布
-		auto rand = Application::GetInstance().GetRNGPointer().GetRandReal();
+		// 基準となる方位を設定
+		dir = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized();
 
-		// 1. 立体角的に均一に分布させるための z (cos(theta)) の計算
-		// [cosMaxAngle, 1.0] の範囲から線形に選ぶことで、円錐内に均等に点が散る
-		auto cosAngle = std::cos(baseData_.spread);
-		float z = cosAngle + (1.0f - cosAngle) * rand;
+		// 乱数生成器の参照
+		auto& rng = Application::GetInstance().GetRNGPointer();
+
+		// ランダム角度
+		float angleRand = rng.GetRandReal();
+		// ランダム方位角
+		float azimuthRand = rng.GetRandReal();
+
+		// 最大拡散度
+		float cosMaxAngle = std::cos(baseData_.spread);
+		// ローカルZ軸の移動量
+		float z = 1.0f - (1.0f - cosMaxAngle) * angleRand;
+
+		// ねじれ角がゼロの時の、Z軸を除いた移動量
 		float sinTheta = std::sqrt(1.0f - z * z);
+		// ねじれ角()
+		float phi = azimuthRand * MathUtil::PI_F * 2.0f;
 
-		// 2. 方位角 phi を 0 から 2*PI の間でランダムに決定
-		float phi = 2.0f * MathUtil::PI_F * rand;
-		float x = sinTheta * std::cos(phi);
-		float y = sinTheta * std::sin(phi);
-
-		// 3. 基準ベクトル `dir` を中心としたローカル座標系（直交基底 TBN）を作成
-		Vector3 up = { 0.0f, 1.0f, 0.0f };
-		// 基準ベクトルがワールドの真上・真下を向いている場合のフォールバック
-		if (std::abs(Dot(dir, up)) > 0.9999f)
+		// sinThetaをcos/sinで処理し、ローカルX/Y軸の移動量を出す
+		Vector3 localDir =
 		{
-			up = { 0.0f, 0.0f, 1.0f };
-		}
-
-		Vector3 tangent = (Cross(up, dir)).Normalized();
-		Vector3 bitangent = Cross(dir, tangent);
-
-		// 4. ローカル座標 (x, y, z) をワールド座標系の基準ベクトル向きに変形
-		// ローカルの Z軸が dir、X軸が tangent、Y軸が bitangent に対応する
-		Vector3 result = {
-			tangent.x * x + bitangent.x * y + dir.x * z,
-			tangent.y * x + bitangent.y * y + dir.y * z,
-			tangent.z * x + bitangent.z * y + dir.z * z
+			sinTheta * std::cos(phi),
+			sinTheta * std::sin(phi),
+			z
 		};
 
-		dir = result.Normalized();
-	}
+		// 最後に、現在の向きへの回転を用いて補正
+		dir = (LookRotation(dir) * localDir).Normalized();
 
-	Projectile::Data dat;
-	dat.type = Collider3D::TYPE::PROJECTILE_PLAYER;
-	dat.position = transform_.position;
-	dat.velocity = dir * baseData_.velocity;
-	dat.damage = editData_.damage;
+		Projectile::Data dat;
+		dat.type = Collider3D::TYPE::PROJECTILE_PLAYER;
+		dat.position = transform_.position;
+		dat.velocity = dir * baseData_.velocity;
+		dat.damage = editData_.damage;
 
-	if (ProjectileManager::GetInstance().Create(dat))
-	{
-		AudioManager::GetInstance().Play(ResourceManager::SRC::SE_FIRE_AR);
+		if (ProjectileManager::GetInstance().Create(dat))
+		{
+			AudioManager::GetInstance().Play(ResourceManager::SRC::SE_FIRE_AR);
 
-		EnemyManager::GetInstance().TriggerSoundEvent(transform_.position, EnemyManager::SOUND_EVENT::GUNFIRE);
+			EnemyManager::GetInstance().TriggerSoundEvent(transform_.position, EnemyManager::SOUND_EVENT::GUNFIRE);
+		}
+		else
+		{
+			return;
+		}
 	}
 }
 
