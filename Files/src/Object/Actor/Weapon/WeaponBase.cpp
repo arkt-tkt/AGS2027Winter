@@ -135,6 +135,7 @@ void WeaponBase::Main()
 		}
 		else
 		{
+			// ‚±‚êˆÈã‹ó‚«‚ª–³‚¢‚Ì‚ÅA‘±s‚Í–³‘Ê
 			return;
 		}
 	}

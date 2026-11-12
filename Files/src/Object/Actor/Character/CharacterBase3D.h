@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Common/Animation.h"
+#include "../../Common/AnimationController.h"
 #include "../ActorBase3D.h"
 
 class CharacterBase3D : public ActorBase3D
@@ -31,7 +31,7 @@ public:
 
 protected:
 	// アニメータ
-	std::unique_ptr<Animation> animation_;
+	std::unique_ptr<AnimationController> animation_;
 	// 地面用線分コライダ
 	std::pair<Vector3, Vector3> lineCollider_;
 

@@ -32,11 +32,13 @@ public:
 	void Update();
 	void Draw();
 
+	// ƒv[ƒ‹“à‚É“ŠË•¨‚ğ¶¬‚·‚é
+	// @return ¶¬‚É¬Œ÷‚µ‚½‚©(false‚Ìê‡A‹ó‚«—Ìˆæ‚ª–³‚¢)
 	bool Create(Projectile::Data);
 	const std::vector<Projectile*>& GetActives() { return active_; }
 
 private:
-	static constexpr size_t POOL_SIZE = 120;
+	static constexpr size_t POOL_SIZE = 150;
 
 	std::vector<std::unique_ptr<Projectile>> pool_;
 	std::vector<Projectile*> active_;

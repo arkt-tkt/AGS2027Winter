@@ -36,7 +36,6 @@
     <ClCompile Include="src\Object\Actor\Projectile\Projectile.cpp" />
     <ClCompile Include="src\Manager\ProjectileManager.cpp" />
     <ClCompile Include="src\Object\Camera.cpp" />
-    <ClCompile Include="src\Object\Common\Animation.cpp" />
     <ClCompile Include="src\Manager\Resource.cpp" />
     <ClCompile Include="src\Manager\ResourceManager.cpp" />
     <ClCompile Include="src\Object\Common\Collider3D.cpp" />
@@ -80,7 +79,6 @@
     <ClInclude Include="src\Object\Actor\Projectile\Projectile.h" />
     <ClInclude Include="src\Manager\ProjectileManager.h" />
     <ClInclude Include="src\Object\Camera.h" />
-    <ClInclude Include="src\Object\Common\Animation.h" />
     <ClInclude Include="src\Manager\Resource.h" />
     <ClInclude Include="src\Manager\ResourceManager.h" />
     <ClInclude Include="src\Object\Common\Collider3D.h" />
@@ -134,21 +132,13 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)Data\Shader\%(Filename).pso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Data\Shader\StarrySky.pso" />
-    <None Include="Data\Text\json\BossParameter.json" />
-    <None Include="Data\Text\json\EnemyPhaseData01.json" />
-    <None Include="Data\Text\json\EnemyPhaseData02.json" />
-    <None Include="Data\Text\json\EnemyPhaseData03.json" />
-    <None Include="Data\Text\json\PlayerWeaponData.json" />
-    <None Include="Data\Text\json\SpecialAttack.json" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c600a4bf-8d3e-468b-9f59-15adb6ad9b8f}</ProjectGuid>
     <RootNamespace>BaseData</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ProjectUnknown</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

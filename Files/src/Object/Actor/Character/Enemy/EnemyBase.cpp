@@ -86,7 +86,7 @@ void EnemyBase::InitModel()
 
 void EnemyBase::InitAnim()
 {
-	animation_ = std::make_unique<Animation>(transform_.modelId);
+	animation_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_IDLE, 0, 30.0f);
 

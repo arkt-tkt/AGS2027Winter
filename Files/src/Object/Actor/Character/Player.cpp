@@ -87,11 +87,18 @@ void Player::InitModel()
 
 void Player::InitAnim()
 {
-	animation_ = std::make_unique<Animation>(transform_.modelId);
+	animation_ = std::make_unique<AnimationController>(transform_.modelId);
 
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0, 30.0f);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE, 0, 30.0f);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0, 30.0f,
+		AnimationController::BASE);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_DASH_FRONT, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 30.0f,
+		AnimationController::UPPER_BODY);
 
 	animation_->Play(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0);
 }
@@ -187,31 +194,35 @@ void Player::Move()
 	if (transform_.position.y <= -1000.0f ||
 		transform_.position.y >= 1000.0f)
 		transform_.position.y = 0.0f;
+
+	if (moveDir.z)
+	{
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, moveDir.z);
+	}
+	else
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0);
+	}
+
+	if (moveDir.x)
+	{
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, moveDir.x);
+	}
+	else
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0);
+	}
 }
 
 void Player::AnimationSwitch()
 {
 	auto& ins = InputManager::GetInstance();
 	using tag = InputManager::TAGS;
-	
-	transform_.localPosition = {};
 
-	if (!animation_->IsPlaying(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0))
+	if (wpn_->GetReloadProg())
 	{
-		if (wpn_->GetReloadProg())
-		{
-			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, false);
-		}
-		else if (velocity_.XZ().LengthSquare() > 0.1f)
-		{
-			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE, 0);
-		}
-		else
-		{
-			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0);
-		}
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 1.0f, false);
 	}
-
 }
 
 void Player::LateMove()

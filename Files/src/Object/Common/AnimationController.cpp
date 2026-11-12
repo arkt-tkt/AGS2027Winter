@@ -14,10 +14,7 @@ AnimationController::AnimationController(int model_id)
 
 AnimationController::~AnimationController()
 {
-	for (auto it = playData_.begin(); it == playData_.end(); )
-	{
-		it = _Stop(it);
-	}
+	StopAll();
 
 	playData_.clear();
 	animData_.clear();
@@ -27,18 +24,17 @@ void AnimationController::Update()
 {
 	auto dt = SceneManager::GetInstance().GetDeltaTime();
 
-	PRIORITY prior = PRIORITY::BASE;
-	std::vector<int> indexes;
+	PARTS upperLv = BASE;
+	std::vector<int> upperArr;
+	PARTS legsLv = BASE;
+	std::vector<int> legsArr;
 
-	for (auto it = playData_.begin(); it == playData_.end(); )
+	for (auto it = playData_.begin(); it != playData_.end(); )
 	{
 		auto play = *it;
 
 		// ブレンド率をゼロに
 		MV1SetAttachAnimBlendRate(modelId_, play->attachId, 0.0f);
-
-		// 再生方向
-		float playDir = play->speed > 0.0f ? 1.0f : -1.0f;
 
 		// 時間を進める
 		play->time += play->playRate * play->speed * dt;
@@ -47,6 +43,9 @@ void AnimationController::Update()
 		if (play->time >= play->totalTime ||
 			play->time < 0.0f)
 		{
+			// 再生方向
+			float playDir = play->speed > 0.0f ? 1.0f : -1.0f;
+
 			if (play->isLoop)
 			{
 				play->time -= play->totalTime * playDir;
@@ -62,52 +61,62 @@ void AnimationController::Update()
 		MV1SetAttachAnimTime(modelId_, play->attachId, play->time);
 
 		// リストに追加
-		if (prior == play->priority)
+		if (upperLv <= play->parts && play->parts != LOWER_BODY)
 		{
-			if (prior < play->priority)
+			if (upperLv < play->parts)
 			{
-				prior = play->priority;
-				indexes.clear();
+				upperLv = play->parts;
+				upperArr.clear();
 			}
 
-			indexes.push_back(play->animIndex);
+			upperArr.push_back(play->attachId);
+		}
+		
+		if (legsLv <= play->parts && play->parts != UPPER_BODY)
+		{
+			if (legsLv < play->parts)
+			{
+				legsLv = play->parts;
+				legsArr.clear();
+			}
+
+			legsArr.push_back(play->attachId);
 		}
 
 		++it;
 	}
 
-	if (indexes.size() == 1)
-	{
-		MV1SetAttachAnimBlendRate(modelId_, indexes.front(), 1.0f);
-	}
-	else
-	{
-		float div = 1.0f / indexes.size();
-		float len = std::sqrtf((int)(indexes.size()));
+	float div = 1.0f / upperArr.size();
 
-		for (auto& index : indexes)
-		{
-			MV1SetAttachAnimBlendRateToFrame(modelId_, index, upperFrameIdx_, div);
-			MV1SetAttachAnimBlendRateToFrame(modelId_, index, legFrameIdx_.first, div);
-			MV1SetAttachAnimBlendRateToFrame(modelId_, index, legFrameIdx_.second, div);
-		}
+	for (auto& index : upperArr)
+	{
+		MV1SetAttachAnimBlendRateToFrame(modelId_, index, upperFrameIdx_, div, TRUE);
+	}
+
+	div = 1.0f / legsArr.size();
+
+	for (auto& index : legsArr)
+	{
+		MV1SetAttachAnimBlendRateToFrame(modelId_, index, rootFrameIdx_, div, FALSE);
+		MV1SetAttachAnimBlendRateToFrame(modelId_, index, legFrameIdx_.first, div, TRUE);
+		MV1SetAttachAnimBlendRateToFrame(modelId_, index, legFrameIdx_.second, div, TRUE);
 	}
 }
 
-void AnimationController::AddFromMine(int anim_index, float play_rate, PRIORITY priority)
+void AnimationController::AddFromMine(int anim_index, float play_rate, PARTS parts)
 {
 	auto total = MV1GetAnimTotalTime(modelId_, anim_index);
 
-	animData_.emplace_back(modelId_, anim_index, play_rate, total, priority);
+	animData_.emplace_back(modelId_, anim_index, play_rate, total, parts);
 }
 
-void AnimationController::AddFromOther(ResourceManager::SRC res, int anim_index, float play_rate, PRIORITY priority)
+void AnimationController::AddFromOther(ResourceManager::SRC res, int anim_index, float play_rate, PARTS parts)
 {
 	int id = ResourceManager::GetInstance().Load(res).handleId_;
 
 	auto total = MV1GetAnimTotalTime(id, anim_index);
 
-	animData_.emplace_back(id, anim_index, play_rate, total, priority);
+	animData_.emplace_back(id, anim_index, play_rate, total, parts);
 }
 
 void AnimationController::Play(ResourceManager::SRC res, int anim_index, float speed, bool is_loop)
@@ -118,8 +127,7 @@ void AnimationController::Play(ResourceManager::SRC res, int anim_index, float s
 
 	for (auto play : playData_)
 	{
-		if (play->modelId == id &&
-			play->animIndex == anim_index)
+		if (play->resId == id && play->animIndex == anim_index)
 		{
 			play->speed = speed;
 
@@ -129,10 +137,9 @@ void AnimationController::Play(ResourceManager::SRC res, int anim_index, float s
 
 	for (auto& anim : animData_)
 	{
-		if (anim.modelId == id &&
-			anim.animIndex == anim_index)
+		if (anim.resId == id && anim.animIndex == anim_index)
 		{
-			anim.attachId = MV1AttachAnim(anim.modelId, anim.animIndex);
+			anim.attachId = MV1AttachAnim(modelId_, anim.animIndex, anim.resId);
 			anim.speed = speed;
 			anim.time = speed > 0.0f ? 0.0f : anim.totalTime;
 			anim.isLoop = is_loop;
@@ -148,9 +155,9 @@ void AnimationController::Stop(ResourceManager::SRC res, int anim_index)
 {
 	int id = ResourceManager::GetInstance().Load(res).handleId_;
 
-	for (auto it = playData_.begin(); it == playData_.end(); )
+	for (auto it = playData_.begin(); it != playData_.end(); )
 	{
-		if ((*it)->modelId == id &&
+		if ((*it)->resId == id &&
 			(*it)->animIndex == anim_index)
 		{
 			_Stop(it);
@@ -162,8 +169,16 @@ void AnimationController::Stop(ResourceManager::SRC res, int anim_index)
 	}
 }
 
-std::vector<AnimationController::AnimationData*>::iterator
-AnimationController::_Stop(const std::vector<AnimationData*>::iterator it)
+void AnimationController::StopAll()
+{
+	for (auto it = playData_.begin(); it != playData_.end(); )
+	{
+		it = _Stop(it);
+	}
+}
+
+std::vector<AnimationController::Animation*>::iterator
+AnimationController::_Stop(const std::vector<Animation*>::iterator it)
 {
 	auto play = *it;
 
