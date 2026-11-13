@@ -93,6 +93,8 @@ void Player::InitAnim()
 		AnimationController::BASE);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, 30.0f,
 		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0, 30.0f,
+		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, 30.0f,
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_DASH_FRONT, 0, 30.0f,
@@ -195,21 +197,28 @@ void Player::Move()
 		transform_.position.y >= 1000.0f)
 		transform_.position.y = 0.0f;
 
-	if (moveDir.z)
+	if (moveDir.z != 0)
 	{
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, moveDir.z);
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, true, std::abs(moveDir.z), moveDir.z);
 	}
 	else
 	{
 		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0);
 	}
 
-	if (moveDir.x)
+	if (moveDir.x > 0)
 	{
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, moveDir.x);
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0);
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, true, moveDir.x);
+	}
+	else if (moveDir.x < 0)
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0);
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0, true, -moveDir.x);
 	}
 	else
 	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0);
 		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0);
 	}
 }
@@ -221,7 +230,7 @@ void Player::AnimationSwitch()
 
 	if (wpn_->GetReloadProg())
 	{
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 1.0f, false);
+		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 2.5f);
 	}
 }
 

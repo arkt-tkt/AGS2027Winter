@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <map>
 #include "../../Manager/SceneManager.h"
 #include "AnimationController.h"
 
@@ -24,10 +25,13 @@ void AnimationController::Update()
 {
 	auto dt = SceneManager::GetInstance().GetDeltaTime();
 
-	PARTS upperLv = BASE;
-	std::vector<int> upperArr;
-	PARTS legsLv = BASE;
-	std::vector<int> legsArr;
+	using namespace std;
+
+	PARTS upperLv = FULL_BODY, lowerLv = FULL_BODY;
+	float upperPow = 0.0f, lowerPow = 0.0f;
+	map<PARTS, pair<float, vector<AnimationController::Animation*>>> upperArr, lowerArr;
+
+	// ※現状、速度は二の次でアニメーションのブレンドと遷移に全能力を注いで制作しています
 
 	for (auto it = playData_.begin(); it != playData_.end(); )
 	{
@@ -35,6 +39,24 @@ void AnimationController::Update()
 
 		// ブレンド率をゼロに
 		MV1SetAttachAnimBlendRate(modelId_, play->attachId, 0.0f);
+
+		// 影響率を調整
+		if (play->power < play->maxPower)
+		{
+			play->power += POWER_ADJUST_PER_SECOND * dt;
+			play->power = (std::min)(play->power, play->maxPower);
+		}
+		else if (play->power > play->maxPower)
+		{
+			play->power -= POWER_ADJUST_PER_SECOND * dt;
+			play->power = (std::max)(play->power, play->maxPower);
+
+			if (play->power <= 0.0f)
+			{
+				it = _Detach(it);
+				continue;
+			}
+		}
 
 		// 時間を進める
 		play->time += play->playRate * play->speed * dt;
@@ -50,10 +72,10 @@ void AnimationController::Update()
 			{
 				play->time -= play->totalTime * playDir;
 			}
-			else
+			else if (play->speed != 0.0f)
 			{
-				it = _Stop(it);
-				continue;
+				_Stop(it);
+				play->speed = 0.0f;
 			}
 		}
 
@@ -61,45 +83,74 @@ void AnimationController::Update()
 		MV1SetAttachAnimTime(modelId_, play->attachId, play->time);
 
 		// リストに追加
-		if (upperLv <= play->parts && play->parts != LOWER_BODY)
+		if (play->parts != LOWER_BODY)
 		{
-			if (upperLv < play->parts)
-			{
-				upperLv = play->parts;
-				upperArr.clear();
-			}
-
-			upperArr.push_back(play->attachId);
-		}
-		
-		if (legsLv <= play->parts && play->parts != UPPER_BODY)
-		{
-			if (legsLv < play->parts)
-			{
-				legsLv = play->parts;
-				legsArr.clear();
-			}
-
-			legsArr.push_back(play->attachId);
+			// ブレンド倍率を加算していく(これは後で使う)
+			upperArr[play->parts].first += play->power;
+			// プレイデータのポインタを格納
+			upperArr[play->parts].second.emplace_back(play);
 		}
 
+		if (play->parts != UPPER_BODY)
+		{
+			// ブレンド倍率を加算していく(これは後で使う)
+			lowerArr[play->parts].first += play->power;
+			// プレイデータのポインタを格納
+			lowerArr[play->parts].second.emplace_back(play);
+		}
+
+		// 次の要素へ
 		++it;
 	}
 
-	float div = 1.0f / upperArr.size();
+	// 倍率
+	float powerMult = 1.0f;
 
-	for (auto& index : upperArr)
+	// 逆方向から
+	for (auto rit = upperArr.rbegin(); rit != upperArr.rend(); ++rit)
 	{
-		MV1SetAttachAnimBlendRateToFrame(modelId_, index, upperFrameIdx_, div, TRUE);
+		auto& [parts, pair] = *rit;
+
+		for (auto& index : pair.second)
+		{
+			// ブレンド用に、倍率が0.0～1.0になるように調整
+			float newPower = pair.first < 1.0f ? index->power : index->power / pair.first;
+
+			// 背骨から先の全てに適用
+			MV1SetAttachAnimBlendRateToFrame(modelId_, index->attachId, upperFrameIdx_,
+				newPower * powerMult, TRUE);
+		}
+
+		powerMult -= pair.first;
+
+		if (powerMult <= 0.0f) break;
 	}
 
-	div = 1.0f / legsArr.size();
+	// 倍率リセット
+	powerMult = 1.0f;
 
-	for (auto& index : legsArr)
+	// やはり、逆方向から
+	for (auto rit = lowerArr.rbegin(); rit != lowerArr.rend(); ++rit)
 	{
-		MV1SetAttachAnimBlendRateToFrame(modelId_, index, rootFrameIdx_, div, FALSE);
-		MV1SetAttachAnimBlendRateToFrame(modelId_, index, legFrameIdx_.first, div, TRUE);
-		MV1SetAttachAnimBlendRateToFrame(modelId_, index, legFrameIdx_.second, div, TRUE);
+		auto& [parts, pair] = *rit;
+
+		for (auto& index : pair.second)
+		{
+			// ブレンド用に、倍率が0.0～1.0になるように調整
+			float newPower = pair.first < 1.0f ? index->power : index->power / pair.first;
+
+			// 腰と両脚に適用
+			MV1SetAttachAnimBlendRateToFrame(modelId_, index->attachId, rootFrameIdx_,
+				newPower * powerMult, FALSE);
+			MV1SetAttachAnimBlendRateToFrame(modelId_, index->attachId, legFrameIdx_.first,
+				newPower * powerMult, TRUE);
+			MV1SetAttachAnimBlendRateToFrame(modelId_, index->attachId, legFrameIdx_.second,
+				newPower * powerMult, TRUE);
+		}
+
+		powerMult -= pair.first;
+
+		if (powerMult <= 0.0f) break;
 	}
 }
 
@@ -119,16 +170,17 @@ void AnimationController::AddFromOther(ResourceManager::SRC res, int anim_index,
 	animData_.emplace_back(id, anim_index, play_rate, total, parts);
 }
 
-void AnimationController::Play(ResourceManager::SRC res, int anim_index, float speed, bool is_loop)
+void AnimationController::Play(ResourceManager::SRC res, int anim_index, bool is_loop, float power, float speed)
 {
 	int id = ResourceManager::GetInstance().Load(res).handleId_;
 
-	if (speed == 0.0f) return;
+	if (power < 0.0f || speed == 0.0f) return;
 
 	for (auto play : playData_)
 	{
 		if (play->resId == id && play->animIndex == anim_index)
 		{
+			play->maxPower = power;
 			play->speed = speed;
 
 			return;
@@ -140,9 +192,38 @@ void AnimationController::Play(ResourceManager::SRC res, int anim_index, float s
 		if (anim.resId == id && anim.animIndex == anim_index)
 		{
 			anim.attachId = MV1AttachAnim(modelId_, anim.animIndex, anim.resId);
+			anim.maxPower = power;
 			anim.speed = speed;
 			anim.time = speed > 0.0f ? 0.0f : anim.totalTime;
 			anim.isLoop = is_loop;
+
+			playData_.push_back(&anim);
+
+			return;
+		}
+	}
+}
+
+void AnimationController::PlayInSeconds(ResourceManager::SRC res, int anim_index, float seconds, float power)
+{
+	int id = ResourceManager::GetInstance().Load(res).handleId_;
+
+	for (auto play : playData_)
+	{
+		if (play->resId == id && play->animIndex == anim_index)
+		{
+			return;
+		}
+	}
+
+	for (auto& anim : animData_)
+	{
+		if (anim.resId == id && anim.animIndex == anim_index)
+		{
+			anim.attachId = MV1AttachAnim(modelId_, anim.animIndex, anim.resId);
+			anim.maxPower = power;
+			anim.speed = anim.totalTime / anim.playRate / seconds; // 再生時間を指定秒数に合わせて調整
+			anim.isLoop = false;
 
 			playData_.push_back(&anim);
 
@@ -171,14 +252,19 @@ void AnimationController::Stop(ResourceManager::SRC res, int anim_index)
 
 void AnimationController::StopAll()
 {
-	for (auto it = playData_.begin(); it != playData_.end(); )
+	for (auto it = playData_.begin(); it != playData_.end(); ++it)
 	{
-		it = _Stop(it);
+		_Stop(it);
 	}
 }
 
+void AnimationController::_Stop(const std::vector<Animation*>::iterator it)
+{
+	(*it)->maxPower = 0.0f;
+}
+
 std::vector<AnimationController::Animation*>::iterator
-AnimationController::_Stop(const std::vector<Animation*>::iterator it)
+AnimationController::_Detach(const std::vector<Animation*>::iterator it)
 {
 	auto play = *it;
 

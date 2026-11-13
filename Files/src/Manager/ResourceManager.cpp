@@ -82,6 +82,9 @@ void ResourceManager::Init()
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/walking.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_MOVE_FRONT, std::move(res));
 
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Strafe_Left.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_MOVE_LEFT, std::move(res));
+	
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Strafe_Right.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_MOVE_RIGHT, std::move(res));
 

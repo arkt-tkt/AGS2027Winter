@@ -6,7 +6,6 @@
 #include "../Scene/TitleScene/TitleScene.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
-#include "ScoreManager.h"
 #include "AudioManager.h"
 
 SceneManager* SceneManager::instance_ = nullptr;

@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Manager\ScoreManager.cpp" />
     <ClCompile Include="src\Object\Actor\ActorBase3D.cpp" />
     <ClCompile Include="src\Object\Camera.cpp" />
     <ClCompile Include="src\Manager\Resource.cpp" />
@@ -44,7 +43,6 @@
     <ClCompile Include="src\Object\Common\AnimationController.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Manager\ScoreManager.h" />
     <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
     <ClInclude Include="src\Object\Camera.h" />
     <ClInclude Include="src\Manager\Resource.h" />
@@ -85,19 +83,5 @@
     <ClInclude Include="src\Utility\RNG.h" />
     <ClInclude Include="src\Scene\PauseLayer\PauseLayer.h" />
     <ClInclude Include="src\Object\Common\AnimationController.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />
-    <FxCompile Include="src\Shader\Pixel\StandardPS.hlsl" />
-    <FxCompile Include="src\Shader\PostEffect\StarrySky.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Data\Text\json\BossParameter.json" />
-    <None Include="Data\Text\json\SpecialAttack.json" />
-    <None Include="Data\Text\json\PlayerWeaponData.json" />
-    <None Include="Data\Text\json\EnemyPhaseData02.json" />
-    <None Include="Data\Shader\StarrySky.pso" />
-    <None Include="Data\Text\json\EnemyPhaseData01.json" />
-    <None Include="Data\Text\json\EnemyPhaseData03.json" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@
 #include "Manager/InputManager.h"
 #include "Manager/ResourceManager.h"
 #include "Manager/SceneManager.h"
-#include "Manager/ScoreManager.h"
 #include "Utility/RNG.h"
 #include "Application.h"
 
@@ -41,11 +40,7 @@ bool Application::Init()
 	FPSManager::CreateInstance(GetRefreshRate());
 
 	// InputManager
-	InputManager::CreateInstance(DX_INPUT_PAD2);
-
-	// ScoreManager
-	ScoreManager::CreateInstance(DX_INPUT_PAD2);
-	ScoreManager::GetInstance().Init();
+	InputManager::CreateInstance(DX_INPUT_PAD1);
 
 	// SceneManager
 	SceneManager::CreateInstance();
@@ -86,9 +81,6 @@ bool Application::Release()
 
 	ResourceManager::GetInstance().Release();
 	ResourceManager::DeleteInstance();
-
-	ScoreManager::GetInstance().Release();
-	ScoreManager::DeleteInstance();
 
 #ifdef APPLICATION_USE_EFFEKSEER
 	Effkseer_End();
@@ -193,8 +185,6 @@ void Application::Update()
 	SceneManager::GetInstance().Update();
 
 	AudioManager::GetInstance().Update();
-
-	ScoreManager::GetInstance().Update();
 }
 
 void Application::Draw()
