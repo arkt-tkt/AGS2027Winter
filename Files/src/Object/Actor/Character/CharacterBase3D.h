@@ -54,6 +54,9 @@ protected:
 	// スコア
 	int scoreValue_ = 0;
 
+	// ローカル移動方向
+	Vector3 moveDir_;
+
 	// 着地状態
 	bool isLanding_ = true;
 	// ダッシュ状態

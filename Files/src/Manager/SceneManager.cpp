@@ -38,8 +38,11 @@ void SceneManager::Update()
 		// アクティブなシーンだけ更新する
 		back->Update();
 
-		// カメラの更新
-		camera_->Update();
+		if (sceneList_.back()->GetMyScene() == SceneBase::SCENE::GAME)
+		{
+			// カメラの更新
+			camera_->Update();
+		}
 
 		back->LateUpdate();
 

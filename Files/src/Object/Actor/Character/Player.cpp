@@ -91,18 +91,28 @@ void Player::InitAnim()
 
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0, 30.0f,
 		AnimationController::BASE);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0, 30.0f,
 		AnimationController::FULL_BODY);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0, 30.0f,
 		AnimationController::FULL_BODY);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_FR, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_B, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_BL, 0, 30.0f,
+		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_BR, 0, 30.0f,
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_DASH_FRONT, 0, 30.0f,
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 30.0f,
 		AnimationController::UPPER_BODY);
 
-	animation_->Play(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0);
+	animation_->Set(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0);
 }
 
 void Player::InitOther()
@@ -129,34 +139,34 @@ void Player::Move()
 	const auto& CAMERA = scnMng_.GetCameraPtr();
 
 	// ˆÚ“®•ûŒü
-	Vector3 moveDir;
+	moveDir_ = {};
 
 	// ãˆÚ“®‚Ìˆ—
-	moveDir.z += INS.CheckNowMap(INPUT_NUM, tag::MOVE_UP);
+	moveDir_.z += INS.CheckNowMap(INPUT_NUM, tag::MOVE_UP);
 	// ‰ºˆÚ“®‚Ìˆ—
-	moveDir.z -= INS.CheckNowMap(INPUT_NUM, tag::MOVE_DOWN);
+	moveDir_.z -= INS.CheckNowMap(INPUT_NUM, tag::MOVE_DOWN);
 	// ¶ˆÚ“®‚Ìˆ—
-	moveDir.x -= INS.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT);
+	moveDir_.x -= INS.CheckNowMap(INPUT_NUM, tag::MOVE_LEFT);
 	// ‰EˆÚ“®‚Ìˆ—
-	moveDir.x += INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT);
+	moveDir_.x += INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT);
 
 	// ’·‚³‚ð“¾‚é
-	auto len = moveDir.Length();
+	auto len = moveDir_.Length();
 	// ³‹K‰»
-	moveDir.Normalize();
+	moveDir_.Normalize();
 
-	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) && moveDir.XZ().LengthSquare() ? true : false;
+	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) && moveDir_.XZ().LengthSquare() ? true : false;
 	
 	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
 	const auto MAX_SPD = maxSpeed_ * SPRINT_MULT * dt;
 	Vector3 moveSpeed;
 	float dotRate = 0.0f;
 
-	if (moveDir.XZ().LengthSquare() > 0.0f)
+	if (moveDir_.XZ().LengthSquare() > 0.0f)
 	{
 		// ˆÚ“®•ûŒü‚ðƒJƒƒ‰‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]
 		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
-		moveSpeed = (quaMat * moveDir).Normalized() * len * accel_ * dt;
+		moveSpeed = (quaMat * moveDir_).Normalized() * len * accel_ * dt;
 
 		// ˆÚ“®•ûŒü‚Æ‘¬“x‚Ì“àÏ‚ðŒvŽZ‚µ‚ÄAŒ¸‘¬—¦‚ð’²®
 		dotRate = Dot(moveSpeed.XZ(), velocity_.XZ()) + 1.0f * 0.5f;
@@ -168,7 +178,7 @@ void Player::Move()
 	velocity_.z *= decaySpeed;
 
 	// ˆÚ“®•ûŒü‚ðƒJƒƒ‰‚ÌŒü‚«‚É“¯Šú
-	if (moveDir.XZ().LengthSquare() > 0.0f)
+	if (moveDir_.XZ().LengthSquare() > 0.0f)
 	{
 		velocity_.x += moveSpeed.x;
 		velocity_.z += moveSpeed.z;
@@ -196,31 +206,6 @@ void Player::Move()
 	if (transform_.position.y <= -1000.0f ||
 		transform_.position.y >= 1000.0f)
 		transform_.position.y = 0.0f;
-
-	if (moveDir.z != 0)
-	{
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0, true, std::abs(moveDir.z), moveDir.z);
-	}
-	else
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_FRONT, 0);
-	}
-
-	if (moveDir.x > 0)
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0);
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0, true, moveDir.x);
-	}
-	else if (moveDir.x < 0)
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0);
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0, true, -moveDir.x);
-	}
-	else
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_LEFT, 0);
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_MOVE_RIGHT, 0);
-	}
 }
 
 void Player::AnimationSwitch()
@@ -231,6 +216,81 @@ void Player::AnimationSwitch()
 	if (wpn_->GetReloadProg())
 	{
 		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 2.5f);
+	}
+
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_FR, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_B, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_BL, 0);
+	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_BR, 0);
+
+	Vector3 dirs[] =
+	{
+		Vector3(0, 0, 1),
+		Vector3(-1, 0, 1),
+		Vector3(1, 0, 1),
+		Vector3(-1, 0, 0),
+		Vector3(1, 0, 0),
+		Vector3(0, 0, -1),
+		Vector3(-1, 0, -1),
+		Vector3(1, 0, -1)
+	};
+
+	for (auto i = 0; i <= 7; ++i)
+	{
+		float dot = (Dot(moveDir_, dirs[i]) - 0.5f) * 2.0f;
+		if (dot > 0.0f)
+		{
+			animation_->Play(ResourceManager::SRC(int(ResourceManager::SRC::ANIME_PL_RF_WALK_F) + i), 0,
+				true, dot, 1.0f);
+		}
+	}
+
+	return;
+
+	if (moveDir_.z > 0 && moveDir_.x < 0)
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0, true, moveDir_.Normalized().Length(), moveDir_.Normalized().Length());
+	}
+	else if (moveDir_.z < 0 && moveDir_.x > 0)
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0, true, moveDir_.Normalized().Length(), -moveDir_.Normalized().Length());
+	}
+	else
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0);
+
+		if (moveDir_.z != 0)
+		{
+			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0, true, std::abs(moveDir_.z), moveDir_.z);
+		}
+		else
+		{
+			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0);
+		}
+
+		if (moveDir_.x > 0)
+		{
+			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
+			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0, true, moveDir_.x);
+		}
+		else if (moveDir_.x < 0)
+		{
+			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
+			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0, true, -moveDir_.x);
+		}
+		else
+		{
+			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
+			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
+		}
 	}
 }
 

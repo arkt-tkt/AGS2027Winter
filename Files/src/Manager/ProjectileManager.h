@@ -31,15 +31,31 @@ private:
 public:
 	void Update();
 	void Draw();
+	void DrawUI();
 
 	// ƒv[ƒ‹“à‚É“ŠË•¨‚ğ¶¬‚·‚é
 	// @return ¶¬‚É¬Œ÷‚µ‚½‚©(false‚Ìê‡A‹ó‚«—Ìˆæ‚ª–³‚¢)
-	bool Create(Projectile::Data);
+	bool CreateProjectile(Projectile::Data);
+
+	void CreateDamagePopUp(const Position3& pos, float damage);
+
 	const std::vector<Projectile*>& GetActives() { return active_; }
 
 private:
+	static constexpr float POP_UP_TIMER = 3.0f;
+
+	struct PopUpData
+	{
+		float timer;
+		float damage;
+		Position3 pos;
+	};
+
 	static constexpr size_t POOL_SIZE = 150;
 
 	std::vector<std::unique_ptr<Projectile>> pool_;
 	std::vector<Projectile*> active_;
+
+	std::vector<PopUpData> popUps_;
+
 };

@@ -84,4 +84,7 @@
     <ClInclude Include="src\Scene\PauseLayer\PauseLayer.h" />
     <ClInclude Include="src\Object\Common\AnimationController.h" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\Shader\PostEffect\ScreenEffect.hlsl" />
+  </ItemGroup>
 </Project>

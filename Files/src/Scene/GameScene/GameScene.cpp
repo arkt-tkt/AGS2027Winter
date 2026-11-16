@@ -24,7 +24,7 @@ bool GameScene::Init()
     stage_->SetPlayerPtr(player_);
 
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
-    cam.SetFollowTarget(&player_->GetTransform());
+    cam.SetFollowTransform(&player_->GetTransform());
     cam.AddAwayColliders(player_->GetTypedColliders(COL_TY::PLAYER));
     cam.AddAwayColliders(stage_->GetColliders());
 
@@ -81,9 +81,15 @@ void GameScene::Update()
     }
 
     if (InputManager::GetInstance().CheckDownMap(
-        player_->GetInputNumber(), InputManager::TAGS::CHANGE_VIEW))
+        player_->GetInputNumber(), InputManager::TAGS::VIEW_CHANGE_MODE))
     {
         scnMng_.GetCameraPtr().SwitchFollowMode();
+    }
+
+    if (InputManager::GetInstance().CheckDownMap(
+        player_->GetInputNumber(), InputManager::TAGS::VIEW_SWITCH_SIDE))
+    {
+        scnMng_.GetCameraPtr().SwitchCameraSide();
     }
 
     ProjectileManager::GetInstance().Update();
@@ -125,6 +131,8 @@ void GameScene::DrawUI()
 
     stage_->DrawUI();
 
+    ProjectileManager::GetInstance().DrawUI();
+
     player_->DrawUI();
 
     DrawFormatString(100, 760, 0xffffffu, "‹óŠÔˆÀ’è“x\n   %3d", MathUtil::Round(stability_));
@@ -135,7 +143,7 @@ bool GameScene::Release()
     AudioManager::GetInstance().Stop(ResourceManager::SRC::MUSIC_BGM);
 
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
-    cam.SetFollowTarget();
+    cam.SetFollowTransform();
     cam.ResetAwayColliders();
 
     EnemyManager::DeleteInstance();

@@ -12,7 +12,7 @@ public:
 		int reserve = 150;
 		int shots = 1;
 		float spread = 0.01f;
-		float fireRate = 0.1f;
+		float fireRate = 60.0f / 825.0f;
 		float velocity = 5000.0f;
 		float reloadTime = 2.5f;
 		float moveSpeedMult = 1.0f;
@@ -42,6 +42,11 @@ protected:
 
 	WeaponData baseData_;
 	WeaponData editData_;
+
+	int ammoClip_;
+	int ammoReserve_;
+	float shotCT_;
+	float reloadProg_;
 
 	void InitParam() override;
 	void InitModel() override;

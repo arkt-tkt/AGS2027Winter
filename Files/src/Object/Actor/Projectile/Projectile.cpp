@@ -2,6 +2,13 @@
 #include "../../../Manager/SceneManager.h"
 #include "Projectile.h"
 
+Projectile::Projectile(ProjectileManager& mng)
+	:
+	projMng_(mng),
+	ActorBase3D()
+{
+}
+
 void Projectile::Update()
 {
 	if (!IsAlive()) return;
@@ -32,6 +39,18 @@ void Projectile::Draw()
 
 	DrawCapsule3D(Vec3ToVEC(transform_.position), Vec3ToVEC(transform_.position2nd),
 		dat_.radius, 16, 0x00ffffu, 0xffffffu, TRUE);
+}
+
+void Projectile::DrawUI()
+{
+	auto drawPos = transform_.position + (transform_.position2nd - transform_.position) / 2.0f;
+
+	auto scPos = VECToVec3(ConvWorldPosToScreenPos(Vec3ToVEC(drawPos)));
+
+	if (scnMng_.GetCameraPtr().IsInCameraBounds(scPos))
+	{
+		DrawStringToCenterPos(scPos.x, scPos.y, std::to_string(dat_.damage).c_str(), 0xffffffu);
+	}
 }
 
 void Projectile::InitParam()

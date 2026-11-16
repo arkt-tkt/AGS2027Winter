@@ -15,8 +15,8 @@ public:
 	{
 		NONE,
 		FIXED,
-		FOLLOW1,
-		FOLLOW2,
+		FOLLOW_FP,
+		FOLLOW_TP,
 		END
 	};
 
@@ -36,12 +36,19 @@ public:
 	void AddAwayColliders(std::vector<std::shared_ptr<Collider3D>> cols);
 	void ResetAwayColliders();
 
-	void SetFollowTarget(const Transform3D* = nullptr);
+	void Kick(Vector3 vec) { kickPower_ += vec; }
+
+	// 追跡するTransformを指定
+	void SetFollowTransform(const Transform3D* = nullptr);
+	// MODEを変更
 	void ChangeCameraMode(MODE mode);
+	// MODE::FOLLOW_xxを切り替え
 	void SwitchFollowMode();
+	// MODE::FOLLOW_xxのカメラ座標X軸を反転
+	void SwitchCameraSide() { isReverseX_ = !isReverseX_; }
 	
 	// カメラ領域内に座標点が存在するかどうかを判定
-	bool IsInCameraBounds(Vector3 pos);
+	bool IsInCameraBounds(Position3 pos);
 
 	const Vector3& GetPosition() const { return pos_; }
 	const Vector3& GetTargetPosition() const { return targetPos_; }
@@ -64,14 +71,10 @@ private:
 	static constexpr Vector3 FIXED_CAMERA_LOCAL_POS = { 0.0f, 0.0f, -320.0f };
 	static constexpr Vector3 FIXED_CAMERA_ANGLES = { 0.0f, 0.0f, 0.0f };
 
-	static constexpr float FOLLOW1_LOCAL_POS_X = 35.0f;
-	static constexpr float FOLLOW1_LOCAL_POS_Y = 60.0f;
-	static constexpr float FOLLOW1_LOCAL_TARGET_POS_Z = 500.0f;
-	static constexpr float FOLLOW1_LOCAL_CAMERA_POS_Z = -100.0f;
-	static constexpr Vector3 FOLLOW1_TARGET_LOCAL_POS = {
-		FOLLOW1_LOCAL_POS_X, FOLLOW1_LOCAL_POS_Y, FOLLOW1_LOCAL_TARGET_POS_Z };
-	static constexpr Vector3 FOLLOW1_CAMERA_LOCAL_POS = {
-		FOLLOW1_LOCAL_POS_X, FOLLOW1_LOCAL_POS_Y, FOLLOW1_LOCAL_CAMERA_POS_Z };
+	static constexpr float FOLLOW_TP_LOCAL_POS_X = 35.0f;
+	static constexpr float FOLLOW_TP_LOCAL_POS_Y = 60.0f;
+	static constexpr float FOLLOW_TP_LOCAL_TARGET_POS_Z = 500.0f;
+	static constexpr float FOLLOW_TP_LOCAL_CAMERA_POS_Z = -100.0f;
 
 	static constexpr float MOUSE_SENSITIVITY_INIT = 0.1f;
 
@@ -84,28 +87,32 @@ private:
 
 	MODE mode_;
 
-	float shakeTimer_ = 0.0f;
-	float shakeDuration_ = 0.0f;
-	float shakeIntensity_ = 0.0f;
-
 	Vector3 pos_;
 	Vector3 prevPos_;
 
 	Vector3 targetPos_;
 	Vector3 prevTargetPos_;
 	
-	// ラジアン度
-	Vector3 angles_;
-	// ラジアン度
-	Vector3 prevAngles_;
+	Vector3 angles_; // ラジアン度
+	Vector3 prevAngles_; // ラジアン度
+
+	Vector3 kickPower_;
+	Vector3 kick_;
+
+	float shakeTimer_ = 0.0f;
+	float shakeDuration_ = 0.0f;
+	float shakeIntensity_ = 0.0f;
+
+	bool isReverseX_ = false;
+	float posLocalX_ = FOLLOW_TP_LOCAL_POS_X;
 
 	float mouseSensitivity_ = MOUSE_SENSITIVITY_INIT;
 
 	void UpdateDxLibCamera();
 
 	void UpdateFixed();
-	void UpdateFollow1();
-	void UpdateFollow2();
+	void UpdateFollowTP();
+	void UpdateFollowFP();
 
 	void UpdateAngles();
 
@@ -113,5 +120,7 @@ private:
 	void CollisionPlayer();
 
 	void ShakeScreen(Vector3& cam_pos, Vector3& tgt_pos) const;
+
+	Vector3 _AngleClamp(const Vector3&);
 
 };

@@ -208,6 +208,8 @@ void AnimationController::PlayInSeconds(ResourceManager::SRC res, int anim_index
 {
 	int id = ResourceManager::GetInstance().Load(res).handleId_;
 
+	if (power < 0.0f || seconds <= 0.0f) return;
+
 	for (auto play : playData_)
 	{
 		if (play->resId == id && play->animIndex == anim_index)
@@ -224,6 +226,40 @@ void AnimationController::PlayInSeconds(ResourceManager::SRC res, int anim_index
 			anim.maxPower = power;
 			anim.speed = anim.totalTime / anim.playRate / seconds; // Ä¶ŠÔ‚ğw’è•b”‚É‡‚í‚¹‚Ä’²®
 			anim.isLoop = false;
+
+			playData_.push_back(&anim);
+
+			return;
+		}
+	}
+}
+
+void AnimationController::Set(ResourceManager::SRC res, int anim_index, bool is_loop, float power, float speed)
+{
+	int id = ResourceManager::GetInstance().Load(res).handleId_;
+
+	if (power < 0.0f || speed == 0.0f) return;
+
+	for (auto play : playData_)
+	{
+		if (play->resId == id && play->animIndex == anim_index)
+		{
+			play->power = play->maxPower = power;
+			play->speed = speed;
+
+			return;
+		}
+	}
+
+	for (auto& anim : animData_)
+	{
+		if (anim.resId == id && anim.animIndex == anim_index)
+		{
+			anim.attachId = MV1AttachAnim(modelId_, anim.animIndex, anim.resId);
+			anim.power = anim.maxPower = power;
+			anim.speed = speed;
+			anim.time = speed > 0.0f ? 0.0f : anim.totalTime;
+			anim.isLoop = is_loop;
 
 			playData_.push_back(&anim);
 

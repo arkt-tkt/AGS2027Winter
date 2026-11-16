@@ -79,11 +79,18 @@ void WeaponBase::Main()
 		editData_.reloadTime ||
 		editData_.clipSize == 0) return;
 
+	// 乱数生成器の参照
+	auto& rng = Application::GetInstance().GetRNGPointer();
+
 	// 弾-1
 	--editData_.clipSize;
 
 	// 発射クールタイム
 	editData_.fireRate -= baseData_.fireRate;
+
+	// 反動
+	scnMng_.GetCameraPtr().Kick(
+		Vector3(-MathUtil::PI_F * 0.012f, MathUtil::PI_F * rng.GetRandReal(-0.003f, 0.003f), 0));
 
 	Vector3 dir;
 
@@ -91,9 +98,6 @@ void WeaponBase::Main()
 	{
 		// 基準となる方位を設定
 		dir = (scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position).Normalized();
-
-		// 乱数生成器の参照
-		auto& rng = Application::GetInstance().GetRNGPointer();
 
 		// ランダム角度
 		float angleRand = rng.GetRandReal();
@@ -127,7 +131,7 @@ void WeaponBase::Main()
 		dat.velocity = dir * baseData_.velocity;
 		dat.damage = editData_.damage;
 
-		if (ProjectileManager::GetInstance().Create(dat))
+		if (ProjectileManager::GetInstance().CreateProjectile(dat))
 		{
 			AudioManager::GetInstance().Play(ResourceManager::SRC::SE_FIRE_AR);
 

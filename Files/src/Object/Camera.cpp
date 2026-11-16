@@ -42,14 +42,17 @@ void Camera::Update()
 	prevTargetPos_ = targetPos_;
 	prevAngles_ = angles_;
 
+	auto x = isReverseX_ ? -FOLLOW_TP_LOCAL_POS_X : FOLLOW_TP_LOCAL_POS_X;
+	posLocalX_ = MathUtil::Lerp(posLocalX_, x, 0.12f);
+
 	if (!SceneManager::GetInstance().IsPause()) switch (mode_)
 	{
 	case MODE::FIXED:
 		UpdateFixed(); break;
-	case MODE::FOLLOW1:
-		UpdateFollow1(); break;
-	case MODE::FOLLOW2:
-		UpdateFollow2(); break;
+	case MODE::FOLLOW_TP:
+		UpdateFollowTP(); break;
+	case MODE::FOLLOW_FP:
+		UpdateFollowFP(); break;
 	}
 
 	UpdateAngles();
@@ -57,7 +60,7 @@ void Camera::Update()
 	shakeTimer_ -= SceneManager::GetInstance().GetDeltaTime();
 	if (shakeTimer_ < 0.0f) shakeTimer_ = 0.0f;
 
-	if (mode_ == MODE::FOLLOW1)
+	if (mode_ == MODE::FOLLOW_TP)
 	{
 		CollisionStage();
 
@@ -133,7 +136,7 @@ void Camera::ResetAwayColliders()
 	awayColliders_.clear();
 }
 
-void Camera::SetFollowTarget(const Transform3D* t)
+void Camera::SetFollowTransform(const Transform3D* t)
 {
 	if (!t)
 	{
@@ -143,7 +146,7 @@ void Camera::SetFollowTarget(const Transform3D* t)
 	}
 
 	followTarget_ = t;
-	ChangeCameraMode(MODE::FOLLOW2);
+	ChangeCameraMode(MODE::FOLLOW_FP);
 }
 
 void Camera::ChangeCameraMode(MODE mode)
@@ -165,7 +168,7 @@ void Camera::SwitchFollowMode()
 	mode_ = (Camera::MODE)intMode;
 }
 
-bool Camera::IsInCameraBounds(Vector3 pos)
+bool Camera::IsInCameraBounds(Position3 pos)
 {
 	return MathUtil::Within(pos.x, 0.0f, Application::RESOLUTION.x) &&
 		MathUtil::Within(pos.y, 0.0f, Application::RESOLUTION.y) &&
@@ -227,10 +230,10 @@ void Camera::UpdateFixed()
 
 	targetPos_ = FIXED_TARGET_POS;
 
-	pos_ = (qRot * FOLLOW1_CAMERA_LOCAL_POS);
+	pos_ = (qRot * FIXED_CAMERA_LOCAL_POS);
 }
 
-void Camera::UpdateFollow1()
+void Camera::UpdateFollowTP()
 {
 	// フォロー先が無いやん！となったら一時固定カメラで
 	if (followTarget_ == nullptr)
@@ -239,16 +242,18 @@ void Camera::UpdateFollow1()
 		return;
 	}
 
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), angles_.x) * AngleAxis(Vector3(0, 1, 0), angles_.y);
+	auto nowAngles = _AngleClamp(angles_ + kick_);
+
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	auto fPos = followTarget_->position;
 
-	targetPos_ = fPos + qRot * FOLLOW1_TARGET_LOCAL_POS;
+	targetPos_ = fPos + qRot * Position3(posLocalX_, FOLLOW_TP_LOCAL_POS_Y, FOLLOW_TP_LOCAL_TARGET_POS_Z);
 
-	pos_ = fPos + (qRot * FOLLOW1_CAMERA_LOCAL_POS);
+	pos_ = fPos + qRot * Position3(posLocalX_, FOLLOW_TP_LOCAL_POS_Y, FOLLOW_TP_LOCAL_CAMERA_POS_Z);
 }
 
-void Camera::UpdateFollow2()
+void Camera::UpdateFollowFP()
 {
 	// フォロー先が無いやん！となったら一時固定カメラで
 	if (followTarget_ == nullptr)
@@ -257,7 +262,9 @@ void Camera::UpdateFollow2()
 		return;
 	}
 
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), angles_.x) * AngleAxis(Vector3(0, 1, 0), angles_.y);
+	auto nowAngles = _AngleClamp(angles_ + kick_);
+
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	auto fPos = followTarget_->position;
 	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->modelId, 5));
@@ -291,6 +298,11 @@ void Camera::UpdateAngles()
 
 	angles_.x = MathUtil::Clamp(angles_.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
 	angles_.y = MathUtil::RadIn2PI(angles_.y);
+
+	kick_ += Lerp(Vector3(), -kick_, 4.0f * dt);
+	auto kickDiff = Lerp(Vector3(), kickPower_, 20.0f * dt);
+	kick_ += kickDiff;
+	kickPower_ -= kickDiff;
 }
 
 void Camera::CollisionStage()
@@ -304,7 +316,7 @@ void Camera::CollisionStage()
 		if (dat.type != Collider3D::TYPE::STAGE || dat.modelId == -1) continue;
 
 		auto hitPoly = c.lock()->GetNearestHitPolyLine(
-			followTarget_->position + Vector3(0, FOLLOW1_LOCAL_POS_Y, 0),
+			followTarget_->position + Vector3(0, FOLLOW_TP_LOCAL_POS_Y, 0),
 			pos_ + qRot * Vector3(2, 1, 0)
 		);
 
@@ -314,7 +326,7 @@ void Camera::CollisionStage()
 		}
 
 		auto pushBack =
-			Vector3(-FOLLOW1_LOCAL_POS_X, 0, -FOLLOW1_LOCAL_CAMERA_POS_Z).Normalized() * 0.5f;
+			Vector3(-FOLLOW_TP_LOCAL_POS_X, 0, -FOLLOW_TP_LOCAL_CAMERA_POS_Z).Normalized() * 0.5f;
 
 		auto norm = VECToVec3(hitPoly.Normal).Normalized() * 3.0f;
 
@@ -333,6 +345,12 @@ void Camera::CollisionPlayer()
 		auto& dat = c.lock()->GetColliderData();
 
 		if (dat.type != Collider3D::TYPE::PLAYER || dat.modelId == -1) continue;
+
+		if (mode_ != MODE::FOLLOW_TP)
+		{
+			MV1SetOpacityRate(dat.modelId, 1.0f);
+			return;
+		}
 
 		auto hit = MV1CollCheck_Line(
 			dat.modelId, -1,
@@ -370,4 +388,12 @@ void Camera::ShakeScreen(Vector3& cam_pos, Vector3& tgt_pos) const
 		cam_pos += offset;
 		tgt_pos += offset;
 	}
+}
+
+Vector3 Camera::_AngleClamp(const Vector3& v)
+{
+	Vector3 ret = v;
+	ret.x = MathUtil::Clamp(v.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
+	ret.y = MathUtil::RadIn2PI(v.y);
+	return ret;
 }

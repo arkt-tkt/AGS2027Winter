@@ -1,8 +1,12 @@
 #pragma once
 #include "../ActorBase3D.h"
 
+class ProjectileManager;
+
 class Projectile : public ActorBase3D
 {
+	friend ProjectileManager;
+
 public:
 	struct Data
 	{
@@ -14,8 +18,11 @@ public:
 		float damage;
 	};
 
+	Projectile(ProjectileManager& mng);
+
 	void Update() override;
 	void Draw() override;
+	void DrawUI() override;
 
 	Data GetData() const { return dat_; }
 	void SetData(Data dat) { dat_ = dat; }
@@ -24,6 +31,9 @@ public:
 
 private:
 	static constexpr float ALIVE_TIME_MAX = 1.5f;
+
+	// マネージャ
+	ProjectileManager& projMng_;
 
 	Data dat_;
 	int hp_;

@@ -113,12 +113,16 @@ bool Application::InitSystem()
 	(SetWindowText)("Project: UNKNOWN");
 
 	// 画面設定
-	int w = GetSystemMetrics(SM_CXSCREEN), h = GetSystemMetrics(SM_CYSCREEN);
-	SetGraphMode(w, h, 32);
+	screenSize_= Vector2(float(GetSystemMetrics(SM_CXSCREEN)), float(GetSystemMetrics(SM_CYSCREEN)));
+	SetGraphMode(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 32);
+
+#if defined(_WIN32) || defined(_WIN64)
+	SetWindowSize(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+#endif
 
 	// ウィンドウモード
 	ChangeWindowMode(TRUE);
-
+	
 	// ボーダーレス化
 	SetWindowStyleMode(1);
 
@@ -202,15 +206,11 @@ void Application::Draw()
 #endif
 
 	SetDrawScreen(DX_SCREEN_BACK);
-
+	
 	ClearDrawScreen();
 
-	int x, y;
-	GetWindowSize(&x, &y);
-	double ext = (std::min)(
-		static_cast<double>(x) / RESOLUTION_WIDTH,
-		static_cast<double>(y) / RESOLUTION_HEIGHT);
-	DrawRotaGraph(x / 2, y / 2, ext, 0.0, preDrawScreen_, FALSE);
+	DrawRotaGraphF(screenSize_.x / 2.0f, screenSize_.y / 2.0f,
+		1.0, 0.0, preDrawScreen_, FALSE);
 
 	// 裏画面を表画面に転写
 	ScreenFlip();

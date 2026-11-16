@@ -294,8 +294,11 @@ void InputManager::InitInputMap()
 		AddorReplaceMap(i, TAGS::VIEW_RIGHT,
 			{ { btn::RSTICK_R, btn::NONE }, { KEY_INPUT_RIGHT, 0x00 }, 0 });
 
-		AddorReplaceMap(i, TAGS::CHANGE_VIEW,
+		AddorReplaceMap(i, TAGS::VIEW_CHANGE_MODE,
 			{ { btn::BUTTON_R3, btn::NONE }, { KEY_INPUT_C, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::VIEW_SWITCH_SIDE,
+			{ { btn::BUTTON_L1, btn::NONE }, { KEY_INPUT_TAB, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_OK,
 			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_RETURN, KEY_INPUT_SPACE }, 0 });

@@ -372,6 +372,14 @@ Vector3 Vector3::Normalized() const
 	return *this / len;
 }
 
+Vector3& Vector3::RadIn2PI()
+{
+	x = MathUtil::RadIn2PI(x);
+	y = MathUtil::RadIn2PI(y);
+	z = MathUtil::RadIn2PI(z);
+	return *this;
+}
+
 Vector3 operator+(const Vector3& va, const Vector3& vb)
 {
 	return Vector3(va) += vb;

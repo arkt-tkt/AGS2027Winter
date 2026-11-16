@@ -301,7 +301,13 @@ void CharacterBase3D::CollisionProjectile()
 						}
 					}
 
-					CalcHP(-p->GetData().damage * dMult);
+					auto finalDmg = p->GetData().damage * dMult;
+
+					CalcHP(-finalDmg);
+
+					ProjectileManager::GetInstance().CreateDamagePopUp(
+						VECToVec3(hits.Dim[0].Position[0]),
+						finalDmg);
 
 					p->Hit();
 

@@ -27,21 +27,21 @@ void CapturePoint::Draw()
 {
 	// モデル
 	MV1DrawModel(transform_.modelId);
+}
 
+void CapturePoint::DrawUI()
+{
 	// オーバーレイ表示
 	Vector3 pos = transform_.position + Vector3(0, 20, 0);
 
 	VECTOR scPos = ConvWorldPosToScreenPos(Vec3ToVEC(pos));
 
-	if (!MathUtil::Within(scPos.z, 0.0f, 1.0f)) return;
+	if (!scnMng_.GetCameraPtr().IsInCameraBounds(VECToVec3(scPos))) return;
 
 	auto col = activeTimer_ > 0.0f ? COLOR_ACTIVE : COLOR_STANDBY;
 
 	DrawStringToCenterPos(MathUtil::Round(scPos.x), MathUtil::Round(scPos.y), "G", col);
-}
 
-void CapturePoint::DrawUI()
-{
 	if (inRange_ && activeTimer_ <= 0.0f)
 	{
 		DrawString(80, 900, "Eキー/右ボタン: 長押しで発電機を起動する", 0xffffffu);

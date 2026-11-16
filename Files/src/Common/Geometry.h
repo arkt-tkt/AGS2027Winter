@@ -149,6 +149,8 @@ struct Vector3
 	Vector3& Normalize();
 	// ³‹K‰»Ï‚İƒxƒNƒgƒ‹
 	Vector3 Normalized() const;
+
+	Vector3& RadIn2PI();
 };
 
 // •Ê–¼

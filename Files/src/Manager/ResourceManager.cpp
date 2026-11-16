@@ -80,13 +80,28 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_IDLE, std::move(res));
 
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/walking.mv1");
-	resourcesMap_.emplace(SRC::ANIME_PL_RF_MOVE_FRONT, std::move(res));
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_F, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Forward_Left.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_FL, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Forward_Right.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_FR, std::move(res));
 
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Strafe_Left.mv1");
-	resourcesMap_.emplace(SRC::ANIME_PL_RF_MOVE_LEFT, std::move(res));
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_L, std::move(res));
 	
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Strafe_Right.mv1");
-	resourcesMap_.emplace(SRC::ANIME_PL_RF_MOVE_RIGHT, std::move(res));
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_R, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Backward.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_B, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Backward_Left.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_BL, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Backward_Right.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_BR, std::move(res));
 
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Rifle_Run.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_DASH_FRONT, std::move(res));

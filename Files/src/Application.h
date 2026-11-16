@@ -31,6 +31,8 @@ public:
 	// 機能使用フラグ
 	static const bool USE_3D_FLAG;
 
+	Vector2 screenSize_;
+
 	// 初期化
 	bool Init();
 
