@@ -71,6 +71,8 @@ public:
 
 		SE_FIRE_AR,
 
+		SHADER_SCREEN,
+
 		JSON_PATHFIND,
 
 		MAX

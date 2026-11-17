@@ -83,7 +83,7 @@ void EnemyManager::TriggerSoundEvent(const Position3& pos, SOUND_EVENT event)
 	{
 		if ((cell->GetTransform().position - pos).LengthSquare() <= range * range)
 		{
-			cell->MemoryPos(pos);
+			cell->GetSoundPos(pos);
 		}
 	}
 }

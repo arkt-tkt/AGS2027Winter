@@ -11,6 +11,8 @@ ProjectileManager::ProjectileManager()
 	for (auto& cell : pool_) cell = std::make_unique<Projectile>(*this);
 
 	active_.reserve(POOL_SIZE);
+
+	popUps_.reserve(60ull);
 }
 
 void ProjectileManager::Update()

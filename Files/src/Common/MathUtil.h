@@ -256,11 +256,4 @@ namespace MathUtil
 		return RadIn2PI(ret);
 	}
 
-	// 色線形補間
-	unsigned int LerpColor(const unsigned int& a, const unsigned int& b, float t);
-
-	// map を用いた色線形補完
-	// map には少なくとも[0.0]と[1.0]に対応する要素が入っているべきである
-	unsigned int LerpColorMap(const std::map<float, unsigned int>& map, float rate);
-
 };

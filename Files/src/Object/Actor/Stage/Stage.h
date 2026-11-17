@@ -23,6 +23,7 @@ public:
 
 	std::vector<std::shared_ptr<Collider3D>> GetColliders() const;
 	int GetCaptureCount();
+	float GetSpStability() { return stability_; }
 
 	void SetPlayerPtr(std::weak_ptr<Player> player) { player_ = player; }
 	Player* GetPlayerPtr() const { return player_.lock().get(); }
@@ -30,6 +31,9 @@ public:
 
 private:
 	static constexpr int CAPTURE_POINT_NUM = 5;
+	static constexpr float LOSS_STABILITY_PER_SECOND = -1.0f;
+	static constexpr float GAIN_STABILITY_PER_SECOND = -LOSS_STABILITY_PER_SECOND / 3.3f;
+	static constexpr float MAX_STABILITY = 100.0f;
 
 	static constexpr Vector3 CAPTURE_POINT_POS[CAPTURE_POINT_NUM] = 
 	{
@@ -47,5 +51,7 @@ private:
 	std::shared_ptr<PathFind> pathFind_;
 	std::shared_ptr<Resupply> resupply_;
 	std::vector<std::shared_ptr<CapturePoint>> capturePoints_;
+
+	float stability_ = MAX_STABILITY;
 
 };

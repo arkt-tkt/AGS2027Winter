@@ -7,6 +7,8 @@
 
 void CharacterBase3D::Update()
 {
+	damageTimer_ = (std::max)(damageTimer_ - scnMng_.GetDeltaTime(), 0.0f);
+
 	// ˆÚ“®
 	{
 		Move();
@@ -62,7 +64,14 @@ void CharacterBase3D::Draw()
 
 void CharacterBase3D::CalcHP(float add)
 {
-	if (IsInvincible() && add < 0.0f) return;
+	if (IsInvincible() && add < 0.0f)
+	{
+		return;
+	}
+	else if (add < 0.0f)
+	{
+		damageTimer_ = DAMAGE_TIMER_MAX;
+	}
 
 	hp_ += add;
 	if (hp_ <= 0.0f)

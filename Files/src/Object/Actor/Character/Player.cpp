@@ -91,15 +91,15 @@ void Player::InitAnim()
 
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_IDLE, 0, 30.0f,
 		AnimationController::BASE);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0, 40.0f,
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0, 30.0f,
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_FR, 0, 30.0f,
 		AnimationController::FULL_BODY);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0, 40.0f,
 		AnimationController::FULL_BODY);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0, 40.0f,
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_WALK_B, 0, 30.0f,
 		AnimationController::FULL_BODY);
@@ -129,7 +129,10 @@ void Player::Move()
 	auto dt = scnMng_.GetDeltaTime();
 
 	// 毎秒1HP回復
-	hp_ = std::clamp(hp_ + dt, 0.0f, maxHp_);
+	if (!damageTimer_)
+	{
+		hp_ = std::clamp(hp_ + dt, 0.0f, maxHp_);
+	}
 
 	// 別名
 	using tag = InputManager::TAGS;
@@ -151,17 +154,25 @@ void Player::Move()
 	moveDir_.x += INS.CheckNowMap(INPUT_NUM, tag::MOVE_RIGHT);
 
 	// 長さを得る
-	auto len = moveDir_.Length();
+	auto len = moveDir_.Length() / Gamepad::DINPUT_STICK_MAX;
 	// 正規化
 	moveDir_.Normalize();
 
-	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) && moveDir_.XZ().LengthSquare() ? true : false;
-	
+	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) || isSprinting_ && moveDir_.XZ().LengthSquare() ? true : false;
+
+	auto toTarget = scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position;
+
+	const auto DOT = Dot(
+		Vector2(velocity_.x, velocity_.z).Normalized(),
+		Vector2(toTarget.x, toTarget.z).Normalized());
+	const auto DIR_MOVE_MULT = 1.0f - 0.1f + DOT * 0.1f;
+
 	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
 	const auto MAX_SPD = maxSpeed_ * SPRINT_MULT * dt;
 	Vector3 moveSpeed;
 	float dotRate = 0.0f;
 
+	// 移動入力あり
 	if (moveDir_.XZ().LengthSquare() > 0.0f)
 	{
 		// 移動方向をカメラの向きに合わせて回転
@@ -169,11 +180,11 @@ void Player::Move()
 		moveSpeed = (quaMat * moveDir_).Normalized() * len * accel_ * dt;
 
 		// 移動方向と速度の内積を計算して、減速率を調整
-		dotRate = Dot(moveSpeed.XZ(), velocity_.XZ()) + 1.0f * 0.5f;
+		dotRate = (Dot(moveSpeed.XZ(), velocity_.XZ()) + 1.0f) * 0.5f;
 	}
 
 	// 緩やかに減速、多少滑る
-	float decaySpeed =  MathUtil::Lerp(std::exp(-deccel_ * dt), 1.0f, dotRate);
+	float decaySpeed = MathUtil::Lerp(std::exp(-deccel_ * dt), 1.0f, dotRate);
 	velocity_.x *= decaySpeed;
 	velocity_.z *= decaySpeed;
 
@@ -185,9 +196,9 @@ void Player::Move()
 	}
 
 	// 最大速度
-	if (velocity_.XZ().LengthSquare() * SPRINT_MULT > MAX_SPD * MAX_SPD)
+	if (velocity_.XZ().LengthSquare() * SPRINT_MULT > std::powf(MAX_SPD * DIR_MOVE_MULT, 2.0f))
 	{
-		float mult = MAX_SPD / velocity_.XZ().Length();
+		float mult = (std::min)(MAX_SPD * DIR_MOVE_MULT / velocity_.XZ().Length(), 1.0f);
 
 		velocity_.x *= mult;
 		velocity_.z *= mult;
@@ -203,9 +214,10 @@ void Player::Move()
 	transform_.position += velocity_;
 
 	// マップから落下した場合
-	if (transform_.position.y <= -1000.0f ||
-		transform_.position.y >= 1000.0f)
+	if (!MathUtil::Within(transform_.position.y, -1000.0f, 1000.0f))
+	{
 		transform_.position.y = 0.0f;
+	}
 }
 
 void Player::AnimationSwitch()
@@ -217,15 +229,6 @@ void Player::AnimationSwitch()
 	{
 		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 2.5f);
 	}
-
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_FR, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_B, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_BL, 0);
-	animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_BR, 0);
 
 	Vector3 dirs[] =
 	{
@@ -241,57 +244,23 @@ void Player::AnimationSwitch()
 
 	for (auto i = 0; i <= 7; ++i)
 	{
-		float dot = (Dot(moveDir_, dirs[i]) - 0.5f) * 2.0f;
+		auto src = int(ResourceManager::SRC::ANIME_PL_RF_WALK_F);
+
+		const float DOT_RATE = 0.75f;
+		float dot = (Dot(moveDir_, dirs[i].Normalized()) - DOT_RATE) / (1.0f - DOT_RATE);
+
 		if (dot > 0.0f)
 		{
-			animation_->Play(ResourceManager::SRC(int(ResourceManager::SRC::ANIME_PL_RF_WALK_F) + i), 0,
-				true, dot, 1.0f);
+			animation_->Play(ResourceManager::SRC(src + i), 0,
+				true, dot, dot);
+		}
+		else
+		{
+			animation_->Stop(ResourceManager::SRC(src + i), 0);
 		}
 	}
 
 	return;
-
-	if (moveDir_.z > 0 && moveDir_.x < 0)
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0, true, moveDir_.Normalized().Length(), moveDir_.Normalized().Length());
-	}
-	else if (moveDir_.z < 0 && moveDir_.x > 0)
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
-		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0, true, moveDir_.Normalized().Length(), -moveDir_.Normalized().Length());
-	}
-	else
-	{
-		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_FL, 0);
-
-		if (moveDir_.z != 0)
-		{
-			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0, true, std::abs(moveDir_.z), moveDir_.z);
-		}
-		else
-		{
-			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_F, 0);
-		}
-
-		if (moveDir_.x > 0)
-		{
-			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
-			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0, true, moveDir_.x);
-		}
-		else if (moveDir_.x < 0)
-		{
-			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
-			animation_->Play(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0, true, -moveDir_.x);
-		}
-		else
-		{
-			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_L, 0);
-			animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_WALK_R, 0);
-		}
-	}
 }
 
 void Player::LateMove()
@@ -310,10 +279,8 @@ void Player::LateMove()
 	{
 		wpn_->Sub();
 	}
-	else if (INS.CheckNowMap(INPUT_NUM, InputManager::TAGS::ATTACK_MAIN))
-	{
-		wpn_->Main();
-	}
+
+	wpn_->Main(INPUT_NUM, InputManager::TAGS::ATTACK_MAIN);
 }
 
 void Player::TurnVisual()

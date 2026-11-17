@@ -1,12 +1,20 @@
 #pragma once
 #include "../../../Common/Geometry.h"
+#include "../../../Manager/InputManager.h"
 #include "../ActorBase3D.h"
 
 class WeaponBase : public ActorBase3D
 {
 public:
+	enum class SHOT_TYPE
+	{
+		SEMI_AUTO,
+		FULL_AUTO
+	};
+
 	struct WeaponData
 	{
+		SHOT_TYPE type = SHOT_TYPE::FULL_AUTO;
 		float damage = 36;
 		int clipSize = 30;
 		int reserve = 150;
@@ -25,7 +33,7 @@ public:
 	void Draw() override;
 	void DrawUI();
 
-	virtual void Main();
+	virtual void Main(int pad_num, InputManager::TAGS tag);
 	virtual void Sub();
 	virtual void Alt();
 	virtual void Reload();

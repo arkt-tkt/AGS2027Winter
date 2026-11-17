@@ -17,12 +17,13 @@ public:
 	void Draw() override;
 	void DrawUI() override;
 
-	void MemoryPos(const Position3& pos);
+	void GetSoundPos(const Position3& pos);
 
 	float GetDamage() const { return damage_; }
 
 private:
 	static constexpr float SCALE = 0.4f;
+	static constexpr float CHASE_UPDATE_SOUND_LEN_SPACE = 25.0f;
 
 	// マネージャ
 	EnemyManager& enmMng_;
@@ -34,8 +35,12 @@ private:
 
 	// 追跡状態
 	bool chasing_ = false;
-	// 最後にプレイヤーの痕跡を見つけた場所
+	// 直前フレームの追跡状態
+	bool prevChasing_ = chasing_;
+	// 最後に知覚情報で得られた行先
 	Position3 chasePos_;
+	// 経路探索のパス
+	std::vector<int> pathData_;
 	// 最後に通過したノード
 	unsigned int lastNode_ = (unsigned int)(-1);
 

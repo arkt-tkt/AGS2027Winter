@@ -86,5 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\ScreenEffect.hlsl" />
+    <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />
   </ItemGroup>
 </Project>

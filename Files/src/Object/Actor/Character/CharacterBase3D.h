@@ -10,6 +10,8 @@ public:
 	static constexpr float GRAVITY_POW = 32.0f;
 	static constexpr float MAX_FALL_VELOCITY = -24.0f;
 
+	static constexpr float DAMAGE_TIMER_MAX = 0.5f;
+
 	CharacterBase3D() : ActorBase3D() {}
 	virtual ~CharacterBase3D() {}
 
@@ -24,6 +26,8 @@ public:
 	float GetHP() const { return hp_; }
 	// HPを計算
 	virtual void CalcHP(float add);
+	// ダメージタイマを取得
+	float GetDamageTimer() const { return damageTimer_; }
 	// 無敵状態を取得
 	bool IsInvincible() const { return invincible_ < 0.0f; }
 	// スコアの値を取得
@@ -41,12 +45,15 @@ protected:
 	float hp_ = 100.0f;
 	// 最大HP
 	float maxHp_ = hp_;
+	// ダメージを受けると作動するタイマ
+	float damageTimer_ = 0.0f;
+	
 	// 1秒あたりの最大移動速度
 	float maxSpeed_ = 120.0f;
 	// ダッシュ倍率
 	float sprintMult_ = 1.8f;
 	// 加速力
-	float accel_ = 12.0f;
+	float accel_ = 9.0f;
 	// 減速力
 	float deccel_ = 9.0f;
 	// 無敵状態タイマー

@@ -34,6 +34,7 @@ public:
 #endif
 
 	std::vector<int> PathGet(const Vector3& start_pos, const Vector3& goal_pos);
+	std::vector<int> PathGetR(const Vector3& start_pos, const Vector3& goal_pos);
 
 	Vector3 NodeToPos(unsigned int node_id)
 	{

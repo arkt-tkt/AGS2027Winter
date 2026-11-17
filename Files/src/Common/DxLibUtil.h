@@ -60,6 +60,15 @@ namespace DxLibUtil
 
 	VECTOR GetScreenPosToWorldPos(const VECTOR& worldPos, int scr_x, int scr_y);
 
+	// 色線形補間
+	unsigned int LerpColor(const unsigned int& a, const unsigned int& b, float t);
+
+	// map を用いた色線形補完
+	// map には少なくとも[0.0]と[1.0]に対応する要素が入っているべきである
+	unsigned int LerpColorMap(const std::map<float, unsigned int>& map, float rate);
+
+	COLOR_F UInt2ColorF(const unsigned int& color_code);
+
 	void DrawStringToCenterPos(int x, int y, const char* string, unsigned int color);
 };
 

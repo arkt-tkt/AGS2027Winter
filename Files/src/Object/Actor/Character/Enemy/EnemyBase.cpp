@@ -44,9 +44,16 @@ void EnemyBase::DrawUI()
 {
 }
 
-void EnemyBase::MemoryPos(const Position3& pos)
+void EnemyBase::GetSoundPos(const Position3& pos)
 {
-	chasePos_ = pos;
+	if ((pos - chasePos_).LengthSquare() >
+		CHASE_UPDATE_SOUND_LEN_SPACE * CHASE_UPDATE_SOUND_LEN_SPACE)
+	{
+		chasePos_ = pos;
+
+		pathData_ = enmMng_.GetPathFindPtr().lock()->
+			PathGetR(transform_.position, chasePos_);
+	}
 }
 
 void EnemyBase::InitParam()
@@ -95,6 +102,10 @@ void EnemyBase::InitAnim()
 
 void EnemyBase::InitOther()
 {
+	chasePos_ = transform_.position;
+	chasePos_.y = 0.0f;
+
+	pathData_.reserve(10);
 }
 
 void EnemyBase::Move()
@@ -126,34 +137,38 @@ void EnemyBase::LateMove()
 		float chkDir = Dot(qRotVec, (playerPos - transform_.position).Normalized());
 
 		// 追跡状態更新
+		prevChasing_ = chasing_;
 		chasing_ = chkLos && chkDir >= 0.0f;
 
 		Vector2 moveDir;
 
+		// 追跡および経路探索
 		if (chasing_)
 		{
+			// 追跡中は直接プレイヤーを追いかける
 			moveDir = (playerPos - transform_.position).XZ().Normalized();
 
+			// 追っかけ対象の座標を覚えておく
 			chasePos_ = playerPos;
 		}
 		else
 		{
-			auto path = pf->PathGet(transform_.position, chasePos_);
-
-			if (path.size() > 1)
+			if (prevChasing_)
 			{
-				unsigned int tgtNode = path.front();
+				// パスの再計算
+				pathData_ = enmMng_.GetPathFindPtr().lock()->
+					PathGetR(transform_.position, chasePos_);
+			}
 
-				if (path.front() == lastNode_)
-				{
-					tgtNode = path[1];
-				}
+			if (pathData_.size() > 1)
+			{
+				unsigned int tgtNode = pathData_.back();
 
 				moveDir = (pf->NodeToPos(tgtNode) - transform_.position).XZ().Normalized();
 
-				if ((pf->NodeToPos(path.front()) - transform_.position).XZ().LengthSquare() <= 10.0f * 10.0f)
+				if ((pf->NodeToPos(pathData_.back()) - transform_.position).XZ().LengthSquare() <= 10.0f * 10.0f)
 				{
-					lastNode_ = path.front();
+					pathData_.pop_back();
 				}
 			}
 			else

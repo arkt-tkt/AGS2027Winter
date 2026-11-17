@@ -123,6 +123,81 @@ std::vector<int> PathFind::PathGet(const Vector3& start_pos, const Vector3& goal
 	return {};
 }
 
+std::vector<int> PathFind::PathGetR(const Vector3& start_pos, const Vector3& goal_pos)
+{
+	std::priority_queue<NodeRecord, std::vector<NodeRecord>, std::greater<NodeRecord>> open_set;
+
+	// 各ノードへの実コスト g(n)
+	std::unordered_map<int, float> g_score;
+	// 経路復元用の親ノードマップ
+	std::unordered_map<int, int> came_from;
+
+	// 初期化
+	for (const auto& pair : nodes_)
+	{
+		g_score[pair.first] = std::numeric_limits<float>::infinity();
+	}
+
+	unsigned int start_id = GetNearestNode(start_pos);
+	unsigned int goal_id = GetNearestNode(goal_pos);
+
+	if (start_id == (unsigned int)(-1) ||
+		goal_id == (unsigned int)(-1))
+	{
+		return {};
+	}
+
+	g_score[start_id] = 0.0f;
+	open_set.push({ start_id, (nodes_.at(goal_id).pos - nodes_.at(start_id).pos).Length() });
+
+	while (!open_set.empty())
+	{
+		NodeRecord current_record = open_set.top();
+		open_set.pop();
+
+		int current_id = current_record.id;
+
+		// ゴールに到達した場合
+		if (current_id == goal_id)
+		{
+			std::vector<int> path;
+			int curr = goal_id;
+
+			while (curr != start_id)
+			{
+				path.push_back(curr);
+				curr = came_from[curr];
+			}
+
+			path.push_back(start_id);
+
+			return path;
+		}
+
+		const auto& current_node = nodes_.at(current_id);
+
+		// 隣接ノードの走査
+		for (const auto& l : current_node.link)
+		{
+			unsigned int next_id = l;
+			double edge_cost = dists_[current_id][next_id];
+			double tentative_g = g_score[current_id] + edge_cost;
+
+			// より短い経路を発見した場合
+			if (tentative_g < g_score[next_id])
+			{
+				came_from[next_id] = current_id;
+				g_score[next_id] = tentative_g;
+				float f = tentative_g + (nodes_.at(next_id).pos - nodes_.at(goal_id).pos).Length();
+				open_set.push({ next_id, f });
+			}
+		}
+	}
+
+	// 経路が見つからない場合
+	return {};
+}
+
 unsigned int PathFind::GetNearestNode(const Vector3& pos)
 {
 	unsigned int ret = (unsigned int)(-1);

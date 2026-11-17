@@ -1,4 +1,6 @@
 #include "../../../Algorithm/PathFind.h"
+#include "../../../Common/MathUtil.h"
+#include "../../../Manager/FPSManager.h"
 #include "CapturePoint.h"
 #include "Platform.h"
 #include "Resupply.h"
@@ -34,6 +36,8 @@ void Stage::Init()
 
 void Stage::Update()
 {
+	auto dt = FPSManager::GetInstance().GetDeltaTime<float>();
+
 	platform_->Update();
 
 	for (auto& capPoint : capturePoints_)
@@ -42,6 +46,9 @@ void Stage::Update()
 	}
 
 	resupply_->Update();
+
+	auto spStabChange = (LOSS_STABILITY_PER_SECOND + GAIN_STABILITY_PER_SECOND * GetCaptureCount()) * dt;
+	stability_ = MathUtil::Clamp(stability_ + spStabChange, 0.0f, MAX_STABILITY);
 }
 
 void Stage::Draw()

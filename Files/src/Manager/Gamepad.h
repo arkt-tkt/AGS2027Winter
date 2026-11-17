@@ -132,11 +132,11 @@ public:
 	};
 
 	// DirectInputのスティック入力最大値
-	static constexpr double DINPUT_STICK_MAX = 1000;
+	static constexpr float DINPUT_STICK_MAX = 1000;
 	// XInputのスティック入力最大値
-	static constexpr double XINPUT_STICK_MAX = SHRT_MAX;
+	static constexpr float XINPUT_STICK_MAX = SHRT_MAX;
 	// XInputのスティック入力値をDirectInputに代入するための掛け率
-	static constexpr double XINPUT_STICK_MULT = DINPUT_STICK_MAX / XINPUT_STICK_MAX;
+	static constexpr float XINPUT_STICK_MULT = DINPUT_STICK_MAX / XINPUT_STICK_MAX;
 
 	Gamepad(int pad_num);
 	~Gamepad();
@@ -157,7 +157,7 @@ public:
 
 private:
 	// スティック入力のデッドゾーン割合
-	static constexpr double DEADZONE = 0.08;
+	static constexpr float DEADZONE = 0.08f;
 	// DirectInputのデッドゾーン実数値
 	static constexpr int DINPUT_DEADZONE = static_cast<int>(DINPUT_STICK_MAX * DEADZONE);
 	// XInputのデッドゾーン実数値

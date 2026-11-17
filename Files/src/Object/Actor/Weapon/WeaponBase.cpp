@@ -73,11 +73,19 @@ void WeaponBase::DrawUI()
 	DrawFormatString(100, 720, 0xffffffu, "AM %3d/%3d", editData_.clipSize, editData_.reserve);
 }
 
-void WeaponBase::Main()
+void WeaponBase::Main(int pad_num, InputManager::TAGS tag)
 {
 	if (editData_.fireRate < baseData_.fireRate ||
 		editData_.reloadTime ||
 		editData_.clipSize == 0) return;
+
+	const auto& ins = InputManager::GetInstance();
+
+	if (baseData_.type == SHOT_TYPE::FULL_AUTO && !ins.CheckNowMap(pad_num, tag) ||
+		baseData_.type == SHOT_TYPE::SEMI_AUTO && !ins.CheckDownMap(pad_num, tag))
+	{
+		return;
+	}
 
 	// —”¶¬Ší‚ÌŽQÆ
 	auto& rng = Application::GetInstance().GetRNGPointer();

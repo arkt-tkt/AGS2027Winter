@@ -1,5 +1,6 @@
 #include <memory>
 #include "../SceneBase.h"
+#include "../../Shader/PostEffect.h"
 #include "../../Object/Actor/Stage/Stage.h"
 
 class Player;
@@ -15,18 +16,13 @@ public:
     bool Release() override;
 
 private:
-    static constexpr float LOSS_STABILITY_PER_SECOND = -1.0f;
-    static constexpr float GAIN_STABILITY_PER_SECOND = -LOSS_STABILITY_PER_SECOND / 3.3f;
-    static constexpr float MAX_STABILITY = 100.0f;
-
     static constexpr float SURVIVAL_TIME = 240.0f;
 
     std::shared_ptr<Player> player_;
     std::unique_ptr<Stage> stage_;
+    std::unique_ptr<PostEffect> screenEffect_;
 
-    float stability_ = MAX_STABILITY;
-    int activeDevice_ = 0;
-
+    int effectScreenId_;
     float surviveTime_ = 0.0f;
 
 };
