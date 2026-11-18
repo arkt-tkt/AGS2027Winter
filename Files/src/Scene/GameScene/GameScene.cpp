@@ -39,16 +39,27 @@ bool GameScene::Init()
 
     AudioManager::GetInstance().Play(ResourceManager::SRC::MUSIC_BGM);
 
-    auto& shaderProf = resLoad.Load(ResourceManager::SRC::SHADER_SCREEN);
-    screenEffect_ = std::make_unique<PostEffect>(
-        shaderProf.handleId_, shaderProf.constBufferId_, shaderProf.constBufferSize_);
-    screenEffect_->SetUseTextures({ Application::GetInstance().GetPreDrawScreen() });
-    screenEffect_->MakeSquareVertex(Vector2(0, 0), Application::RESOLUTION);
-    screenEffect_->AddConstantBuffer({ 0.0f, 4.0f, 1.0f, 0.75f });
-    screenEffect_->AddConstantBuffer({ 1.0f, 0.25f, 0.25f, 0.25f });
-    screenEffect_->AddConstantBuffer({ 0.0f, 1.0f, 0.1f, 0.6f });
+    effectScreen1Id_ = MakeScreen(int(Application::RESOLUTION.x), int(Application::RESOLUTION.y));
+    effectScreen2Id_ = MakeScreen(int(Application::RESOLUTION.x), int(Application::RESOLUTION.y));
 
-    effectScreenId_ = MakeScreen(int(Application::RESOLUTION.x), int(Application::RESOLUTION.y));
+    auto& shaderProf1 = resLoad.Load(ResourceManager::SRC::SHADER_GAUSS);
+    gaussian_ = std::make_unique<PostEffect>(
+        shaderProf1.handleId_, shaderProf1.constBufferId_, shaderProf1.constBufferSize_);
+    gaussian_->SetUseTextures({ Application::GetInstance().GetPreDrawScreen() });
+    gaussian_->MakeSquareVertex(Vector2(0, 0), Application::RESOLUTION);
+    gaussian_->SetTexAddressMode(PostEffect::TEXADDRESS::WRAP);
+    gaussian_->AddConstantBuffer({ 1.0f, 0.0f, 1.0f / Application::RESOLUTION.x, 1.0f / Application::RESOLUTION.y });
+    gaussian_->AddConstantBuffer({ 2.0f, 4.0f, false, false });
+
+    auto& shaderProf2 = resLoad.Load(ResourceManager::SRC::SHADER_SCREEN);
+    screenEffect_ = std::make_unique<PostEffect>(
+        shaderProf2.handleId_, shaderProf2.constBufferId_, shaderProf2.constBufferSize_);
+    screenEffect_->SetUseTextures({ effectScreen2Id_ });
+    screenEffect_->MakeSquareVertex(Vector2(0, 0), Application::RESOLUTION);
+    screenEffect_->SetTexAddressMode(PostEffect::TEXADDRESS::WRAP);
+    screenEffect_->AddConstantBuffer({ 1.0f, 0.75f, 0.5f, false });
+    screenEffect_->AddConstantBuffer({ 0.25f, 0.25f, 0.25f, false });
+    screenEffect_->AddConstantBuffer({ 0.0f, 1.0f, 0.1f, 0.6f });
 
     return true;
 }
@@ -116,8 +127,7 @@ void GameScene::Update()
         unsigned int col1 = 0x404040u;
         unsigned int col2 = 0xc00000u;
         auto vigCol = UInt2ColorF(LerpColor(col1, col2, rate));
-        
-        screenEffect_->EditConstantBuffer(1, { 0.5f, vigCol.r, vigCol.g, vigCol.b });
+        screenEffect_->EditConstantBuffer(1, { vigCol.r, vigCol.g, vigCol.b, false });
     }
 }
 
@@ -139,13 +149,25 @@ void GameScene::Draw()
     ProjectileManager::GetInstance().Draw();
 
     // ここから画面効果(ポストエフェクト)
-    SetDrawScreen(effectScreenId_);
+    SetDrawScreen(effectScreen1Id_);
+
+    gaussian_->SetUseTextures({ Application::GetInstance().GetPreDrawScreen() });
+    gaussian_->EditConstantBuffer(0, { 1.0f, 0.0f, 1.0f / Application::RESOLUTION.x, 1.0f / Application::RESOLUTION.y });
+    gaussian_->Draw();
+
+    SetDrawScreen(effectScreen2Id_);
+
+    gaussian_->SetUseTextures({ effectScreen1Id_ });
+    gaussian_->EditConstantBuffer(0, { 0.0f, 1.0f, 1.0f / Application::RESOLUTION.x, 1.0f / Application::RESOLUTION.y });
+    gaussian_->Draw();
+
+    SetDrawScreen(effectScreen1Id_);
 
     screenEffect_->Draw();
 
     SetDrawScreen(Application::GetInstance().GetPreDrawScreen());
 
-    DrawGraph(0, 0, effectScreenId_, TRUE);
+    DrawGraph(0, 0, effectScreen1Id_, TRUE);
 }
 
 void GameScene::DrawUI()
@@ -169,7 +191,8 @@ void GameScene::DrawUI()
 
 bool GameScene::Release()
 {
-    DeleteGraph(effectScreenId_);
+    DeleteGraph(effectScreen1Id_);
+    DeleteGraph(effectScreen2Id_);
 
     AudioManager::GetInstance().Stop(ResourceManager::SRC::MUSIC_BGM);
 

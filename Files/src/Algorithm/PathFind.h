@@ -33,7 +33,9 @@ public:
 	void DrawDebug();
 #endif
 
+	// Œo˜H’Tõ(‡)
 	std::vector<int> PathGet(const Vector3& start_pos, const Vector3& goal_pos);
+	// Œo˜H’Tõ(‹t)
 	std::vector<int> PathGetR(const Vector3& start_pos, const Vector3& goal_pos);
 
 	Vector3 NodeToPos(unsigned int node_id)

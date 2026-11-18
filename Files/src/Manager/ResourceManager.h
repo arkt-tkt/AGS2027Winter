@@ -71,6 +71,7 @@ public:
 
 		SE_FIRE_AR,
 
+		SHADER_GAUSS,
 		SHADER_SCREEN,
 
 		JSON_PATHFIND,

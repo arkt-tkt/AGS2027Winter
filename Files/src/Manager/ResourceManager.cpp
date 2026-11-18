@@ -130,6 +130,8 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::SE_FIRE_AR, std::move(res));
 
 	// シェーダ
+	res = std::make_unique<RES>(RES_T::PIXEL_SHADER, "GaussianCustom.pso", 2u);
+	resourcesMap_.emplace(SRC::SHADER_GAUSS, std::move(res));
 	res = std::make_unique<RES>(RES_T::PIXEL_SHADER, "ScreenEffect.pso", 3u);
 	resourcesMap_.emplace(SRC::SHADER_SCREEN, std::move(res));
 

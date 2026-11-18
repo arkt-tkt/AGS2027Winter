@@ -20,9 +20,12 @@ private:
 
     std::shared_ptr<Player> player_;
     std::unique_ptr<Stage> stage_;
+
+    std::unique_ptr<PostEffect> gaussian_;
     std::unique_ptr<PostEffect> screenEffect_;
 
-    int effectScreenId_;
+    int effectScreen1Id_;
+    int effectScreen2Id_;
     float surviveTime_ = 0.0f;
 
 };

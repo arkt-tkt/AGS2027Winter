@@ -162,10 +162,13 @@ void EnemyBase::LateMove()
 
 			if (pathData_.size() > 1)
 			{
+				// 現在の移動先ノード
 				unsigned int tgtNode = pathData_.back();
 
+				// 移動方向
 				moveDir = (pf->NodeToPos(tgtNode) - transform_.position).XZ().Normalized();
 
+				// 現在のノードに十分近づいたら次のノードへ
 				if ((pf->NodeToPos(pathData_.back()) - transform_.position).XZ().LengthSquare() <= 10.0f * 10.0f)
 				{
 					pathData_.pop_back();

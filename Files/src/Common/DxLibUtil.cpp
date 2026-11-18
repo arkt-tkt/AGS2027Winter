@@ -173,9 +173,9 @@ unsigned int DxLibUtil::LerpColor(const unsigned int& a, const unsigned int& b, 
 {
 	unsigned int red, gre, blu;
 
-	red = std::lerp((a & 0xff0000u) / 0x10000u, (b & 0xff0000u) / 0x10000u, t);
-	gre = std::lerp((a & 0xff00u) / 0x100u, (b & 0xff00u) / 0x100u, t);
-	blu = std::lerp(a & 0xffu, b & 0xffu, t);
+	red = MathUtil::Lerp((a & 0xff0000u) / 0x10000u, (b & 0xff0000u) / 0x10000u, t);
+	gre = MathUtil::Lerp((a & 0xff00u) / 0x100u, (b & 0xff00u) / 0x100u, t);
+	blu = MathUtil::Lerp(a & 0xffu, b & 0xffu, t);
 	
 	return (red * 0x10000u) + (gre * 0x100u) + blu;
 }

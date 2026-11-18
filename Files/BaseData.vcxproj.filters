@@ -87,5 +87,7 @@
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\ScreenEffect.hlsl" />
     <FxCompile Include="src\Shader\PostEffect\FXAA.hlsl" />
+    <FxCompile Include="src\Shader\PostEffect\Gaussian.hlsl" />
+    <FxCompile Include="src\Shader\PostEffect\GaussianCustom.hlsl" />
   </ItemGroup>
 </Project>

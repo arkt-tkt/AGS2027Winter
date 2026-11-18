@@ -3,24 +3,18 @@ SamplerState smp : register(s0);
 
 cbuffer constants : register(b4)
 {
-    float gaussianSigma; // ガウスぼかし強度(標準偏差)
-    int gaussianSamples; // ガウスサンプル数(-1x～1xの値を使用)
     float vignetteStrength; // ビネット強度
     float vignetteRadius; // ビネットの中心からの半径(0.0～1.0)
-    
     float vignetteSoftness; // ビネットのフェードの柔らかさ(0.0～1.0)
+    float dummy1;
+    
     float3 vignetteColor; // ビネットの色味
+    float dummy2;
     
     // カラーオーバーレイ
     float colorOverlayStrength; // カラーオーバーレイの強度(0.0～1.0)
     float3 colorOverlayColor;
 };
-
-// ガウス関数
-float gaussian(float offset, float sigma)
-{
-    return exp(-(offset * offset) / (2.0 * sigma * sigma));
-}
 
 struct PS_INPUT
 {
@@ -31,40 +25,7 @@ struct PS_INPUT
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    float4 color = float4(0, 0, 0, 0);
-    uint2 textureSize;
-    tex.GetDimensions(textureSize.x, textureSize.y);
-    float2 texelSize = 1.0 / textureSize;
-    
-    // ガウス
-    if (gaussianSigma > 0.0)
-    {
-        // 左から右
-        float weightSum = 0.0;
-        for (int i = -gaussianSamples; i <= gaussianSamples; ++i)
-        {
-            float w = gaussian(i, gaussianSigma);
-            float2 sampleUV = input.uv + float2(texelSize.x, 0) * i;
-            color += tex.Sample(smp, sampleUV) * w;
-            weightSum += w;
-        }
-        color /= weightSum;
-        
-        // 上から下
-        weightSum = 0.0;
-        for (int j = -gaussianSamples; j <= gaussianSamples; ++j)
-        {
-            float w = gaussian(j, gaussianSigma);
-            float2 sampleUV = input.uv + float2(0, texelSize.y) * j;
-            color += tex.Sample(smp, sampleUV) * w;
-            weightSum += w;
-        }
-        color /= weightSum;
-    }
-    else
-    {
-        color = tex.Sample(smp, input.uv);
-    }
+    float4 color = tex.Sample(smp, input.uv);
     
     // ビネット
     // UV座標を中心基準に変換
@@ -76,10 +37,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     // 色を暗くする
     color.rgb *= lerp(vignetteColor, float3(1.0, 1.0, 1.0), vignette * vignetteStrength);
     
-    
     // カラーオーバーレイ
     //color.rgb *= lerp(float3(1.0, 1.0, 1.0), colorOverlayColor, colorOverlayStrength);
-    
     
     return color;
 }
