@@ -72,3 +72,6 @@ Testing/
 x64/
 x86/
 Log.txt
+*.cso
+*.pso
+*.vso
