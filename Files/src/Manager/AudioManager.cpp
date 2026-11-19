@@ -139,9 +139,6 @@ void AudioManager::Play3D(ResourceManager::SRC src, const Vector3& pos, float ra
 	auto it = soundMap_.find(src);
 	if (it == soundMap_.end()) return;
 
-	//Set3DPositionSoundMem(Vec3ToVEC(pos), (*it).second.handle);
-	//Set3DRadiusSoundMem(range, (*it).second.handle);
-
 	(*it).second.use3d = true;
 	(*it).second.pos = pos;
 	(*it).second.range = range;

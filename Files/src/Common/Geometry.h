@@ -4,10 +4,10 @@
 #pragma region F
 struct Color
 {
-	float r, g, b;
+	float r, g, b, a;
 
-	inline Color() : r(0), g(0), b(0) {}
-	inline Color(float r, float g, float b) : r(r), g(g), b(b) {}
+	inline Color() : r(0), g(0), b(0), a(0) {}
+	inline Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
 	Color(unsigned int c);
 
 	Color operator/(float f);

@@ -117,7 +117,7 @@ void Player::InitAnim()
 
 void Player::InitOther()
 {
-	wpn_ = std::make_unique<WeaponBase>();
+	wpn_ = std::make_unique<ItemBase>();
 	wpn_->Init();
 	wpn_->SetParentTransform(transform_);
 }

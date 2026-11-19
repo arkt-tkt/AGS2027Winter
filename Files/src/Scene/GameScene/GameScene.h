@@ -16,6 +16,9 @@ public:
     bool Release() override;
 
 private:
+    static constexpr float GAUSSIAN_SIGMA_RATIO = 2.57f;
+    static constexpr float GAUSSIAN_STEPS = 4.0f;
+
     static constexpr float SURVIVAL_TIME = 240.0f;
 
     std::shared_ptr<Player> player_;
@@ -26,6 +29,8 @@ private:
 
     int effectScreen1Id_;
     int effectScreen2Id_;
+    float sigma_ = 0.0f;
+
     float surviveTime_ = 0.0f;
 
 };

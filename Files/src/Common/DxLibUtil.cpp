@@ -171,13 +171,22 @@ VECTOR DxLibUtil::GetScreenPosToWorldPos(const VECTOR& worldPos, int scr_x, int 
 
 unsigned int DxLibUtil::LerpColor(const unsigned int& a, const unsigned int& b, float t)
 {
-	unsigned int red, gre, blu;
+	using namespace MathUtil;
 
-	red = MathUtil::Lerp((a & 0xff0000u) / 0x10000u, (b & 0xff0000u) / 0x10000u, t);
-	gre = MathUtil::Lerp((a & 0xff00u) / 0x100u, (b & 0xff00u) / 0x100u, t);
-	blu = MathUtil::Lerp(a & 0xffu, b & 0xffu, t);
-	
-	return (red * 0x10000u) + (gre * 0x100u) + blu;
+	long long red = Lerp(
+		(long long)((a & 0xff0000u) / 0x10000u),
+		(long long)((b & 0xff0000u) / 0x10000u), t);
+	long long green = Lerp(
+		(long long)((a & 0xff00u) / 0x100u),
+		(long long)((b & 0xff00u) / 0x100u), t);
+	long long blue = Lerp(
+		(long long)(a & 0xffu),
+		(long long)(b & 0xffu), t);
+
+	return
+		(unsigned int)Clamp(red, 0ll, 0xffll) * 0x10000u +
+		(unsigned int)Clamp(green, 0ll, 0xffll) * 0x100u +
+		(unsigned int)Clamp(blue, 0ll, 0xffll);
 }
 
 unsigned int DxLibUtil::LerpColorMap(const std::map<float, unsigned int>& map, float rate)

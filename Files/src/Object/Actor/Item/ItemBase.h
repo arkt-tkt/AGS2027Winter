@@ -3,7 +3,7 @@
 #include "../../../Manager/InputManager.h"
 #include "../ActorBase3D.h"
 
-class WeaponBase : public ActorBase3D
+class ItemBase : public ActorBase3D
 {
 public:
 	enum class SHOT_TYPE
@@ -16,9 +16,9 @@ public:
 	{
 		SHOT_TYPE type = SHOT_TYPE::FULL_AUTO;
 		float damage = 36;
+		int shots = 1;
 		int clipSize = 30;
 		int reserve = 150;
-		int shots = 1;
 		float spread = 0.01f;
 		float fireRate = 60.0f / 825.0f;
 		float velocity = 5000.0f;
@@ -26,7 +26,7 @@ public:
 		float moveSpeedMult = 1.0f;
 	};
 
-	virtual ~WeaponBase() {}
+	virtual ~ItemBase() {}
 
 	void Update() override;
 	void LateUpdate() override;

@@ -29,6 +29,7 @@ public:
 		float speed = 1.0f;
 		float time = 0.0f;
 		bool isLoop = true;
+		bool autoDetach = true;
 	};
 
 	AnimationController(int model_id);
@@ -43,15 +44,27 @@ public:
 	void AddFromOther(ResourceManager::SRC res, int anim_index, float play_rate, PARTS parts = BASE);
 
 	// 指定アニメーションを再生
-	void Play(ResourceManager::SRC res, int anim_index, bool is_loop = true, float power = 1.0f, float speed = 1.0f);
+	void Play(ResourceManager::SRC res, int anim_index,
+		bool is_loop = true, float power = 1.0f, float speed = 1.0f, bool auto_detach = true);
+
+	// 指定アニメーションを指定秒数に収まるように再生(ループ無し)
+	void PlayFromFrame(ResourceManager::SRC res, int anim_index, int frame,
+		bool is_loop = true, float power = 1.0f, float speed = 1.0f, bool auto_detach = true);
+
 	// 指定アニメーションを指定秒数に収まるように再生(ループ無し、逆再生無し)
-	void PlayInSeconds(ResourceManager::SRC res, int anim_index, float seconds, float power = 1.0f);
+	void PlayInSeconds(ResourceManager::SRC res, int anim_index, float seconds,
+		float power = 1.0f);
+
 	// 指定アニメーションを再生(有効度100%から)
-	void Set(ResourceManager::SRC res, int anim_index, bool is_loop = true, float power = 1.0f, float speed = 1.0f);
+	void Set(ResourceManager::SRC res, int anim_index, bool is_loop = true,
+		float power = 1.0f, float speed = 1.0f);
+
 	// 指定アニメーションを停止
 	void Stop(ResourceManager::SRC res, int anim_index);
 	// 全アニメーションを停止
 	void StopAll();
+
+	const bool IsPlaying(ResourceManager::SRC res, int anim_index);
 
 	// プレイ中のアニメーションデータ配列の取得
 	const auto& GetPlayData() { return playData_; }

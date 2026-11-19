@@ -1,5 +1,6 @@
 #include "../../../../Algorithm/PathFind.h"
 #include "../../../../Common/DxLibUtil.h"
+#include "../../../../Common/MathUtil.h"
 #include "../../../../Manager/EnemyManager.h"
 #include "../../../../Manager/SceneManager.h"
 #include "../../../../Utility/RNG.h"
@@ -71,9 +72,12 @@ void EnemyBase::InitModel()
 	pos.y = 800.0f;
 	pos.z = Application::GetInstance().GetRNGPointer().GetRandReal(-1600.0f, 1600.0f);
 
+	float rot = Application::GetInstance().GetRNGPointer().GetRandReal(0.0f, 2.0f * MathUtil::PI_F);
+
 	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_ENEMY1);
 	transform_.scale = SCALE;
 	transform_.position = pos;
+	transform_.rotation.y = rot;
 	transform_.localRotation.y = DX_PI_F;
 
 	colliders_.emplace_back(
@@ -95,9 +99,13 @@ void EnemyBase::InitAnim()
 {
 	animation_ = std::make_unique<AnimationController>(transform_.modelId);
 
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_IDLE, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_IDLE, 0, 30.0f);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_MOVE, 0, 30.0f,
+		AnimationController::PARTS::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_PUNCH, 0, 30.0f,
+		AnimationController::PARTS::UPPER_BODY);
 
-	animation_->Play(ResourceManager::SRC::ANIME_PL_IDLE, 0);
+	animation_->Play(ResourceManager::SRC::ANIME_EN_IDLE, 0);
 }
 
 void EnemyBase::InitOther()
@@ -145,8 +153,13 @@ void EnemyBase::LateMove()
 		// 追跡および経路探索
 		if (chasing_)
 		{
-			// 追跡中は直接プレイヤーを追いかける
-			moveDir = (playerPos - transform_.position).XZ().Normalized();
+			auto vec = (playerPos - transform_.position).XZ();
+
+			if (vec.LengthSquare() > TARGET_NEAR * TARGET_NEAR)
+			{
+				// 追跡中は直接プレイヤーを追いかける
+				moveDir = vec.Normalized();
+			}
 
 			// 追っかけ対象の座標を覚えておく
 			chasePos_ = playerPos;
@@ -191,6 +204,16 @@ void EnemyBase::LateMove()
 
 void EnemyBase::AnimationSwitch()
 {
+	if (velocity_.XZ().LengthSquare() > 0.0f)
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_EN_IDLE, 0);
+		animation_->Play(ResourceManager::SRC::ANIME_EN_MOVE, 0);
+	}
+	else
+	{
+		animation_->Stop(ResourceManager::SRC::ANIME_EN_MOVE, 0);
+		animation_->Play(ResourceManager::SRC::ANIME_EN_IDLE, 0);
+	}
 }
 
 void EnemyBase::CollisionMove()
@@ -200,6 +223,8 @@ void EnemyBase::CollisionMove()
 
 void EnemyBase::TurnVisual()
 {
+	if (velocity_.XZ().LengthSquare() == 0.0f) return;
+
 	auto player = enmMng_.GetPlayerPtr();
 	Vector3 moveDir = velocity_.Normalized();
 	moveDir.y = 0.0f;
@@ -213,8 +238,36 @@ void EnemyBase::TurnVisual()
 
 void EnemyBase::AttackPlayer()
 {
-	if ((enmMng_.GetPlayerPtr()->GetTransform().position - transform_.position).LengthSquare() <= 5.0f * 5.0f)
+	if ((enmMng_.GetPlayerPtr()->GetTransform().position - transform_.position).LengthSquare() <=
+		ATTACK_RANGE * ATTACK_RANGE &&
+		!animation_->IsPlaying(ResourceManager::SRC::ANIME_EN_PUNCH, 0))
 	{
-		enmMng_.GetPlayerPtr()->CalcHP(-damage_ * scnMng_.GetDeltaTime());
+		animation_->Play(ResourceManager::SRC::ANIME_EN_PUNCH, 0, false);
+
+		isCanHit_ = true;
+	}
+
+	if (isCanHit_)
+	{
+		Position3 armPos = VECToVec3(MV1GetFramePosition(transform_.modelId,
+			MV1SearchFrame(transform_.modelId, "mixamorig:RightHand")));
+
+		auto cols = enmMng_.GetPlayerPtr()->GetTypedColliders(Collider3D::TYPE::PLAYER);
+
+		for (auto& col : cols)
+		{
+			auto hit = MV1CollCheck_Sphere(
+				col->GetColliderData().modelId, -1,
+				Vec3ToVEC(armPos), ATTACK_HIT_RADIUS);
+
+			if (hit.HitNum)
+			{
+				enmMng_.GetPlayerPtr()->CalcHP(-damage_);
+
+				isCanHit_ = false;
+
+				break;
+			}
+		}
 	}
 }

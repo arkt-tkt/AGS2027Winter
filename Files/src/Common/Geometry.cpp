@@ -8,14 +8,14 @@
 #pragma region êF
 Color::Color(unsigned int c)
 {
-	r = (float)(c / 0x10000);
-	g = (float)(c / 0x100 % 0x100);
-	b = (float)(c % 0x100);
+	r = static_cast<float>((c / 0x10000) % 0x100);
+	g = static_cast<float>((c / 0x100) % 0x100);
+	b = static_cast<float>(c % 0x100);
 }
 
 Color Color::operator/(float f)
 {
-	return { r / f, g / f, b / f };
+	return { r / f, g / f, b / f, a / f };
 }
 
 Color Color::Add(const Color& c, bool limit) const

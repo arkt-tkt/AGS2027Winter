@@ -25,7 +25,7 @@
     <ClCompile Include="src\Shader\PostEffect.cpp" />
     <ClCompile Include="src\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="src\Object\Actor\Stage\Platform.cpp" />
-    <ClCompile Include="src\Object\Actor\Weapon\WeaponBase.cpp" />
+    <ClCompile Include="src\Object\Actor\Item\ItemBase.cpp" />
     <ClCompile Include="src\Object\Actor\Character\CharacterBase3D.cpp" />
     <ClCompile Include="src\Manager\ProjectileManager.cpp" />
     <ClCompile Include="src\Object\Actor\Projectile\Projectile.cpp" />
@@ -41,6 +41,8 @@
     <ClCompile Include="src\Object\Actor\Stage\Resupply.cpp" />
     <ClCompile Include="src\Scene\PauseLayer\PauseLayer.cpp" />
     <ClCompile Include="src\Object\Common\AnimationController.cpp" />
+    <ClCompile Include="src\Object\Actor\Character\Inventory.cpp" />
+    <ClCompile Include="src\Manager\ItemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Object\Actor\ActorBase3D.h" />
@@ -68,7 +70,7 @@
     <ClInclude Include="src\Shader\PostEffect.h" />
     <ClInclude Include="src\Scene\GameScene\GameScene.h" />
     <ClInclude Include="src\Object\Actor\Stage\Platform.h" />
-    <ClInclude Include="src\Object\Actor\Weapon\WeaponBase.h" />
+    <ClInclude Include="src\Object\Actor\Item\ItemBase.h" />
     <ClInclude Include="src\Object\Actor\Character\CharacterBase3D.h" />
     <ClInclude Include="src\Manager\ProjectileManager.h" />
     <ClInclude Include="src\Object\Actor\Projectile\Projectile.h" />
@@ -83,6 +85,8 @@
     <ClInclude Include="src\Utility\RNG.h" />
     <ClInclude Include="src\Scene\PauseLayer\PauseLayer.h" />
     <ClInclude Include="src\Object\Common\AnimationController.h" />
+    <ClInclude Include="src\Object\Actor\Character\Inventory.h" />
+    <ClInclude Include="src\Manager\ItemManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shader\PostEffect\ScreenEffect.hlsl" />

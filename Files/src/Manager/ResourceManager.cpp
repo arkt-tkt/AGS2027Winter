@@ -73,41 +73,35 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::MODEL_WPN_AR_STG556, std::move(res));
 
 	// アニメーション
-	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/standing_idle.mv1");
-	resourcesMap_.emplace(SRC::ANIME_PL_IDLE, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/rifle_aiming_idle.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_IDLE, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/walking.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_F, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Forward_Left.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_FL, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Forward_Right.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_FR, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Strafe_Left.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_L, std::move(res));
-	
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Strafe_Right.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_R, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Backward.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_B, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Backward_Left.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_BL, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Walk_Backward_Right.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_BR, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Rifle_Run.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_DASH_FRONT, std::move(res));
-
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/reloading.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_RELOAD, std::move(res));
+
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/standing_idle.mv1");
+	resourcesMap_.emplace(SRC::ANIME_EN_IDLE, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Drunk_Run_Forward.mv1");
+	resourcesMap_.emplace(SRC::ANIME_EN_MOVE, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Mutant_Punch.mv1");
+	resourcesMap_.emplace(SRC::ANIME_EN_PUNCH, std::move(res));
 
 	// 音楽
 	res = std::make_unique<RES>(RES_T::MUSIC, "異次元空間.mp3", 0.8f, true);
@@ -136,6 +130,8 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::SHADER_SCREEN, std::move(res));
 
 	// JSONファイル
+	res = std::make_unique<RES>(RES_T::JSON, "Items.json");
+	resourcesMap_.emplace(SRC::JSON_ITEMS, std::move(res));
 	res = std::make_unique<RES>(RES_T::JSON, "PathFind.json");
 	resourcesMap_.emplace(SRC::JSON_PATHFIND, std::move(res));
 }

@@ -8,9 +8,9 @@
 #include "../../../Utility/RNG.h"
 #include "../../../Application.h"
 #include "../Projectile/Projectile.h"
-#include "WeaponBase.h"
+#include "ItemBase.h"
 
-void WeaponBase::Update()
+void ItemBase::Update()
 {
 	auto dt = SceneManager::GetInstance().GetDeltaTime();
 
@@ -41,14 +41,14 @@ void WeaponBase::Update()
 	}
 }
 
-void WeaponBase::LateUpdate()
+void ItemBase::LateUpdate()
 {
 	TurnVisual();
 
 	transform_.Update();
 }
 
-void WeaponBase::Draw()
+void ItemBase::Draw()
 {
 	if (transform_.modelId == -1) return;
 
@@ -68,12 +68,12 @@ void WeaponBase::Draw()
 #endif
 }
 
-void WeaponBase::DrawUI()
+void ItemBase::DrawUI()
 {
 	DrawFormatString(100, 720, 0xffffffu, "AM %3d/%3d", editData_.clipSize, editData_.reserve);
 }
 
-void WeaponBase::Main(int pad_num, InputManager::TAGS tag)
+void ItemBase::Main(int pad_num, InputManager::TAGS tag)
 {
 	if (editData_.fireRate < baseData_.fireRate ||
 		editData_.reloadTime ||
@@ -153,18 +153,18 @@ void WeaponBase::Main(int pad_num, InputManager::TAGS tag)
 	}
 }
 
-void WeaponBase::Sub()
+void ItemBase::Sub()
 {
 	if (editData_.reloadTime) return;
 
 	// ADSˆ—
 }
 
-void WeaponBase::Alt()
+void ItemBase::Alt()
 {
 }
 
-void WeaponBase::Reload()
+void ItemBase::Reload()
 {
 	if (editData_.clipSize > baseData_.clipSize ||
 		editData_.reserve == 0) return;
@@ -175,12 +175,12 @@ void WeaponBase::Reload()
 	}
 }
 
-void WeaponBase::Refill()
+void ItemBase::Refill()
 {
 	editData_.reserve = baseData_.reserve;
 }
 
-float WeaponBase::GetReloadProg() const
+float ItemBase::GetReloadProg() const
 {
 	if (!editData_.reloadTime)
 	{
@@ -192,13 +192,13 @@ float WeaponBase::GetReloadProg() const
 	}
 }
 
-void WeaponBase::InitParam()
+void ItemBase::InitParam()
 {
 	++editData_.clipSize;
 	editData_.reloadTime = 0.0f;
 }
 
-void WeaponBase::InitModel()
+void ItemBase::InitModel()
 {
 	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_WPN_AR_STG556);
 	transform_.scale = 0.04f;
@@ -208,7 +208,7 @@ void WeaponBase::InitModel()
 	transform_.Update();
 }
 
-void WeaponBase::TurnVisual()
+void ItemBase::TurnVisual()
 {
 	if (parent_->modelId == -1) return;
 

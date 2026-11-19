@@ -32,10 +32,16 @@ float gaussian1D(float x, float sigma)
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
+    if (sigma == 0.0)
+    {
+        return tex.Sample(smp, input.uv);
+    }
+    
     float gauss = gaussian1D(0, sigma);
     float sum = gauss;
     float3 col = tex.Sample(smp, input.uv).rgb * gauss;
     
+    [loop]
     for (int i = 1; i < (int) count; i++)
     {
         gauss = gaussian1D(i, sigma);

@@ -24,12 +24,15 @@ public:
 private:
 	static constexpr float SCALE = 0.4f;
 	static constexpr float CHASE_UPDATE_SOUND_LEN_SPACE = 25.0f;
+	static constexpr float TARGET_NEAR = 38.0f;
+	static constexpr float ATTACK_RANGE = 42.0f;
+	static constexpr float ATTACK_HIT_RADIUS = 3.0f;
 
 	// マネージャ
 	EnemyManager& enmMng_;
 
 	// 攻撃で与えるダメージ量
-	float damage_ = 20.0f;
+	float damage_ = 15.0f;
 	// 壁に当たったか
 	bool hitWall_ = false;
 
@@ -43,6 +46,8 @@ private:
 	std::vector<int> pathData_;
 	// 最後に通過したノード
 	unsigned int lastNode_ = (unsigned int)(-1);
+	// 攻撃が当たる状態
+	bool isCanHit_ = false;
 
 	void InitParam() override;
 	void InitModel() override;

@@ -74,7 +74,8 @@ void AnimationController::Update()
 			}
 			else if (play->speed != 0.0f)
 			{
-				_Stop(it);
+				if (play->autoDetach) _Stop(it);
+
 				play->speed = 0.0f;
 			}
 		}
@@ -170,7 +171,8 @@ void AnimationController::AddFromOther(ResourceManager::SRC res, int anim_index,
 	animData_.emplace_back(id, anim_index, play_rate, total, parts);
 }
 
-void AnimationController::Play(ResourceManager::SRC res, int anim_index, bool is_loop, float power, float speed)
+void AnimationController::Play(ResourceManager::SRC res, int anim_index,
+	bool is_loop, float power, float speed, bool auto_detach)
 {
 	int id = ResourceManager::GetInstance().Load(res).handleId_;
 
@@ -182,6 +184,10 @@ void AnimationController::Play(ResourceManager::SRC res, int anim_index, bool is
 		{
 			play->maxPower = power;
 			play->speed = speed;
+
+			if (play->time > play->totalTime && speed > 0.0f ||
+				play->time < 0.0f && speed < 0.0f)
+				play->time = speed > 0.0f ? 0.0f : play->totalTime;
 
 			return;
 		}
@@ -196,6 +202,40 @@ void AnimationController::Play(ResourceManager::SRC res, int anim_index, bool is
 			anim.speed = speed;
 			anim.time = speed > 0.0f ? 0.0f : anim.totalTime;
 			anim.isLoop = is_loop;
+			anim.autoDetach = auto_detach;
+
+			playData_.push_back(&anim);
+
+			return;
+		}
+	}
+}
+
+void AnimationController::PlayFromFrame(ResourceManager::SRC res, int anim_index, int frame,
+	bool is_loop, float power, float speed, bool auto_detach)
+{
+	int id = ResourceManager::GetInstance().Load(res).handleId_;
+
+	if (power < 0.0f || speed == 0.0f) return;
+
+	for (auto play : playData_)
+	{
+		if (play->resId == id && play->animIndex == anim_index)
+		{
+			return;
+		}
+	}
+
+	for (auto& anim : animData_)
+	{
+		if (anim.resId == id && anim.animIndex == anim_index)
+		{
+			anim.attachId = MV1AttachAnim(modelId_, anim.animIndex, anim.resId);
+			anim.maxPower = power;
+			anim.speed = speed;
+			anim.time = frame / anim.playRate;
+			anim.isLoop = is_loop;
+			anim.autoDetach = auto_detach;
 
 			playData_.push_back(&anim);
 
@@ -292,6 +332,22 @@ void AnimationController::StopAll()
 	{
 		_Stop(it);
 	}
+}
+
+const bool AnimationController::IsPlaying(ResourceManager::SRC res, int anim_index)
+{
+	int id = ResourceManager::GetInstance().Load(res).handleId_;
+
+	for (auto play : playData_)
+	{
+		if (play->resId == id && play->animIndex == anim_index &&
+			play->speed != 0.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void AnimationController::_Stop(const std::vector<Animation*>::iterator it)

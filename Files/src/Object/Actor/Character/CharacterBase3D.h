@@ -10,7 +10,7 @@ public:
 	static constexpr float GRAVITY_POW = 32.0f;
 	static constexpr float MAX_FALL_VELOCITY = -24.0f;
 
-	static constexpr float DAMAGE_TIMER_MAX = 0.5f;
+	static constexpr float DAMAGE_TIMER_MAX = 1.0f;
 
 	CharacterBase3D() : ActorBase3D() {}
 	virtual ~CharacterBase3D() {}
@@ -24,6 +24,8 @@ public:
 	virtual const bool& IsAlive() const { return isAlive_; }
 	// HPを取得
 	float GetHP() const { return hp_; }
+	// 最大HPを取得
+	float GetMaxHP() const { return maxHp_; }
 	// HPを計算
 	virtual void CalcHP(float add);
 	// ダメージタイマを取得
