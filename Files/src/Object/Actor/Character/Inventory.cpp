@@ -12,6 +12,11 @@ Inventory::Inventory(Player* player)
 
 Inventory::~Inventory()
 {
+	for (auto& [slot, item] : inv_)
+	{
+		if (item != nullptr) item->Release();
+	}
+
 	inv_.clear();
 }
 
