@@ -62,6 +62,7 @@ public:
 		ATTACK_SPECIAL,
 
 		RELOAD,
+		CYCLE,
 	};
 
 	// ここに書かれているタグに登録されたボタンは、
@@ -74,7 +75,7 @@ public:
 	};
 
 	using KEY_STATE_ARRAY = std::array<char, 256ULL>;
-	using MOUSE_STATE_ARRAY = std::map<int, bool>;
+	using MOUSE_STATE_ARRAY = std::array<int, 11ULL>;
 
 	using PAD_MAP_ARRAY = std::array<Gamepad::PAD_INPUT, 2ULL>;
 	using KEY_MAP_ARRAY = std::array<int, 2ULL>;
@@ -112,10 +113,10 @@ public:
 	Vector2 GetMousePos() const;
 	Vector2 GetMouseMoveLength() const;
 
-	bool CheckNowMouse(int DxLib_MOUSEcode) const;
-	bool CheckPrevMouse(int DxLib_MOUSEcode) const;
-	bool CheckDownMouse(int DxLib_MOUSEcode) const;
-	bool CheckUpMouse(int DxLib_MOUSEcode) const;
+	bool CheckNowMouse(int mouse_button_num) const;
+	bool CheckPrevMouse(int mouse_button_num) const;
+	bool CheckDownMouse(int mouse_button_num) const;
+	bool CheckUpMouse(int mouse_button_num) const;
 
 	// 指定した番号のゲームパッドの接続状態を返す
 	bool IsGamepadConnected(int pad_num) const;
@@ -137,6 +138,8 @@ private:
 	Vector2 nowMousePos_; // マウスポインタの座標
 	MOUSE_STATE_ARRAY nowMouse_; // 現在のマウスボタン情報
 	MOUSE_STATE_ARRAY prevMouse_; // 直前のマウスボタン情報
+	float nowMouseWheel_; // 現在のマウスホイール情報
+	float prevMouseWheel_; // 直前のマウスホイール情報
 
 	void InitInputMap(); // 入力マップの初期設定
 

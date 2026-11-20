@@ -157,7 +157,7 @@ public:
 
 private:
 	// スティック入力のデッドゾーン割合
-	static constexpr float DEADZONE = 0.08f;
+	static constexpr double DEADZONE = 0.1f;
 	// DirectInputのデッドゾーン実数値
 	static constexpr int DINPUT_DEADZONE = static_cast<int>(DINPUT_STICK_MAX * DEADZONE);
 	// XInputのデッドゾーン実数値
@@ -172,6 +172,8 @@ private:
 	using BUTTON_STATE_ARRAY = std::array<int, static_cast<size_t>(PAD_INPUT::END)>;
 	BUTTON_STATE_ARRAY nowButton_;
 	BUTTON_STATE_ARRAY prevButton_;
+
+	int _DZFunc(int in, bool xin = true);
 
 };
 

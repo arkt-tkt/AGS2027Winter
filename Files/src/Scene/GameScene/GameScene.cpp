@@ -75,13 +75,21 @@ bool GameScene::Init()
 
 void GameScene::Update()
 {
-    if (InputManager::GetInstance().CheckDownMap(1, InputManager::TAGS::SYSTEM_NG))
+    const auto& input = InputManager::GetInstance();
+
+    if (input.CheckDownMap(1, InputManager::TAGS::SYSTEM_NG))
     {
         nextScene_ = SceneBase::SCENE::TITLE;
     }
     else if (!player_->IsAlive())
     {
         nextScene_ = SceneBase::SCENE::END;
+    }
+
+    if (input.CheckNowKey(KEY_INPUT_LCONTROL) && input.CheckNowKey(KEY_INPUT_LSHIFT) &&
+        input.CheckDownKey(KEY_INPUT_G))
+    {
+        godMode_ = !godMode_;
     }
 
     auto dt = scnMng_.GetDeltaTime();
@@ -110,13 +118,13 @@ void GameScene::Update()
         }
     }
 
-    if (InputManager::GetInstance().CheckDownMap(
+    if (input.CheckDownMap(
         player_->GetInputNumber(), InputManager::TAGS::VIEW_CHANGE_MODE))
     {
         scnMng_.GetCameraPtr().SwitchFollowMode();
     }
 
-    if (InputManager::GetInstance().CheckDownMap(
+    if (input.CheckDownMap(
         player_->GetInputNumber(), InputManager::TAGS::VIEW_SWITCH_SIDE))
     {
         scnMng_.GetCameraPtr().SwitchCameraSide();
@@ -128,6 +136,7 @@ void GameScene::Update()
 
 	EnemyManager::GetInstance().Update();
 
+    player_->SetGodMode(godMode_);
     player_->Update();
 
     {
@@ -160,6 +169,8 @@ void GameScene::Draw()
     player_->Draw();
 
     ProjectileManager::GetInstance().Draw();
+
+    if (godMode_) return;
 
     // ここから画面効果(ポストエフェクト)
     SetDrawScreen(effectScreen1Id_);

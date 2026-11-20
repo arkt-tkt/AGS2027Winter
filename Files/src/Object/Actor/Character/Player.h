@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include <numbers>
-#include "../Item/ItemBase.h"
+#include "Inventory.h"
 #include "CharacterBase3D.h"
 
 class Player : public CharacterBase3D
@@ -18,7 +18,9 @@ public:
 	const int& GetPlayerNumber() const { return PLAYER_NUM; }
 	const int& GetInputNumber() const { return INPUT_NUM; }
 
-	ItemBase* GetEquippedWeaponPtr() const { return wpn_.get(); }
+	void SetGodMode(bool in) { godMode_ = in; }
+
+	Inventory* GetInventoryPtr() const { return inv_.get(); }
 
 private:
 	static constexpr float PLAYER_SCALE = 0.4f;
@@ -34,7 +36,9 @@ private:
 	const int PLAYER_NUM;
 	const int INPUT_NUM;
 
-	std::unique_ptr<ItemBase> wpn_;
+	std::unique_ptr<Inventory> inv_;
+
+	bool godMode_ = false;
 
 	void InitParam() override;
 	void InitModel() override;

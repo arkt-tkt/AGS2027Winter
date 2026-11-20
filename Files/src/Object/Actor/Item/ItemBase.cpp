@@ -14,27 +14,37 @@ void ItemBase::Update()
 {
 	auto dt = SceneManager::GetInstance().GetDeltaTime();
 
-	if (editData_.fireRate < baseData_.fireRate)
+	if (shotTimer_ < baseData_.fireRate)
 	{
-		editData_.fireRate += dt;
+		shotTimer_ += dt;
 	}
 
-	if (editData_.reloadTime)
+	if (fireCount_ > 0 && fireCount_ < fireCountTarget_)
 	{
-		editData_.reloadTime -= dt;
+		Main(-1, InputManager::TAGS::NONE);
 
-		if (editData_.reloadTime <= 0.0f)
+		if (fireCount_ >= fireCountTarget_)
 		{
-			editData_.reloadTime = 0.0f;
+			fireCount_ = fireCountTarget_ = -1;
+		}
+	}
+
+	if (reloadProg_)
+	{
+		reloadProg_ -= dt;
+
+		if (reloadProg_ <= 0.0f)
+		{
+			reloadProg_ = 0.0f;
 			
-			int ammo = editData_.reserve < baseData_.clipSize ?
-				editData_.reserve : baseData_.clipSize;
+			int ammo = ammoReserve_ < baseData_.clipsize ?
+				ammoReserve_ : baseData_.clipsize;
 
-			int resSub = (std::min)(baseData_.clipSize + 1 - editData_.clipSize, baseData_.clipSize);
+			int resSub = (std::min)(baseData_.clipsize + 1 - ammoClip_, baseData_.clipsize);
 
-			editData_.reserve = (std::max)(editData_.reserve - resSub, 0);
+			ammoReserve_ = (std::max)(ammoReserve_ - resSub, 0);
 
-			editData_.clipSize = (std::min)(editData_.clipSize + ammo, baseData_.clipSize + 1);
+			ammoClip_ = (std::min)(ammoClip_ + ammo, baseData_.clipsize + 1);
 		}
 
 		return;
@@ -70,31 +80,55 @@ void ItemBase::Draw()
 
 void ItemBase::DrawUI()
 {
-	DrawFormatString(100, 720, 0xffffffu, "AM %3d/%3d", editData_.clipSize, editData_.reserve);
+	DrawFormatString(100, 720, 0xffffffu, "AM %3d/%3d", ammoClip_, ammoReserve_);
 }
 
-void ItemBase::Main(int pad_num, InputManager::TAGS tag)
+bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 {
-	if (editData_.fireRate < baseData_.fireRate ||
-		editData_.reloadTime ||
-		editData_.clipSize == 0) return;
+	bool ret = false;
 
-	const auto& ins = InputManager::GetInstance();
+	if (shotTimer_ < baseData_.fireRate) return ret;
 
-	if (baseData_.type == SHOT_TYPE::FULL_AUTO && !ins.CheckNowMap(pad_num, tag) ||
-		baseData_.type == SHOT_TYPE::SEMI_AUTO && !ins.CheckDownMap(pad_num, tag))
+	if (reloadProg_ || ammoClip_ == 0)
 	{
-		return;
+		fireCount_ = fireCountTarget_ = -1;
+		return ret;
+	}
+
+	if (fireCount_ < fireCountTarget_)
+	{
+		if (pad_num != -1) return ret;
+
+		++fireCount_;
+	}
+	else if (pad_num > 0)
+	{
+		const auto& ins = InputManager::GetInstance();
+
+		int fireRound = baseData_.firemode[firemode_];
+
+		if (fireRound == -1 && !ins.CheckNowMap(pad_num, tag) ||
+			fireRound > 0 && !ins.CheckDownMap(pad_num, tag))
+		{
+			return ret;
+		}
+
+		fireCountTarget_ = fireRound;
+		fireCount_ = fireRound > 0 ? 1 : -1;
+	}
+	else
+	{
+		return ret;
 	}
 
 	// 乱数生成器の参照
 	auto& rng = Application::GetInstance().GetRNGPointer();
 
 	// 弾-1
-	--editData_.clipSize;
+	--ammoClip_;
 
 	// 発射クールタイム
-	editData_.fireRate -= baseData_.fireRate;
+	shotTimer_ -= baseData_.fireRate;
 
 	// 反動
 	scnMng_.GetCameraPtr().Kick(
@@ -113,7 +147,7 @@ void ItemBase::Main(int pad_num, InputManager::TAGS tag)
 		float azimuthRand = rng.GetRandReal();
 
 		// 最大拡散度
-		float cosMaxAngle = std::cos(baseData_.spread);
+		float cosMaxAngle = std::cos(baseData_.dispersion);
 		// ローカルZ軸の移動量
 		float z = 1.0f - (1.0f - cosMaxAngle) * angleRand;
 
@@ -137,25 +171,29 @@ void ItemBase::Main(int pad_num, InputManager::TAGS tag)
 		dat.type = Collider3D::TYPE::PROJECTILE_PLAYER;
 		dat.position = transform_.position;
 		dat.velocity = dir * baseData_.velocity;
-		dat.damage = editData_.damage;
+		dat.damage = baseData_.damage;
 
 		if (ProjectileManager::GetInstance().CreateProjectile(dat))
 		{
 			AudioManager::GetInstance().Play(ResourceManager::SRC::SE_FIRE_AR);
 
 			EnemyManager::GetInstance().TriggerSoundEvent(transform_.position, EnemyManager::SOUND_EVENT::GUNFIRE);
+
+			ret = true;
 		}
 		else
 		{
 			// これ以上空きが無いので、続行は無駄
-			return;
+			return ret;
 		}
 	}
+
+	return ret;
 }
 
 void ItemBase::Sub()
 {
-	if (editData_.reloadTime) return;
+	if (reloadProg_) return;
 
 	// ADS処理
 }
@@ -166,36 +204,42 @@ void ItemBase::Alt()
 
 void ItemBase::Reload()
 {
-	if (editData_.clipSize > baseData_.clipSize ||
-		editData_.reserve == 0) return;
+	if (ammoClip_ > baseData_.clipsize ||
+		ammoReserve_ == 0) return;
 
-	if (!editData_.reloadTime)
+	if (!reloadProg_)
 	{
-		editData_.reloadTime = baseData_.reloadTime;
+		reloadProg_ = baseData_.reload;
 	}
+}
+
+void ItemBase::CycleFiremode()
+{
+	firemode_ = (firemode_ + 1) % (unsigned int)baseData_.firemode.size();
 }
 
 void ItemBase::Refill()
 {
-	editData_.reserve = baseData_.reserve;
+	ammoReserve_ = baseData_.reserve;
 }
 
 float ItemBase::GetReloadProg() const
 {
-	if (!editData_.reloadTime)
+	if (!reloadProg_)
 	{
 		return 0.0f;
 	}
 	else
 	{
-		return (baseData_.reloadTime - editData_.reloadTime) / baseData_.reloadTime;
+		return (baseData_.reload - reloadProg_) / baseData_.reload;
 	}
 }
 
 void ItemBase::InitParam()
 {
-	++editData_.clipSize;
-	editData_.reloadTime = 0.0f;
+	ammoClip_ = baseData_.clipsize + 1;
+	ammoReserve_ = baseData_.reserve;
+	shotTimer_ = baseData_.fireRate;
 }
 
 void ItemBase::InitModel()

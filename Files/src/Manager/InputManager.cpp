@@ -226,24 +226,24 @@ Vector2 InputManager::GetMouseMoveLength() const
 		nowMousePos_.y - Application::RESOLUTION_HEIGHT / 2);
 }
 
-bool InputManager::CheckNowMouse(int DxLib_MOUSEcode) const
+bool InputManager::CheckNowMouse(int mouse_button_num) const
 {
-	return nowMouse_.at(DxLib_MOUSEcode);
+	return nowMouse_[mouse_button_num];
 }
 
-bool InputManager::CheckPrevMouse(int DxLib_MOUSEcode) const
+bool InputManager::CheckPrevMouse(int mouse_button_num) const
 {
-	return prevMouse_.at(DxLib_MOUSEcode);
+	return prevMouse_[mouse_button_num];
 }
 
-bool InputManager::CheckDownMouse(int DxLib_MOUSEcode) const
+bool InputManager::CheckDownMouse(int mouse_button_num) const
 {
-	return nowMouse_.at(DxLib_MOUSEcode) && !prevMouse_.at(DxLib_MOUSEcode);
+	return nowMouse_[mouse_button_num] && !prevMouse_[mouse_button_num];
 }
 
-bool InputManager::CheckUpMouse(int DxLib_MOUSEcode) const
+bool InputManager::CheckUpMouse(int mouse_button_num) const
 {
-	return !nowMouse_.at(DxLib_MOUSEcode) && prevMouse_.at(DxLib_MOUSEcode);
+	return !nowMouse_[mouse_button_num] && prevMouse_[mouse_button_num];
 }
 
 bool InputManager::IsGamepadConnected(int pad_num) const
@@ -271,16 +271,16 @@ void InputManager::InitInputMap()
 		}
 
 		AddorReplaceMap(i, TAGS::MOVE_UP,
-			{ { btn::LSTICK_U, btn::DPAD_U }, { KEY_INPUT_W, 0x00 }, 0 });
+			{ { btn::LSTICK_U, btn::NONE }, { KEY_INPUT_W, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::MOVE_DOWN,
-			{ { btn::LSTICK_D, btn::DPAD_D }, { KEY_INPUT_S, 0x00 }, 0 });
+			{ { btn::LSTICK_D, btn::NONE }, { KEY_INPUT_S, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::MOVE_LEFT,
-			{ { btn::LSTICK_L, btn::DPAD_L }, { KEY_INPUT_A, 0x00 }, 0 });
+			{ { btn::LSTICK_L, btn::NONE }, { KEY_INPUT_A, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::MOVE_RIGHT,
-			{ { btn::LSTICK_R, btn::DPAD_R }, { KEY_INPUT_D, 0x00 }, 0 });
+			{ { btn::LSTICK_R, btn::NONE }, { KEY_INPUT_D, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::VIEW_UP,
 			{ { btn::RSTICK_U, btn::NONE }, { KEY_INPUT_UP, 0x00 }, 0 });
@@ -298,7 +298,7 @@ void InputManager::InitInputMap()
 			{ { btn::BUTTON_R3, btn::NONE }, { KEY_INPUT_C, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::VIEW_SWITCH_SIDE,
-			{ { btn::BUTTON_L1, btn::NONE }, { KEY_INPUT_TAB, 0x00 }, 0 });
+			{ { btn::DPAD_L, btn::NONE }, { KEY_INPUT_TAB, 0x00 }, 0 });
 
 		AddorReplaceMap(i, TAGS::SYSTEM_OK,
 			{ { btn::BUTTON_START, btn::NONE }, { KEY_INPUT_RETURN, KEY_INPUT_SPACE }, 0 });
@@ -318,11 +318,14 @@ void InputManager::InitInputMap()
 		AddorReplaceMap(i, TAGS::SPRINT,
 			{ { btn::BUTTON_L3, btn::NONE }, { KEY_INPUT_LSHIFT, 0x00 }, 0 });
 
+		AddorReplaceMap(i, TAGS::ATTACK_MAIN,
+			{ { btn::BUTTON_R2, btn::NONE }, { KEY_INPUT_F, 0x00 }, 1 });
+
 		AddorReplaceMap(i, TAGS::RELOAD,
 			{ { btn::BUTTON_LEFT, btn::NONE }, { KEY_INPUT_R, 0x00 }, 0 });
 
-		AddorReplaceMap(i, TAGS::ATTACK_MAIN,
-			{ { btn::BUTTON_R2, btn::NONE }, { KEY_INPUT_F, 0x00 }, MOUSE_INPUT_LEFT });
+		AddorReplaceMap(i, TAGS::CYCLE,
+			{ { btn::DPAD_R, btn::NONE }, { KEY_INPUT_B, 0x00 }, 0 });
 	}
 }
 
@@ -346,11 +349,23 @@ void InputManager::UpdateMouse()
 	// マウスボタンの入力状態を取得（各ビット毎に入力情報が入る）
 	auto mb = GetMouseInput();
 	
-	// とりあえず標準的なボタン3つ＋サイドボタン2つまで対応
-	nowMouse_[0] = false;
-	for (int i = MOUSE_INPUT_LEFT; i <= MOUSE_INPUT_5; i *= 2)
+	int index = 0;
+	nowMouse_[index] = false;
+	for (int digit = MOUSE_INPUT_LEFT; digit <= MOUSE_INPUT_8; digit *= 2)
 	{
-		nowMouse_[i] = mb & i;
+		nowMouse_[++index] = mb & digit;
+	}
+
+	int mr = GetMouseWheelRotVol();
+	if (mr > 0)
+	{
+		nowMouse_[++index] = mr;
+		nowMouse_[++index] = 0;
+	}
+	else if (mr < 0)
+	{
+		nowMouse_[++index] = 0;
+		nowMouse_[++index] = -mr;
 	}
 }
 

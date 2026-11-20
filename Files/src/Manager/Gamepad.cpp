@@ -10,6 +10,7 @@ Gamepad::Gamepad(int pad_num)
 	prevButton_.fill(0);
 	
 	padTypeNum_ = GetJoypadType(PAD_NUM);
+	SetJoypadDeadZone(PAD_NUM, 0.0);
 }
 
 Gamepad::~Gamepad()
@@ -42,98 +43,109 @@ void Gamepad::Update()
 		// DirectInput
 		// X軸
 		if (dIn.X < -DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_L] = std::abs(dIn.X);
+			nowButton_[(int)PAD_INPUT::LSTICK_L] = std::abs(_DZFunc(dIn.X, false));
 		else if (dIn.X > DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_R] = std::abs(dIn.X);
+			nowButton_[(int)PAD_INPUT::LSTICK_R] = std::abs(_DZFunc(dIn.X, false));
 		// Y軸
 		if (dIn.Y < -DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_U] = std::abs(dIn.Y);
+			nowButton_[(int)PAD_INPUT::LSTICK_U] = std::abs(_DZFunc(dIn.Y, false));
 		else if (dIn.Y > DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_D] = std::abs(dIn.Y);
+			nowButton_[(int)PAD_INPUT::LSTICK_D] = std::abs(_DZFunc(dIn.Y, false));
 	}
 	else
 	{ // XInput
 		// X軸
 		if (xIn.ThumbLX < -XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_L] = (int)std::abs(xIn.ThumbLX * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::LSTICK_L] = (int)std::abs(_DZFunc(xIn.ThumbLX) * XINPUT_STICK_MULT);
 		else if (xIn.ThumbLX > XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_R] = (int)std::abs(xIn.ThumbLX * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::LSTICK_R] = (int)std::abs(_DZFunc(xIn.ThumbLX) * XINPUT_STICK_MULT);
 		// Y軸
 		if (xIn.ThumbLY > XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_U] = (int)std::abs(xIn.ThumbLY * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::LSTICK_U] = (int)std::abs(_DZFunc(xIn.ThumbLY) * XINPUT_STICK_MULT);
 		else if (xIn.ThumbLY < -XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::LSTICK_D] = (int)std::abs(xIn.ThumbLY * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::LSTICK_D] = (int)std::abs(_DZFunc(xIn.ThumbLY) * XINPUT_STICK_MULT);
 	}
 
 	// 右スティック
 	if (!xFlg)
-	{
-		// DirectInput
+	{ // DirectInput
 		// DirectInputは、右スティック専用のパラメーターを持たない（RxやRyなどは本来、スティックの回転量である）ため
 		// ここに記述してあるプログラムでは反応しない場合がある
 
 		// X軸
 		if (dIn.Rx < -DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_L] = std::abs(dIn.Rx);
+			nowButton_[(int)PAD_INPUT::RSTICK_L] = std::abs(_DZFunc(dIn.Rx, false));
 		else if (dIn.Rx > DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_R] = std::abs(dIn.Rx);
+			nowButton_[(int)PAD_INPUT::RSTICK_R] = std::abs(_DZFunc(dIn.Rx, false));
 
 		if (dIn.Z < -DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_L] = std::abs(dIn.Z);
+			nowButton_[(int)PAD_INPUT::RSTICK_L] = std::abs(_DZFunc(dIn.Z, false));
 		else if (dIn.Z > DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_R] = std::abs(dIn.Z);
+			nowButton_[(int)PAD_INPUT::RSTICK_R] = std::abs(_DZFunc(dIn.Z, false));
 
 		// Y軸
 		if (dIn.Ry < -DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_U] = std::abs(dIn.Ry);
+			nowButton_[(int)PAD_INPUT::RSTICK_U] = std::abs(_DZFunc(dIn.Ry, false));
 		else if (dIn.Ry > DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_D] = std::abs(dIn.Ry);
+			nowButton_[(int)PAD_INPUT::RSTICK_D] = std::abs(_DZFunc(dIn.Ry, false));
 
 		if (dIn.Rz < -DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_U] = std::abs(dIn.Rz);
+			nowButton_[(int)PAD_INPUT::RSTICK_U] = std::abs(_DZFunc(dIn.Rz, false));
 		else if (dIn.Rz > DINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_D] = std::abs(dIn.Rz);
+			nowButton_[(int)PAD_INPUT::RSTICK_D] = std::abs(_DZFunc(dIn.Rz, false));
 	}
 	else
-	{
-		// XInput
+	{ // XInput
 		// X軸
 		if (xIn.ThumbRX < -XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_L] = (int)std::abs(xIn.ThumbRX * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::RSTICK_L] = (int)std::abs(_DZFunc(xIn.ThumbRX) * XINPUT_STICK_MULT);
 		else if (xIn.ThumbRX > XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_R] = (int)std::abs(xIn.ThumbRX * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::RSTICK_R] = (int)std::abs(_DZFunc(xIn.ThumbRX) * XINPUT_STICK_MULT);
 		// Y軸
 		if (xIn.ThumbRY > XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_U] = (int)std::abs(xIn.ThumbRY * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::RSTICK_U] = (int)std::abs(_DZFunc(xIn.ThumbRY) * XINPUT_STICK_MULT);
 		else if (xIn.ThumbRY < -XINPUT_DEADZONE)
-			nowButton_[(int)PAD_INPUT::RSTICK_D] = (int)std::abs(xIn.ThumbRY * XINPUT_STICK_MULT);
+			nowButton_[(int)PAD_INPUT::RSTICK_D] = (int)std::abs(_DZFunc(xIn.ThumbRY) * XINPUT_STICK_MULT);
 	}
 
 	// ハットスイッチ／十字キー
-	if (dIn.POV[0] != 0xFFFFFFFFU)
-	{
-		// POVは、出力に弧度×100のunsigned int型1つを用いているため
-		// 取り出した値を100で割った後、弧度からラジアンに変換すると良い
-		double rad = MathUtil::DegToRad(dIn.POV[0] / 100.0);
+	if (!xFlg)
+	{ // DirectInput
+		if (dIn.POV[0] != 0xFFFFFFFFU)
+		{
+			// POVは、出力に弧度×100のunsigned int型1つを用いているため
+			// 取り出した値を100で割った後、弧度からラジアンに変換すると良い
+			double rad = MathUtil::DegToRad(dIn.POV[0] / 100.0);
 
-		// 計算時の誤差に対するマージン
-		double margin = 0.01;
+			// 計算時の誤差に対するマージン
+			double margin = 0.01;
 
-		// 本来はx = cos、y = sinだが、0が上から始まるので
-		// cosとsinを入れ替えた方が良い
-		double sinRet = std::sin(rad);
-		double cosRet = std::cos(rad);
+			// 本来はx = cos、y = sinだが、0が上から始まるので
+			// cosとsinを入れ替えた方が良い
+			double sinRet = std::sin(rad);
+			double cosRet = std::cos(rad);
+
+			// X軸
+			if (sinRet < -margin)
+				nowButton_[(int)PAD_INPUT::DPAD_L] = DINPUT_STICK_MAX;
+			else if (sinRet > margin)
+				nowButton_[(int)PAD_INPUT::DPAD_R] = DINPUT_STICK_MAX;
+			// Y軸
+			if (cosRet > margin)
+				nowButton_[(int)PAD_INPUT::DPAD_U] = DINPUT_STICK_MAX;
+			else if (cosRet < -margin)
+				nowButton_[(int)PAD_INPUT::DPAD_D] = DINPUT_STICK_MAX;
+		}
+	}
+	else
+	{ // XInput
+		// Y軸
+		nowButton_[(int)PAD_INPUT::DPAD_U] = xIn.Buttons[0] ? DINPUT_STICK_MAX : 0;
+		nowButton_[(int)PAD_INPUT::DPAD_D] = xIn.Buttons[1] ? DINPUT_STICK_MAX : 0;
 
 		// X軸
-		if (sinRet < -margin)
-			nowButton_[(int)PAD_INPUT::DPAD_L] = DINPUT_STICK_MAX;
-		else if (sinRet > margin)
-			nowButton_[(int)PAD_INPUT::DPAD_R] = DINPUT_STICK_MAX;
-		// Y軸
-		if (cosRet > margin)
-			nowButton_[(int)PAD_INPUT::DPAD_U] = DINPUT_STICK_MAX;
-		else if (cosRet < -margin)
-			nowButton_[(int)PAD_INPUT::DPAD_D] = DINPUT_STICK_MAX;
+		nowButton_[(int)PAD_INPUT::DPAD_L] = xIn.Buttons[2] ? DINPUT_STICK_MAX : 0;
+		nowButton_[(int)PAD_INPUT::DPAD_R] = xIn.Buttons[3] ? DINPUT_STICK_MAX : 0;
 	}
 
 	// Buttons（ボタン）
@@ -313,4 +325,13 @@ int Gamepad::GetPadTypeModel() const
 bool Gamepad::IsNintendoJoypad() const
 {
 	return GetPadTypeModel() == static_cast<int>(PAD_MODEL::NINTENDO);
+}
+
+int Gamepad::_DZFunc(int in, bool xin)
+{
+	int ret;
+	const int IN_MAX = !xin ? DINPUT_STICK_MAX : XINPUT_STICK_MAX;
+
+	ret = (int)(in - IN_MAX * DEADZONE);
+	return (int)(ret / (1.0 - DEADZONE));
 }

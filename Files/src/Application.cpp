@@ -117,6 +117,7 @@ bool Application::InitSystem()
 	SetGraphMode(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 32);
 
 #if defined(_WIN32) || defined(_WIN64)
+	// Windows専用、「画面の拡大」設定に合わせてウインドウを調整してくれる
 	SetWindowSize(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 #endif
 

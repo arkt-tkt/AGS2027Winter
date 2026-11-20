@@ -46,7 +46,7 @@ void Resupply::Activate()
 {
 	auto pl = stage_.GetPlayerPtr();
 	
-	pl->GetEquippedWeaponPtr()->Refill();
+	pl->GetInventoryPtr()->RefillEquipped();
 
 	activeTimer_ = 20.0f;
 }

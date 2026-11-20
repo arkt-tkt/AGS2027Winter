@@ -1,4 +1,7 @@
 #pragma once
+#include <map>
+#include <string>
+#include "../Object/Actor/Item/ItemBase.h"
 
 class ItemManager
 {
@@ -24,6 +27,19 @@ private:
 	virtual ~ItemManager() {}
 
 public:
+	static constexpr const char* CAT_NAME[] =
+	{
+		"Weap", "Thro" ,"Auxi", "Batt"
+	};
+
+	static constexpr const char* BUFF_NAME[] =
+	{
+		"HP", "Shield"
+	};
+
 	void LoadItemsData();
+
+private:
+	std::vector<ItemBase::ItemData> dat_;
 
 };

@@ -15,6 +15,8 @@ public:
     void DrawUI() override;
     bool Release() override;
 
+    bool IsGodMode() const { return godMode_; }
+
 private:
     static constexpr float GAUSSIAN_SIGMA_RATIO = 2.57f;
     static constexpr float GAUSSIAN_STEPS = 4.0f;
@@ -32,5 +34,7 @@ private:
     float sigma_ = 0.0f;
 
     float surviveTime_ = 0.0f;
+
+    bool godMode_ = false;
 
 };

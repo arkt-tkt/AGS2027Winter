@@ -40,7 +40,7 @@ public:
 	void AddAwayColliders(std::vector<std::weak_ptr<Collider3D>> cols);
 
 	// Object3Dを取得
-	const Transform3D& GetTransform() const { return transform_; }
+	Transform3D& GetTransform() { return transform_; }
 
 	// 特定タイプのコライダを取得
 	std::vector<std::shared_ptr<Collider3D>> GetTypedColliders(Collider3D::TYPE type) const;

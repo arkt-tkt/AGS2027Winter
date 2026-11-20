@@ -38,7 +38,7 @@ void Player::Draw()
 		transform_.rotation.x, transform_.rotation.y, transform_.rotation.z);
 #endif
 
-	wpn_->Draw();
+	inv_->Draw();
 
 	CharacterBase3D::Draw();
 }
@@ -47,7 +47,7 @@ void Player::DrawUI()
 {
 	DrawFormatString(100, 700, 0xffffffu, "HP %3d", MathUtil::Round(hp_));
 
-	wpn_->DrawUI();
+	inv_->DrawUI();
 }
 
 void Player::InitParam()
@@ -117,9 +117,7 @@ void Player::InitAnim()
 
 void Player::InitOther()
 {
-	wpn_ = std::make_unique<ItemBase>();
-	wpn_->Init();
-	wpn_->SetParentTransform(transform_);
+	inv_ = std::make_unique<Inventory>(this);
 }
 
 void Player::Move()
@@ -168,7 +166,10 @@ void Player::Move()
 	const auto DIR_MOVE_MULT = 1.0f - 0.1f + DOT * 0.1f;
 
 	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
-	const auto MAX_SPD = maxSpeed_ * SPRINT_MULT * dt;
+	auto maxSpd_ = maxSpeed_ * SPRINT_MULT * dt;
+
+	maxSpd_ *= (godMode_ ? 1.5f : 1.0f);
+
 	Vector3 moveSpeed;
 	float dotRate = 0.0f;
 
@@ -196,9 +197,9 @@ void Player::Move()
 	}
 
 	// Å‘å‘¬“x
-	if (velocity_.XZ().LengthSquare() * SPRINT_MULT > std::powf(MAX_SPD * DIR_MOVE_MULT, 2.0f))
+	if (velocity_.XZ().LengthSquare() * SPRINT_MULT > std::powf(maxSpd_ * DIR_MOVE_MULT, 2.0f))
 	{
-		float mult = (std::min)(MAX_SPD * DIR_MOVE_MULT / velocity_.XZ().Length(), 1.0f);
+		float mult = (std::min)(maxSpd_ * DIR_MOVE_MULT / velocity_.XZ().Length(), 1.0f);
 
 		velocity_.x *= mult;
 		velocity_.z *= mult;
@@ -225,7 +226,7 @@ void Player::AnimationSwitch()
 	auto& ins = InputManager::GetInstance();
 	using tag = InputManager::TAGS;
 
-	if (wpn_->GetReloadProg())
+	if (inv_->GetReloadProg())
 	{
 		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 2.5f);
 	}
@@ -267,20 +268,7 @@ void Player::LateMove()
 {
 	if (!isAlive_) return;
 
-	wpn_->Update();
-
-	const auto& INS = InputManager::GetInstance();
-
-	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::RELOAD))
-	{
-		wpn_->Reload();
-	}
-	else if (INS.CheckNowMap(INPUT_NUM, InputManager::TAGS::ATTACK_SUB))
-	{
-		wpn_->Sub();
-	}
-
-	wpn_->Main(INPUT_NUM, InputManager::TAGS::ATTACK_MAIN);
+	inv_->Update();
 }
 
 void Player::TurnVisual()
@@ -313,5 +301,5 @@ void Player::TurnVisual()
 
 	transform_.Update();
 
-	wpn_->LateUpdate();
+	inv_->LateUpdate();
 }
