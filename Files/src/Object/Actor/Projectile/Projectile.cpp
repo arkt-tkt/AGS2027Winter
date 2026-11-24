@@ -1,5 +1,6 @@
 #include "../../../Common/DxLibUtil.h"
 #include "../../../Manager/SceneManager.h"
+#include "../Character/CharacterBase3D.h"
 #include "Projectile.h"
 
 Projectile::Projectile(ProjectileManager& mng)
@@ -41,16 +42,23 @@ void Projectile::Draw()
 		dat_.radius, 16, 0x00ffffu, 0xffffffu, TRUE);
 }
 
-void Projectile::DrawUI()
+bool Projectile::IsCanHit(CharacterBase3D* chara)
 {
-	auto drawPos = transform_.position + (transform_.position2nd - transform_.position) / 2.0f;
+	if (!chara) return false;
+	if (std::find(hitAways_.begin(), hitAways_.end(), chara) != hitAways_.end()) return false;
 
-	auto scPos = VECToVec3(ConvWorldPosToScreenPos(Vec3ToVEC(drawPos)));
+	return true;
+}
 
-	if (scnMng_.GetCameraPtr().IsInCameraBounds(scPos))
-	{
-		DrawStringToCenterPos(scPos.x, scPos.y, std::to_string(dat_.damage).c_str(), 0xffffffu);
-	}
+void Projectile::Hit(CharacterBase3D* chara)
+{
+	hitAways_.push_back(chara);
+	hp_--;
+}
+
+void Projectile::HitEnv()
+{
+	hp_ = 0;
 }
 
 void Projectile::InitParam()
@@ -58,8 +66,10 @@ void Projectile::InitParam()
 	transform_.position = transform_.position2nd = dat_.position;
 	velocity_ = dat_.velocity;
 
-	hp_ = 1;
+	hp_ = dat_.penetration + 1;
 	aliveTimer_ = 0.0f;
+
+	hitAways_.clear();
 }
 
 void Projectile::InitModel()

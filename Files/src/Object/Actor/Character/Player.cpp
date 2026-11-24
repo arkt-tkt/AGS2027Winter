@@ -43,13 +43,6 @@ void Player::Draw()
 	CharacterBase3D::Draw();
 }
 
-void Player::DrawUI()
-{
-	DrawFormatString(100, 700, 0xffffffu, "HP %3d", MathUtil::Round(hp_));
-
-	inv_->DrawUI();
-}
-
 void Player::InitParam()
 {
 	isAlive_ = true;
@@ -228,7 +221,8 @@ void Player::AnimationSwitch()
 
 	if (inv_->GetReloadProg())
 	{
-		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 2.5f);
+		float animLen = inv_->GetData().reload;
+		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, animLen);
 	}
 
 	Vector3 dirs[] =
@@ -285,9 +279,9 @@ void Player::TurnVisual()
 	int frameCnt = _countof(ROTATABLE_FRAME_INDEX);
 
 	Quaternion qRot = Quaternion().Euler(
-		-scnMng_.GetCameraPtr().GetAngles().x * 0.84f / frameCnt,
+		-scnMng_.GetCameraPtr().GetVisualAngles().x * 0.84f / frameCnt,
 		0,
-		-scnMng_.GetCameraPtr().GetAngles().x * 0.6f / frameCnt);
+		-scnMng_.GetCameraPtr().GetVisualAngles().x * 0.6f / frameCnt);
 
 	// ここにフレーム本来の座標、回転、拡大率が入る
 	MATRIX mat = MGetIdent();

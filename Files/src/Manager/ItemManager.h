@@ -7,9 +7,25 @@ class ItemManager
 {
 public:
 	// シングルトン
-	static void CreateInstance() { if (instance_ == nullptr) instance_ = new ItemManager(); }
-	static ItemManager& GetInstance() { return *instance_; }
-	static void DeleteInstance() { if (instance_ != nullptr) delete instance_; instance_ = nullptr; }
+	static void CreateInstance()
+	{
+		if (instance_ == nullptr)
+			instance_ = new ItemManager();
+	}
+
+	static ItemManager& GetInstance()
+	{
+		if (instance_ == nullptr)
+			instance_ = new ItemManager();
+		return *instance_;
+	}
+
+	static void DeleteInstance()
+	{
+		if (instance_ != nullptr)
+			delete instance_;
+		instance_ = nullptr;
+	}
 
 private:
 	// インスタンス
@@ -37,9 +53,13 @@ public:
 		"HP", "Shield"
 	};
 
-	void LoadItemsData();
+	void LoadItemData();
+	ItemBase::ItemData GetItemData(const std::string& name) const;
 
 private:
-	std::vector<ItemBase::ItemData> dat_;
+	std::map<std::string, ItemBase::ItemData> data_;
+
+	void _LoadValue();
+	void _LoadDesc();
 
 };

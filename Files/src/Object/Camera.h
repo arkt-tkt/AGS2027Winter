@@ -1,7 +1,7 @@
 #pragma once
-#include <DxLib.h>
 #include <vector>
 #include "../Common/Geometry.h"
+#include "../Common/MathUtil.h"
 
 class Collider3D;
 class Transform3D;
@@ -53,6 +53,7 @@ public:
 	const Vector3& GetPosition() const { return pos_; }
 	const Vector3& GetTargetPosition() const { return targetPos_; }
 	const Vector3& GetAngles() const { return angles_; }
+	const Vector3 GetVisualAngles() const { return _AngleClamp(angles_ + kick_); }
 	const MODE& GetCameraMode() const { return mode_; }
 
 	void StartShake(float intensity, float duration);
@@ -65,7 +66,7 @@ private:
 	static constexpr float FOG_END_RANGE = 2000.0f;
 	static constexpr int FOG_COLOR[3] = { 0x08, 0x00, 0x10 };
 
-	static constexpr float CAMERA_FOV = 75.0f * DX_PI_F / 180.0f;
+	static constexpr float CAMERA_FOV = 75.0f * MathUtil::PI_F / 180.0f;
 
 	static constexpr Vector3 FIXED_TARGET_POS = { 0.0f, 0.0f, 0.0f };
 	static constexpr Vector3 FIXED_CAMERA_LOCAL_POS = { 0.0f, 0.0f, -320.0f };
@@ -78,8 +79,8 @@ private:
 
 	static constexpr float MOUSE_SENSITIVITY_INIT = 0.1f;
 
-	static constexpr float UP_ANGLE_LIMIT = -64.0f * DX_PI_F / 180.0f;
-	static constexpr float DOWN_ANGLE_LIMIT = 64.0f * DX_PI_F / 180.0f;
+	static constexpr float UP_ANGLE_LIMIT = -64.0f * MathUtil::PI_F / 180.0f;
+	static constexpr float DOWN_ANGLE_LIMIT = 64.0f * MathUtil::PI_F / 180.0f;
 
 	const Transform3D* followTarget_;
 
@@ -121,6 +122,6 @@ private:
 
 	void ShakeScreen(Vector3& cam_pos, Vector3& tgt_pos) const;
 
-	Vector3 _AngleClamp(const Vector3&);
+	Vector3 _AngleClamp(const Vector3&) const;
 
 };

@@ -25,7 +25,7 @@ private:
 	static constexpr float SCALE = 0.4f;
 	static constexpr float CHASE_UPDATE_SOUND_LEN_SPACE = 25.0f;
 	static constexpr float TARGET_NEAR = 38.0f;
-	static constexpr float ATTACK_RANGE = 200.0f;// 42.0f;
+	static constexpr float ATTACK_RANGE = TARGET_NEAR * 1.25f;
 	static constexpr float ATTACK_HIT_RADIUS = 3.0f;
 
 	// マネージャ

@@ -12,7 +12,14 @@ ProjectileManager::ProjectileManager()
 
 	active_.reserve(POOL_SIZE);
 
-	popUps_.reserve(60ull);
+	popUps_.reserve(POP_UP_SIZE);
+}
+
+ProjectileManager::~ProjectileManager()
+{
+	for (auto& cell : pool_) cell->Release();
+
+	pool_.clear();
 }
 
 void ProjectileManager::Update()
@@ -64,7 +71,7 @@ void ProjectileManager::DrawUI()
 		if (!SceneManager::GetInstance().GetCameraPtr().IsInCameraBounds(VECToVec3(scPos))) return;
 
 		DrawStringToCenterPos(MathUtil::Round(scPos.x), MathUtil::Round(scPos.y),
-			std::to_string(MathUtil::Round(cell.damage)).c_str(), 0xffffffu);
+			std::to_string(MathUtil::RoundDown(cell.damage)).c_str(), 0xffffffu);
 	}
 }
 

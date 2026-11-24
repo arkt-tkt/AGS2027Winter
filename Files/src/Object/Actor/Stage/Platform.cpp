@@ -111,7 +111,7 @@ void Platform::Collision()
 
 					if (hits.HitNum)
 					{
-						proj->Hit();
+						proj->HitEnv();
 					}
 
 					// 検出した地面ポリゴン情報の後始末

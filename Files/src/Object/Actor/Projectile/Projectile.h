@@ -1,6 +1,8 @@
 #pragma once
+#include <list>
 #include "../ActorBase3D.h"
 
+class CharacterBase3D;
 class ProjectileManager;
 
 class Projectile : public ActorBase3D
@@ -13,21 +15,23 @@ public:
 		Collider3D::TYPE type;
 		Position3 position;
 		Vector3 velocity;
+		float damage;
+		int penetration = 0;
 		float radius = 1.0f;
 		float gravity = 0.1f;
-		float damage;
 	};
 
 	Projectile(ProjectileManager& mng);
 
 	void Update() override;
 	void Draw() override;
-	void DrawUI() override;
 
 	Data GetData() const { return dat_; }
 	void SetData(Data dat) { dat_ = dat; }
-	bool IsAlive() const { return hp_ > 0.0f; }
-	void Hit() { --hp_; }
+	bool IsAlive() const { return hp_ > 0; }
+	bool IsCanHit(CharacterBase3D* chara);
+	void Hit(CharacterBase3D* chara);
+	void HitEnv();
 
 private:
 	static constexpr float ALIVE_TIME_MAX = 1.5f;
@@ -38,6 +42,8 @@ private:
 	Data dat_;
 	int hp_;
 	float aliveTimer_ = 0.0f;
+
+	std::list<CharacterBase3D*> hitAways_;
 
 	void InitParam() override;
 	void InitModel() override;

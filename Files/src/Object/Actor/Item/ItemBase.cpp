@@ -40,11 +40,14 @@ void ItemBase::Update()
 			int ammo = ammoReserve_ < baseData_.clipsize ?
 				ammoReserve_ : baseData_.clipsize;
 
-			int resSub = (std::min)(baseData_.clipsize + 1 - ammoClip_, baseData_.clipsize);
+			int maxClip = baseData_.chambering ?
+				baseData_.clipsize + baseData_.chambering : baseData_.clipsize;
+
+			int resSub = (std::min)(maxClip - ammoClip_, baseData_.clipsize);
 
 			ammoReserve_ = (std::max)(ammoReserve_ - resSub, 0);
 
-			ammoClip_ = (std::min)(ammoClip_ + ammo, baseData_.clipsize + 1);
+			ammoClip_ = (std::min)(ammoClip_ + ammo, maxClip);
 		}
 
 		return;
@@ -76,11 +79,6 @@ void ItemBase::Draw()
 	DrawLine3D(basePos, VAdd(basePos, vy35), 0xff00u);
 	DrawLine3D(basePos, VAdd(basePos, vz35), 0xffu);
 #endif
-}
-
-void ItemBase::DrawUI()
-{
-	DrawFormatString(100, 720, 0xffffffu, "AM %3d/%3d", ammoClip_, ammoReserve_);
 }
 
 bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
@@ -131,8 +129,12 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 	shotTimer_ -= baseData_.fireRate;
 
 	// ”½“®
-	scnMng_.GetCameraPtr().Kick(
-		Vector3(-MathUtil::PI_F * 0.012f, MathUtil::PI_F * rng.GetRandReal(-0.003f, 0.003f), 0));
+	Vector3 recShake = {
+		baseData_.recoilShake.x * rng.GetRandReal(-1.0f, 1.0f),
+		baseData_.recoilShake.y * rng.GetRandReal(-1.0f, 1.0f),
+		baseData_.recoilShake.z * rng.GetRandReal(-1.0f, 1.0f)
+	};
+	scnMng_.GetCameraPtr().Kick(baseData_.recoilKick + recShake);
 
 	Vector3 dir;
 
@@ -172,6 +174,7 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 		dat.position = transform_.position;
 		dat.velocity = dir * baseData_.velocity;
 		dat.damage = baseData_.damage;
+		dat.penetration = baseData_.penetration;
 
 		if (ProjectileManager::GetInstance().CreateProjectile(dat))
 		{
@@ -204,7 +207,7 @@ void ItemBase::Alt()
 
 void ItemBase::Reload()
 {
-	if (ammoClip_ > baseData_.clipsize ||
+	if (ammoClip_ >= baseData_.clipsize + baseData_.chambering ||
 		ammoReserve_ == 0) return;
 
 	if (!reloadProg_)
@@ -216,6 +219,10 @@ void ItemBase::Reload()
 void ItemBase::CycleFiremode()
 {
 	firemode_ = (firemode_ + 1) % (unsigned int)baseData_.firemode.size();
+
+	_SetFiremodeLabel();
+
+	AudioManager::GetInstance().Play(ResourceManager::SRC::SE_SWITCH_FIREMODE);
 }
 
 void ItemBase::Refill()
@@ -237,17 +244,22 @@ float ItemBase::GetReloadProg() const
 
 void ItemBase::InitParam()
 {
-	ammoClip_ = baseData_.clipsize + 1;
+	ammoClip_ = baseData_.clipsize +
+		baseData_.chambering;
+
 	ammoReserve_ = baseData_.reserve;
 	shotTimer_ = baseData_.fireRate;
+
+	_SetFiremodeLabel();
 }
 
 void ItemBase::InitModel()
 {
-	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_WPN_AR_STG556);
-	transform_.scale = 0.04f;
+	transform_.modelId = resMng_.LoadModelDuplicate(
+		static_cast<ResourceManager::SRC>(baseData_.model));
+	transform_.scale = baseData_.scale;
 	transform_.position = 0.0f;
-	transform_.localPosition = Position3(-1, -1, 10);
+	transform_.localPosition = baseData_.offset;
 
 	transform_.Update();
 }
@@ -272,4 +284,20 @@ void ItemBase::TurnVisual()
 
 	auto qRot = LookRotation(forward);
 	transform_.rotation = qRot.ToEuler();
+}
+
+void ItemBase::_SetFiremodeLabel()
+{
+	if (baseData_.firemode[firemode_] == -1)
+	{
+		firemodeLabel_ = FIREMODE_LABEL_AUTO;
+	}
+	else if (baseData_.firemode[firemode_] == 1)
+	{
+		firemodeLabel_ = FIREMODE_LABEL_SEMI;
+	}
+	else
+	{
+		firemodeLabel_ = std::to_string(baseData_.firemode[firemode_]) + FIREMODE_LABEL_BURST;
+	}
 }

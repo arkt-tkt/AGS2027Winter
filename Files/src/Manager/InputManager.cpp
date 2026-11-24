@@ -324,8 +324,11 @@ void InputManager::InitInputMap()
 		AddorReplaceMap(i, TAGS::RELOAD,
 			{ { btn::BUTTON_LEFT, btn::NONE }, { KEY_INPUT_R, 0x00 }, 0 });
 
-		AddorReplaceMap(i, TAGS::CYCLE,
+		AddorReplaceMap(i, TAGS::ATTACK_CHANGE,
 			{ { btn::DPAD_R, btn::NONE }, { KEY_INPUT_B, 0x00 }, 0 });
+
+		AddorReplaceMap(i, TAGS::WEAPON_SWITCH,
+			{ { btn::BUTTON_L1, btn::NONE }, { KEY_INPUT_1, 0x00 }, 0 });
 	}
 }
 
@@ -377,22 +380,6 @@ void InputManager::UpdatePad()
 	{
 		gamepads_[i]->Update();
 	}
-}
-
-bool InputManager::CheckNeedKeepLayout(int padNum, TAGS tag) const
-{
-	bool tagHit = false;
-
-	for (auto p : PAD_KEEP_LAYOUT_ARRAY)
-	{
-		if (p == tag)
-		{
-			tagHit = true;
-			break;
-		}
-	}
-
-	return tagHit;
 }
 
 bool InputManager::InputBoundCheck(int padNum) const

@@ -107,10 +107,10 @@ const T FPSManager::GetDeltaTime() const
     // 可変フレームレート制御用のデルタタイム
     if (timeList_.back() < idealFrameSecond_ * DELTA_TIME_DELAY_MULT_MAX)
     {
-        // IDEAL_FRAME_SECONDの2倍までは、可変フレームレートで対応する
+        // IDEAL_FRAME_SECONDの3倍までは、可変フレームレートで対応する
         return static_cast<T>(timeList_.back());
     }
-    // それ以上の場合、固定でIDEAL_FRAME_SECONDの2倍を返す（処理落ちする）
+    // それ以上の場合、固定でIDEAL_FRAME_SECONDの3倍を返す（処理落ちする）
     // ※瞬間移動や判定抜けを防止するため
     return static_cast<T>(idealFrameSecond_ * DELTA_TIME_DELAY_MULT_MAX);
 }

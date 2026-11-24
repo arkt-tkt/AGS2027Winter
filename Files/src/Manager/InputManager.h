@@ -62,16 +62,10 @@ public:
 		ATTACK_SPECIAL,
 
 		RELOAD,
-		CYCLE,
-	};
+		ATTACK_CHANGE,
+		WEAPON_SWITCH,
 
-	// ここに書かれているタグに登録されたボタンは、
-	// 任天堂系ゲームパッド用再配置処理の影響を受けない
-	static constexpr TAGS PAD_KEEP_LAYOUT_ARRAY[]
-	{
-		TAGS::SYSTEM_OK,
-		TAGS::SYSTEM_NG,
-		TAGS::SYSTEM_PAUSE
+		END
 	};
 
 	using KEY_STATE_ARRAY = std::array<char, 256ULL>;
@@ -147,7 +141,6 @@ private:
 	void UpdateMouse(); // マウス更新
 	void UpdatePad(); // ジョイパッド更新
 	
-	bool CheckNeedKeepLayout(int padNum, TAGS tag) const;
 	bool InputBoundCheck(int padNum) const;
 
 };

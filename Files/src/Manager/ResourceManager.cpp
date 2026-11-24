@@ -69,9 +69,6 @@ void ResourceManager::Init()
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Enemy/character.mv1");
 	resourcesMap_.emplace(SRC::MODEL_ENEMY1, std::move(res));
 
-	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/sg553-assault-rifle/source/sg553.mv1");
-	resourcesMap_.emplace(SRC::MODEL_WPN_AR_STG556, std::move(res));
-
 	// アニメーション
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/rifle_aiming_idle.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_IDLE, std::move(res));
@@ -120,6 +117,8 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::MUSIC_CP_ACTIVATE_4, std::move(res));
 
 	// 効果音
+	res = std::make_unique<RES>(RES_T::SE, "カーソル移動2.mp3", 1.0f, false);
+	resourcesMap_.emplace(SRC::SE_SWITCH_FIREMODE, std::move(res));
 	res = std::make_unique<RES>(RES_T::SE, "狙撃銃発射.mp3", 1.0f, false);
 	resourcesMap_.emplace(SRC::SE_FIRE_AR, std::move(res));
 
@@ -132,8 +131,16 @@ void ResourceManager::Init()
 	// JSONファイル
 	res = std::make_unique<RES>(RES_T::JSON, "Items.json");
 	resourcesMap_.emplace(SRC::JSON_ITEMS, std::move(res));
+	res = std::make_unique<RES>(RES_T::JSON, "ItemDescs.json");
+	resourcesMap_.emplace(SRC::JSON_ITEMDESCS, std::move(res));
 	res = std::make_unique<RES>(RES_T::JSON, "PathFind.json");
 	resourcesMap_.emplace(SRC::JSON_PATHFIND, std::move(res));
+
+	// 武器モデル
+	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/sg553-assault-rifle/source/sg553.mv1");
+	resourcesMap_.emplace(SRC::MODEL_WPN_AR_SG553, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly-gl06/gl06.mv1");
+	resourcesMap_.emplace(SRC::MODEL_WPN_SG_GL06, std::move(res));
 }
 
 void ResourceManager::Release()

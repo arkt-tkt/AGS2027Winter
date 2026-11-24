@@ -15,6 +15,13 @@ EnemyManager::EnemyManager(GameScene* ptr)
 	active_.reserve(POOL_SIZE);
 }
 
+EnemyManager::~EnemyManager()
+{
+	for (auto& cell : pool_) cell->Release();
+
+	pool_.clear();
+}
+
 void EnemyManager::Update()
 {
 	for (auto it = active_.begin(); it != active_.end(); )

@@ -1,3 +1,4 @@
+#include "../../../Manager/ItemManager.h"
 #include "Player.h"
 #include "Inventory.h"
 
@@ -5,7 +6,8 @@ Inventory::Inventory(Player* player)
 	:
 	player_(*player)
 {
-	Add(SLOT::SLOT_PRIMARY1);
+	Add(SLOT::SLOT_PRIMARY1, "Weap_SG553");
+	Add(SLOT::SLOT_PRIMARY2, "Weap_GL06");
 
 	Switch(SLOT::SLOT_PRIMARY1);
 }
@@ -30,6 +32,13 @@ void Inventory::Update()
 	const auto& INS = InputManager::GetInstance();
 	const int INPUT_NUM = player_.GetInputNumber();
 
+	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::WEAPON_SWITCH))
+	{
+		SLOT nextSlot = static_cast<SLOT>
+			((static_cast<int>(nowSlot_) + 1) % static_cast<int>(SLOT::SLOT_SECONDARY));
+		Switch(nextSlot);
+	}
+
 	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::RELOAD))
 	{
 		inv_[nowSlot_]->Reload();
@@ -40,7 +49,7 @@ void Inventory::Update()
 		inv_[nowSlot_]->Sub();
 	}
 
-	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::CYCLE))
+	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::ATTACK_CHANGE))
 	{
 		inv_[nowSlot_]->CycleFiremode();
 	}
@@ -73,7 +82,7 @@ void Inventory::Switch(SLOT slot)
 	nowSlot_ = slot;
 }
 
-void Inventory::Add(SLOT slot, bool replace)
+void Inventory::Add(SLOT slot, const std::string& name, bool replace)
 {
 	if (!replace)
 	{
@@ -81,9 +90,9 @@ void Inventory::Add(SLOT slot, bool replace)
 		if (it != inv_.end()) return;
 	}
 
-	ItemBase::ItemData data;
-	std::unique_ptr<ItemBase> newItem =
-		std::make_unique<ItemBase>(data);
+	ItemBase::ItemData data = ItemManager::GetInstance().GetItemData(name);
+
+	std::unique_ptr<ItemBase> newItem = std::make_unique<ItemBase>(data);
 	newItem->SetParentTransform(player_.GetTransform());
 	newItem->Init();
 

@@ -30,8 +30,12 @@ public:
 	void RefillEquipped() { inv_[nowSlot_]->Refill(); }
 	float GetReloadProg() { return inv_[nowSlot_]->GetReloadProg(); }
 
+	const std::pair<const int&, const int&> GetAmmo() { return inv_[nowSlot_]->GetAmmo(); }
+	const std::string& GetFiremodeLabel() { return inv_[nowSlot_]->GetFiremodeLabel(); }
+	const ItemBase::ItemData& GetData() { return inv_[nowSlot_]->GetData(); }
+
 	void Switch(SLOT slot);
-	void Add(SLOT slot, bool replace = false);
+	void Add(SLOT slot, const std::string& name, bool replace = false);
 
 private:
 	Player& player_;

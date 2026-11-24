@@ -276,6 +276,9 @@ void CharacterBase3D::CollisionProjectile()
 		{
 			if (!p->IsAlive()) continue;
 
+			auto myPtr = this;
+			if (!p->IsCanHit(myPtr)) continue;
+
 			for (auto& pCol : p->GetTypedColliders(awayType))
 			{
 				auto& pDat = pCol->GetColliderData();
@@ -288,6 +291,8 @@ void CharacterBase3D::CollisionProjectile()
 
 				if (hits.HitNum)
 				{
+					p->Hit(myPtr);
+
 					// Õ“Ë‚µ‚½‚çHP‚ðŒ¸‚ç‚·
 					float dMult = 1.0f;
 
@@ -318,14 +323,10 @@ void CharacterBase3D::CollisionProjectile()
 						VECToVec3(hits.Dim[0].Position[0]),
 						finalDmg);
 
-					p->Hit();
-
-					if (!p->IsAlive()) break;
+					break;
 				}
 
 				MV1CollResultPolyDimTerminate(hits);
-
-				if (!p->IsAlive()) break;
 			}
 		}
 	}

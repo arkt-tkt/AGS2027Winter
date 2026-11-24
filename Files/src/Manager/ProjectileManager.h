@@ -26,7 +26,7 @@ private:
 	// コンストラクタ
 	ProjectileManager();
 	// デストラクタ
-	virtual ~ProjectileManager() {}
+	virtual ~ProjectileManager();
 
 public:
 	void Update();
@@ -52,6 +52,7 @@ private:
 	};
 
 	static constexpr size_t POOL_SIZE = 150;
+	static constexpr size_t POP_UP_SIZE = 100;
 
 	std::vector<std::unique_ptr<Projectile>> pool_;
 	std::vector<Projectile*> active_;

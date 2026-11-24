@@ -1,11 +1,11 @@
 #include <cmath>
+#include <DxLib.h>
 #include <fstream>
 #include <string>
 #include <algorithm>
 #include <EffekseerForDXLib.h>
 #include "../Application.h"
 #include "../Common/DxLibUtil.h"
-#include "../Common/MathUtil.h"
 #include "../Manager/AudioManager.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/ResourceManager.h"
@@ -79,9 +79,13 @@ void Camera::BeforeDraw()
 	// ‰æ–Ê‚Ì—h‚ê‚ðŒvŽZ‚µ‚Ä”½‰f‚³‚¹‚é
 	ShakeScreen(finalPos, finalTarget);
 
+	//
+	auto nowAngles = _AngleClamp(angles_ + kick_);
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
+
 	// ƒJƒƒ‰‚ÌÝ’è(ˆÊ’u‚Æ’Ž‹“_‚É‚æ‚é§Œä)
 	SetCameraPositionAndTargetAndUpVec(
-		Vec3ToVEC(finalPos), Vec3ToVEC(finalTarget), VGet(0, 1, 0));
+		Vec3ToVEC(finalPos), Vec3ToVEC(finalTarget), Vec3ToVEC(qRot * Vector3(0, 1, 0)));
 
 	auto front = (finalTarget - finalPos).Normalized();
 
@@ -243,8 +247,7 @@ void Camera::UpdateFollowTP()
 	}
 
 	auto nowAngles = _AngleClamp(angles_ + kick_);
-
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	auto fPos = followTarget_->position;
 
@@ -263,8 +266,7 @@ void Camera::UpdateFollowFP()
 	}
 
 	auto nowAngles = _AngleClamp(angles_ + kick_);
-
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
+	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	auto fPos = followTarget_->position;
 	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->modelId, 5));
@@ -390,7 +392,7 @@ void Camera::ShakeScreen(Vector3& cam_pos, Vector3& tgt_pos) const
 	}
 }
 
-Vector3 Camera::_AngleClamp(const Vector3& v)
+Vector3 Camera::_AngleClamp(const Vector3& v) const
 {
 	Vector3 ret = v;
 	ret.x = MathUtil::Clamp(v.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);

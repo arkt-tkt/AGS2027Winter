@@ -5,6 +5,7 @@
 #include "../../Manager/AudioManager.h"
 #include "../../Manager/EnemyManager.h"
 #include "../../Manager/InputManager.h"
+#include "../../Manager/ItemManager.h"
 #include "../../Manager/ProjectileManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
@@ -15,6 +16,10 @@ bool GameScene::Init()
 {
     auto& resLoad = ResourceManager::GetInstance();
     using COL_TY = Collider3D::TYPE;
+    
+    // アイテムマネージャ
+    ItemManager::CreateInstance();
+	ItemManager::GetInstance().LoadItemData();
 
     // ステージ
     stage_ = std::make_unique<Stage>(this);
@@ -207,25 +212,23 @@ void GameScene::Draw()
 
 void GameScene::DrawUI()
 {
-#ifdef _DEBUG
-    auto col = 0xffffffu;
-    if (stage_->GetSpStability() <= 30.0f) col = 0xff4040u;
-    DrawFormatString(20, 20, col, "注意: 空間安定度が15%%未満になると、継続ダメージを受けます");
-    DrawFormatString(20, 80, 0xffffffu, "起動中の装置: %1d\n(空間安定度を高めます　起動している数に比例して効果も強くなります)", stage_->GetCaptureCount());
-    DrawFormatString(20, 140, 0xffffffu, "作戦進行度: %.1f%%\n(100%%に達するとゲームクリアーです)", surviveTime_ / SURVIVAL_TIME * 100.0f);
-#endif
-
     stage_->DrawUI();
 
     ProjectileManager::GetInstance().DrawUI();
 
-    player_->DrawUI();
+#ifdef _DEBUG
+    DrawFormatString(20, 200, 0xffffffu, "起動中の装置: %1d\n作戦進行度: %.1f%%",
+        stage_->GetCaptureCount(), surviveTime_ / SURVIVAL_TIME * 100.0f);
+#endif
 
     DrawFormatString(100, 700, 0xffffffu, "HP %3d", MathUtil::Round(player_->GetHP()));
 
-    DrawFormatString(100, 700, 0xffffffu, "HP %3d", MathUtil::Round(player_->GetHP()));
+	auto ammo = player_->GetInventoryPtr()->GetAmmo();
+    DrawFormatString(100, 800, 0xffffffu, "%s\n%s - %3d/%3d",
+        player_->GetInventoryPtr()->GetData().name.c_str(), player_->GetInventoryPtr()->GetFiremodeLabel().c_str(),
+        ammo.first, ammo.second);
 
-    DrawFormatString(100, 760, 0xffffffu, "空間安定度\n   %3d", MathUtil::Round(stage_->GetSpStability()));
+    DrawFormatString(100, 900, 0xffffffu, "空間安定度\n   %3d", MathUtil::Round(stage_->GetSpStability()));
 }
 
 bool GameScene::Release()
@@ -241,6 +244,7 @@ bool GameScene::Release()
 
     EnemyManager::DeleteInstance();
     ProjectileManager::DeleteInstance();
+    ItemManager::DeleteInstance();
 
     return true;
 }

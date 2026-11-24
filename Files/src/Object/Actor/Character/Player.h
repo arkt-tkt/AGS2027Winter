@@ -12,7 +12,6 @@ public:
 	virtual ~Player();
 
 	void Draw() override;
-	void DrawUI() override;
 
 	// プレイヤー番号（0始まり）
 	const int& GetPlayerNumber() const { return PLAYER_NUM; }

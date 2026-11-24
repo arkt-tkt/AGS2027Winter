@@ -84,7 +84,7 @@ namespace MathUtil
 	{
 		static_assert(std::is_floating_point<T>::value);
 
-		auto rad2pi = PI_V<T> * T(2.0f);
+		auto rad2pi = PI_V<T> * 2.0f;
 
 		while (radian >= rad2pi)
 			radian -= rad2pi;
@@ -101,7 +101,7 @@ namespace MathUtil
 	{
 		static_assert(std::is_floating_point<T>::value);
 
-		return degree * PI_V<T> / T(180.0f);
+		return degree * PI_V<T> / 180.0f;
 	}
 
 	// ラジアン度から弧度に変換
@@ -110,7 +110,7 @@ namespace MathUtil
 	{
 		static_assert(std::is_floating_point<T>::value);
 
-		return radian / PI_V<T> * T(180.0f);
+		return radian / PI_V<T> * 180.0f;
 	}
 
 	// 少数部を四捨五入
@@ -120,7 +120,7 @@ namespace MathUtil
 		static_assert(std::is_floating_point<T>::value);
 
 		auto i = int(n);
-		return n - T(i) >= T(0.5f) ? i + 1 : i;
+		return n - T(i) >= 0.5f ? i + 1 : i;
 	}
 	// 少数部を切り捨て
 	template<typename T>
@@ -128,7 +128,7 @@ namespace MathUtil
 	{
 		static_assert(std::is_floating_point<T>::value);
 
-		return std::floor(n);
+		return static_cast<int>(std::floor(n));
 	}
 	// 少数部を切り上げ
 	template<typename T>
@@ -136,7 +136,7 @@ namespace MathUtil
 	{
 		static_assert(std::is_floating_point<T>::value);
 
-		return std::ceil(n);
+		return static_cast<int>(std::ceil(n));
 	}
 
 	// 少数部のみを返す (符号付き)

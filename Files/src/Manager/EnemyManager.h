@@ -28,7 +28,7 @@ private:
 	// コンストラクタ
 	EnemyManager(GameScene* ptr);
 	// デストラクタ
-	virtual ~EnemyManager() {}
+	virtual ~EnemyManager();
 
 public:
 	enum class SOUND_EVENT
