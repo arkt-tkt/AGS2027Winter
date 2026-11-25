@@ -327,8 +327,11 @@ void InputManager::InitInputMap()
 		AddorReplaceMap(i, TAGS::ATTACK_CHANGE,
 			{ { btn::DPAD_R, btn::NONE }, { KEY_INPUT_B, 0x00 }, 0 });
 
-		AddorReplaceMap(i, TAGS::WEAPON_SWITCH,
-			{ { btn::BUTTON_L1, btn::NONE }, { KEY_INPUT_1, 0x00 }, 0 });
+		AddorReplaceMap(i, TAGS::WEAPON_SWITCH_F,
+			{ { btn::BUTTON_R1, btn::NONE }, { KEY_INPUT_1, 0x00 }, 10 });
+
+		AddorReplaceMap(i, TAGS::WEAPON_SWITCH_R,
+			{ { btn::BUTTON_L1, btn::NONE }, { KEY_INPUT_2, 0x00 }, 9 });
 	}
 }
 

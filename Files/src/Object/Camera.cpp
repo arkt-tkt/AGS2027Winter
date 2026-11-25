@@ -43,7 +43,7 @@ void Camera::Update()
 	prevAngles_ = angles_;
 
 	auto x = isReverseX_ ? -FOLLOW_TP_LOCAL_POS_X : FOLLOW_TP_LOCAL_POS_X;
-	posLocalX_ = MathUtil::Lerp(posLocalX_, x, 0.12f);
+	posLocalX_ = MathUtil::Lerp(posLocalX_, x, FOLLOW_TP_LOCAL_POS_X_TRANS_RATE);
 
 	if (!SceneManager::GetInstance().IsPause()) switch (mode_)
 	{

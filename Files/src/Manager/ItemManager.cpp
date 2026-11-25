@@ -111,8 +111,23 @@ void ItemManager::_LoadValue()
 		if (data.contains("Dispersion"))
 			item.dispersion = data["Dispersion"].get<float>();
 
+
 		if (data.contains("RPM"))
-			item.fireRate = 60.0f / data["RPM"].get<float>();
+		{
+			item.fireRate.clear();
+
+			if (data["RPM"].is_array())
+			{
+				for (auto& rpm : data["RPM"])
+				{
+					item.fireRate.emplace_back(60.0f / rpm.get<float>());
+				}
+			}
+			else
+			{
+				item.fireRate.emplace_back(60.0f / data["RPM"].get<float>());
+			}
+		}
 
 		if (data.contains("Velocity"))
 			item.velocity = data["Velocity"].get<float>();

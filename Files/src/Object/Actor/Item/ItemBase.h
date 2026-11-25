@@ -33,7 +33,7 @@ public:
 		int clipsize = 40;
 		int reserve = 200;
 		float dispersion = 0.01f;
-		float fireRate = 60.0f / 800.0f;
+		std::vector<float> fireRate = { 60.0f / 800.0f };
 		float velocity = 4000.0f;
 		float reload = 2.0f;
 		Vector3 recoilKick = { 0.0f, 0.0f, 0.0f };
@@ -66,6 +66,7 @@ protected:
 	static constexpr const char* FIREMODE_LABEL_AUTO = "AUTO";
 	static constexpr const char* FIREMODE_LABEL_BURST = " BR";
 	static constexpr const char* FIREMODE_LABEL_SEMI = "SEMI";
+	static constexpr Position3 HAND_OFFSET = { 3.5f, 22.5f, -6.0f };
 
 	Transform3D* parent_;
 
@@ -75,7 +76,7 @@ protected:
 
 	int ammoClip_;
 	int ammoReserve_;
-	float shotTimer_;
+	float shotTimer_ = 0.0f;
 	float reloadProg_ = 0.0f;
 
 	unsigned int firemode_ = 0u;
@@ -90,5 +91,7 @@ protected:
 	void TurnVisual() override;
 
 	void _SetFiremodeLabel();
+
+	float _FireRate();
 
 };

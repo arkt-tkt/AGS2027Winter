@@ -14,9 +14,9 @@ void ItemBase::Update()
 {
 	auto dt = SceneManager::GetInstance().GetDeltaTime();
 
-	if (shotTimer_ < baseData_.fireRate)
+	if (shotTimer_ > 0.0f)
 	{
-		shotTimer_ += dt;
+		shotTimer_ -= dt;
 	}
 
 	if (fireCount_ > 0 && fireCount_ < fireCountTarget_)
@@ -68,16 +68,21 @@ void ItemBase::Draw()
 	transform_.Draw();
 
 #ifdef _DEBUG
-	DrawLine3D(Vec3ToVEC(transform_.position), Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xff0000u);
+	DrawLine3D(Vec3ToVEC(transform_.position), Vec3ToVEC(scnMng_.GetCameraPtr().GetTargetPosition()), 0xff00ffu);
 
-	auto basePos = MV1GetFramePosition(parent_->modelId, 35);
-	auto vx35 = VTransformSR(VECTOR(40, 0, 0), MV1GetFrameLocalWorldMatrix(parent_->modelId, 35));
-	auto vy35 = VTransformSR(VECTOR(0, 40, 0), MV1GetFrameLocalWorldMatrix(parent_->modelId, 35));
-	auto vz35 = VTransformSR(VECTOR(0, 0, 40), MV1GetFrameLocalWorldMatrix(parent_->modelId, 35));
+	auto lPos = VScale(Vec3ToVEC(HAND_OFFSET), 0.4f);
+	auto oPos = MV1GetFramePosition(parent_->modelId, 35);
+	auto lwMat = MV1GetFrameLocalWorldMatrix(parent_->modelId, 35);
 
-	DrawLine3D(basePos, VAdd(basePos, vx35), 0xff0000u);
-	DrawLine3D(basePos, VAdd(basePos, vy35), 0xff00u);
-	DrawLine3D(basePos, VAdd(basePos, vz35), 0xffu);
+	auto pos = VTransformSR(lPos, lwMat);
+	auto vx = VTransformSR(VAdd(lPos, VECTOR(40, 0, 0)), lwMat);
+	auto vy = VTransformSR(VAdd(lPos, VECTOR(0, 40, 0)), lwMat);
+	auto vz = VTransformSR(VAdd(lPos, VECTOR(0, 0, 40)), lwMat);
+
+	DrawLine3D(VAdd(oPos, pos), VAdd(oPos, vx), 0xff0000u);
+	DrawLine3D(VAdd(oPos, pos), VAdd(oPos, vy), 0xff00u);
+	DrawLine3D(VAdd(oPos, pos), VAdd(oPos, vz), 0xffu);
+	DrawSphere3D(VAdd(oPos, pos), 1.5f, 16, 0xffff00u, 0xffffffu, TRUE);
 #endif
 }
 
@@ -85,7 +90,7 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 {
 	bool ret = false;
 
-	if (shotTimer_ < baseData_.fireRate) return ret;
+	if (shotTimer_ > 0.0f) return ret;
 
 	if (reloadProg_ || ammoClip_ == 0)
 	{
@@ -126,7 +131,7 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 	--ammoClip_;
 
 	// 発射クールタイム
-	shotTimer_ -= baseData_.fireRate;
+	shotTimer_ += _FireRate();
 
 	// 反動
 	Vector3 recShake = {
@@ -248,7 +253,6 @@ void ItemBase::InitParam()
 		baseData_.chambering;
 
 	ammoReserve_ = baseData_.reserve;
-	shotTimer_ = baseData_.fireRate;
 
 	_SetFiremodeLabel();
 }
@@ -270,10 +274,12 @@ void ItemBase::TurnVisual()
 
 	using namespace DxLibUtil;
 
-	// mixamorigの35番は右手首、40番は右手人差し指の付け根
-	auto rhPos = VECToVec3(MV1GetFramePosition(parent_->modelId, 35));
-	auto rhIndexPos = VECToVec3(MV1GetFramePosition(parent_->modelId, 40));
-	transform_.position = rhPos + (rhIndexPos - rhPos) / 2.0f;
+	// mixamorigの35番は右手首
+	auto lPos = VScale(Vec3ToVEC(HAND_OFFSET), 0.4f);
+	auto oPos = MV1GetFramePosition(parent_->modelId, 35);
+	auto lwMat = MV1GetFrameLocalWorldMatrix(parent_->modelId, 35);
+	auto pos = VTransformSR(lPos, lwMat);
+	transform_.position = VECToVec3(VAdd(oPos, pos));
 
 	// 右手から注視点へのベクトルを取り、
 	// その方向に銃口を向ける
@@ -300,4 +306,16 @@ void ItemBase::_SetFiremodeLabel()
 	{
 		firemodeLabel_ = std::to_string(baseData_.firemode[firemode_]) + FIREMODE_LABEL_BURST;
 	}
+}
+
+float ItemBase::_FireRate()
+{
+	if (baseData_.firemode[firemode_] != -1 &&
+		baseData_.firemode[firemode_] != 1 &&
+		baseData_.fireRate.size() == 2)
+	{
+		return baseData_.fireRate[1];
+	}
+
+	return baseData_.fireRate[0];
 }

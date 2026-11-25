@@ -32,10 +32,16 @@ void Inventory::Update()
 	const auto& INS = InputManager::GetInstance();
 	const int INPUT_NUM = player_.GetInputNumber();
 
-	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::WEAPON_SWITCH))
+	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::WEAPON_SWITCH_F))
 	{
 		SLOT nextSlot = static_cast<SLOT>
 			((static_cast<int>(nowSlot_) + 1) % static_cast<int>(SLOT::SLOT_SECONDARY));
+		Switch(nextSlot);
+	}
+	else if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::WEAPON_SWITCH_R))
+	{
+		SLOT nextSlot = static_cast<SLOT>
+			((static_cast<int>(SLOT::SLOT_SECONDARY) + static_cast<int>(nowSlot_) - 1) % static_cast<int>(SLOT::SLOT_SECONDARY));
 		Switch(nextSlot);
 	}
 

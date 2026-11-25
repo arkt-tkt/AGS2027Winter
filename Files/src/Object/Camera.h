@@ -72,6 +72,7 @@ private:
 	static constexpr Vector3 FIXED_CAMERA_LOCAL_POS = { 0.0f, 0.0f, -320.0f };
 	static constexpr Vector3 FIXED_CAMERA_ANGLES = { 0.0f, 0.0f, 0.0f };
 
+	static constexpr float FOLLOW_TP_LOCAL_POS_X_TRANS_RATE = 0.12f;
 	static constexpr float FOLLOW_TP_LOCAL_POS_X = 35.0f;
 	static constexpr float FOLLOW_TP_LOCAL_POS_Y = 60.0f;
 	static constexpr float FOLLOW_TP_LOCAL_TARGET_POS_Z = 500.0f;

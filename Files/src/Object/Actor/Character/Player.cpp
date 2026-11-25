@@ -159,9 +159,9 @@ void Player::Move()
 	const auto DIR_MOVE_MULT = 1.0f - 0.1f + DOT * 0.1f;
 
 	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
-	auto maxSpd_ = maxSpeed_ * SPRINT_MULT * dt;
+	auto maxSpd_ = maxSpeed_ * SPRINT_MULT * dt * inv_->GetData().movement;
 
-	maxSpd_ *= (godMode_ ? 1.5f : 1.0f);
+	maxSpd_ *= (godMode_ ? 1.75f : 1.0f);
 
 	Vector3 moveSpeed;
 	float dotRate = 0.0f;
@@ -278,10 +278,12 @@ void Player::TurnVisual()
 	// 徐々に体を折り曲げる
 	int frameCnt = _countof(ROTATABLE_FRAME_INDEX);
 
+	float visualAngleX = -scnMng_.GetCameraPtr().GetVisualAngles().x;
+
 	Quaternion qRot = Quaternion().Euler(
-		-scnMng_.GetCameraPtr().GetVisualAngles().x * 0.84f / frameCnt,
+		visualAngleX * 0.8f / frameCnt,
 		0,
-		-scnMng_.GetCameraPtr().GetVisualAngles().x * 0.6f / frameCnt);
+		visualAngleX * 0.64f / frameCnt);
 
 	// ここにフレーム本来の座標、回転、拡大率が入る
 	MATRIX mat = MGetIdent();
@@ -291,6 +293,12 @@ void Player::TurnVisual()
 		MV1ResetFrameUserLocalMatrix(transform_.modelId, idx);
 		mat = MV1GetFrameLocalMatrix(transform_.modelId, idx);
 		MV1SetFrameUserLocalMatrix(transform_.modelId, idx, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
+
+		//auto qua = GetRotation(MATToMat4x4(mat));
+		//qua *= qRot;
+		//mat = Mat4x4ToMAT(qua.ToMatrix());
+
+		//MV1SetFrameUserLocalMatrix(transform_.modelId, idx, mat);
 	}
 
 	transform_.Update();
