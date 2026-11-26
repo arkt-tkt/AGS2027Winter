@@ -4,9 +4,10 @@
 #include "../Scene/EndScene/EndScene.h"
 #include "../Scene/GameScene/GameScene.h"
 #include "../Scene/TitleScene/TitleScene.h"
+#include "AudioManager.h"
+#include "InputManager.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
-#include "AudioManager.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
@@ -21,6 +22,11 @@ void SceneManager::Update()
 {
 	// Faderの更新
 	fader_->Update();
+
+	if (sceneList_.back()->GetMyScene() == SceneBase::SCENE::GAME)
+		InputManager::GetInstance().SetMouseVisibility(false); // 隠してロックする
+	else
+		InputManager::GetInstance().SetMouseVisibility(true); // 表示してフリーに
 
 	// Faderの状態を確認して次に進む／スキップする
 	if (!CheckFader())

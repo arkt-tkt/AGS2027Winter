@@ -8,18 +8,15 @@ Inventory::Inventory(Player* player)
 {
 	Add(SLOT::SLOT_PRIMARY1, "Weap_SG553");
 	Add(SLOT::SLOT_PRIMARY2, "Weap_GL06");
+	Add(SLOT::SLOT_SECONDARY, "Weap_Scout");
+	Add(SLOT::SLOT_BATTERY, "Weap_MG3");
 
 	Switch(SLOT::SLOT_PRIMARY1);
 }
 
 Inventory::~Inventory()
 {
-	for (auto& [slot, item] : inv_)
-	{
-		if (item != nullptr) item->Release();
-	}
-
-	inv_.clear();
+	Release();
 }
 
 void Inventory::Update()
@@ -34,16 +31,38 @@ void Inventory::Update()
 
 	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::WEAPON_SWITCH_F))
 	{
-		SLOT nextSlot = static_cast<SLOT>
-			((static_cast<int>(nowSlot_) + 1) % static_cast<int>(SLOT::SLOT_SECONDARY));
-		Switch(nextSlot);
+		while (true)
+		{
+			SLOT nextSlot = static_cast<SLOT>
+				((static_cast<int>(nowSlot_) + 1) % static_cast<int>(SLOT::SLOT_MAX));
+
+			if (inv_[nextSlot] != nullptr)
+			{
+				Switch(nextSlot);
+				break;
+			}
+
+			nowSlot_ = nextSlot;
+		}
 	}
 	else if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::WEAPON_SWITCH_R))
 	{
-		SLOT nextSlot = static_cast<SLOT>
-			((static_cast<int>(SLOT::SLOT_SECONDARY) + static_cast<int>(nowSlot_) - 1) % static_cast<int>(SLOT::SLOT_SECONDARY));
-		Switch(nextSlot);
+		while (true)
+		{
+			SLOT nextSlot = static_cast<SLOT>
+				((static_cast<int>(SLOT::SLOT_MAX) + static_cast<int>(nowSlot_) - 1) % static_cast<int>(SLOT::SLOT_MAX));
+
+			if (inv_[nextSlot] != nullptr)
+			{
+				Switch(nextSlot);
+				break;
+			}
+
+			nowSlot_ = nextSlot;
+		}
 	}
+
+	isActed_ = false;
 
 	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::RELOAD))
 	{
@@ -53,6 +72,8 @@ void Inventory::Update()
 	if (INS.CheckNowMap(INPUT_NUM, InputManager::TAGS::ATTACK_SUB))
 	{
 		inv_[nowSlot_]->Sub();
+
+		isActed_ = true;
 	}
 
 	if (INS.CheckDownMap(INPUT_NUM, InputManager::TAGS::ATTACK_CHANGE))
@@ -60,7 +81,7 @@ void Inventory::Update()
 		inv_[nowSlot_]->CycleFiremode();
 	}
 
-	inv_[nowSlot_]->Main(INPUT_NUM, InputManager::TAGS::ATTACK_MAIN);
+	isActed_ = inv_[nowSlot_]->Main(INPUT_NUM, InputManager::TAGS::ATTACK_MAIN) ? true : isActed_;
 }
 
 void Inventory::LateUpdate()
@@ -76,6 +97,16 @@ void Inventory::Draw()
 void Inventory::DrawUI()
 {
 	inv_[nowSlot_]->DrawUI();
+}
+
+void Inventory::Release()
+{
+	for (auto& [slot, item] : inv_)
+	{
+		if (item != nullptr) item->Release();
+	}
+
+	inv_.clear();
 }
 
 void Inventory::Switch(SLOT slot)

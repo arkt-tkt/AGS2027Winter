@@ -17,8 +17,12 @@ EnemyManager::EnemyManager(GameScene* ptr)
 
 EnemyManager::~EnemyManager()
 {
-	for (auto& cell : pool_) cell->Release();
+	active_.clear();
 
+	for (auto& cell : pool_)
+	{
+		cell->Release();
+	}
 	pool_.clear();
 }
 
@@ -26,16 +30,11 @@ void EnemyManager::Update()
 {
 	for (auto it = active_.begin(); it != active_.end(); )
 	{
-		if (!(*it)->IsAlive())
-		{
-			it = active_.erase(it);
-			continue;
-		}
-
 		(*it)->Update();
 
 		if (!(*it)->IsAlive())
 		{
+			(*it)->Release();
 			it = active_.erase(it);
 			continue;
 		}

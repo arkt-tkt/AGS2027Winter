@@ -1,3 +1,4 @@
+#include <EffekseerForDXLib.h>
 #include "../../../Common/DxLibUtil.h"
 #include "../../../Manager/SceneManager.h"
 #include "../Character/CharacterBase3D.h"
@@ -12,7 +13,11 @@ Projectile::Projectile(ProjectileManager& mng)
 
 void Projectile::Update()
 {
-	if (!IsAlive()) return;
+	if (hp_ <= 0)
+	{
+		--effectTimer_;
+		return;
+	}
 
 	const auto& dt = scnMng_.GetDeltaTime();
 
@@ -31,23 +36,47 @@ void Projectile::Update()
 	transform_.position += velocity_ * dt;
 
 	transform_.Update();
+
+	SetPosPlayingEffekseer3DEffect(effectPId_,
+		transform_.position.x, transform_.position.y, transform_.position.z);
+
+	UpdateEffekseer3D();
+
 	UpdateColliders();
 }
 
 void Projectile::Draw()
 {
-	if (!IsAlive()) return;
+	//DrawEffekseer3D_Draw(effectPId_);
+
+#ifdef _DEBUG
+	if (hp_ <= 0) return;
 
 	DrawCapsule3D(Vec3ToVEC(transform_.position), Vec3ToVEC(transform_.position2nd),
-		dat_.radius, 16, 0x00ffffu, 0xffffffu, TRUE);
+		dat_.radius, 4, 0x00ffffu, 0xffffffu, FALSE);
+#endif
 }
 
-bool Projectile::IsCanHit(CharacterBase3D* chara)
+void Projectile::Release()
 {
+	hitAways_.clear();
+	StopEffekseer3DEffect(effectPId_);
+
+	ActorBase3D::Release();
+}
+
+bool Projectile::IsCanHit(CharacterBase3D* chara) const
+{
+	if (hp_ <= 0) return false;
 	if (!chara) return false;
 	if (std::find(hitAways_.begin(), hitAways_.end(), chara) != hitAways_.end()) return false;
 
 	return true;
+}
+
+bool Projectile::IsCanDest() const
+{
+	return effectTimer_ <= 0;
 }
 
 void Projectile::Hit(CharacterBase3D* chara)
@@ -68,12 +97,19 @@ void Projectile::InitParam()
 
 	hp_ = dat_.penetration + 1;
 	aliveTimer_ = 0.0f;
-
-	hitAways_.clear();
+	effectTimer_ = EFFECT_DRAW_FRAME_MAX;
 }
 
 void Projectile::InitModel()
 {
+	effectPId_ = PlayEffekseer3DEffect(
+		resMng_.Load(ResourceManager::SRC::EFFEKSEER_BULLET).handleId_);
+
+	SetPosPlayingEffekseer3DEffect(effectPId_,
+		transform_.position.x, transform_.position.y, transform_.position.z);
+	
+	UpdateEffekseer3D();
+
 	colliders_.emplace_back(
 		std::make_shared<Collider3D>(
 			dat_.type,

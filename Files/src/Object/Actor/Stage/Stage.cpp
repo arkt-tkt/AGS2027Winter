@@ -77,6 +77,12 @@ void Stage::DrawUI()
 	resupply_->DrawUI();
 }
 
+void Stage::Release()
+{
+	platform_->Release();
+	resupply_->Release();
+}
+
 std::vector<std::shared_ptr<Collider3D>> Stage::GetColliders() const
 {
 	const auto GET_COL_TYPE = Collider3D::TYPE::STAGE;
@@ -84,7 +90,7 @@ std::vector<std::shared_ptr<Collider3D>> Stage::GetColliders() const
 	std::vector<std::shared_ptr<Collider3D>> ret =
 		platform_->GetTypedColliders(GET_COL_TYPE);
 
-	ret.reserve(ret.size() + capturePoints_.size());
+	ret.reserve(ret.size() + capturePoints_.size() + 1);
 
 	for (auto& capPoint : capturePoints_)
 	{

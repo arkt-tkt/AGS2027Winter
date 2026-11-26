@@ -76,12 +76,16 @@ public:
 		SHADER_GAUSS,
 		SHADER_SCREEN,
 
+		EFFEKSEER_BULLET,
+
 		JSON_ITEMS,
 		JSON_ITEMDESCS,
 		JSON_PATHFIND,
 
 		MODEL_WPN_AR_SG553 = 100,
 		MODEL_WPN_SG_GL06,
+		MODEL_WPN_SR_SCOUT,
+		MODEL_WPN_MG_MG3,
 
 		MAX
 	};
@@ -103,7 +107,7 @@ public:
 	void Init();
 
 	// 解放
-	void Release();
+	void UnLoad();
 
 	// リソースのロード
 	const Resource& Load(SRC src);

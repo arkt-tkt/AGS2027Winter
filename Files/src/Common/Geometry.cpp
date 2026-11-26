@@ -259,6 +259,11 @@ Vector2 GetVector2FromAngle(float radian, float length)
 {
 	return Vector2(std::cos(radian), std::sin(radian)) * length;
 }
+
+bool IsInBox(const Vector2& v, const Vector2& low, const Vector2& high)
+{
+	return low <= high && low <= v && v <= high;
+}
 #pragma endregion
 
 #pragma region ‚RŽŸŒ³ƒxƒNƒgƒ‹
@@ -860,7 +865,7 @@ Quaternion& Quaternion::operator+=(const Quaternion& q)
 	return *this;
 }
 
-Quaternion& Quaternion::operator*=(float f)
+Quaternion& Quaternion::operator*=(double f)
 {
 	w *= f;
 	x *= f;
@@ -905,7 +910,7 @@ Quaternion& Quaternion::operator*=(const Quaternion& q)
 	return *this = ret;
 }
 
-Quaternion& Quaternion::operator/=(float f)
+Quaternion& Quaternion::operator/=(double f)
 {
 	w /= f;
 	x /= f;

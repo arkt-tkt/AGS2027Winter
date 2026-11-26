@@ -58,7 +58,7 @@ namespace MathUtil
 		static_assert(std::is_arithmetic<T>::value);
 		static_assert(std::is_floating_point<fp>::value);
 		
-		return a + (b - a) * t;
+		return a + (T)((b - a) * t);
 	}
 
 	// ŒÊ“x‚ğ0`360‚Éû‚ß‚é

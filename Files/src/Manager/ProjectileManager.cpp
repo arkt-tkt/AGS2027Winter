@@ -17,8 +17,13 @@ ProjectileManager::ProjectileManager()
 
 ProjectileManager::~ProjectileManager()
 {
-	for (auto& cell : pool_) cell->Release();
+	popUps_.clear();
+	active_.clear();
 
+	for (auto& cell : pool_)
+	{
+		cell->Release();
+	}
 	pool_.clear();
 }
 
@@ -28,16 +33,11 @@ void ProjectileManager::Update()
 
 	for (auto it = active_.begin(); it != active_.end(); )
 	{
-		if (!(*it)->IsAlive())
-		{
-			it = active_.erase(it);
-			continue;
-		}
-
 		(*it)->Update();
 
-		if (!(*it)->IsAlive())
+		if ((*it)->IsCanDest())
 		{
+			(*it)->Release();
 			it = active_.erase(it);
 			continue;
 		}
@@ -77,8 +77,10 @@ void ProjectileManager::DrawUI()
 
 bool ProjectileManager::CreateProjectile(Projectile::Data dat)
 {
-	for (auto& cell : pool_) if (!cell->IsAlive())
+	for (auto& cell : pool_) if (cell->IsCanDest())
 	{
+		cell->Release();
+
 		cell->SetData(dat);
 		cell->Init();
 		active_.push_back(cell.get());

@@ -171,21 +171,22 @@ void Resource::Release()
 		break;
 	case Resource::TYPE::MODEL:
 		{
-			MV1DeleteModel(handleId_);
-			auto& ids = duplicateModelIds_;
-			for (auto id : ids)
+			for (auto& id : duplicateModelIds_)
 			{
 				MV1DeleteModel(id);
 			}
+			duplicateModelIds_.clear();
+			
+			MV1DeleteModel(handleId_);
 		}
 		break;
 	case Resource::TYPE::PIXEL_SHADER:
-		DeleteShader(handleId_);
-
 		if (constBufferId_ != -1)
 		{
 			DeleteShaderConstantBuffer(constBufferId_);
 		}
+
+		DeleteShader(handleId_);
 		break;
 	case Resource::TYPE::JSON:
 		json_.clear();

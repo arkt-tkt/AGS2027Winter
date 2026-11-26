@@ -79,12 +79,9 @@ bool Application::Release()
 	InputManager::GetInstance().Release();
 	InputManager::DeleteInstance();
 
-	ResourceManager::GetInstance().Release();
 	ResourceManager::DeleteInstance();
 
-#ifdef APPLICATION_USE_EFFEKSEER
 	Effkseer_End();
-#endif
 
 	// DxLib ÇÃâï˙
 	DxLib_End();
@@ -146,15 +143,12 @@ bool Application::InitSystem()
 		SetUseLighting(TRUE);
 	}
 
-#ifdef APPLICATION_USE_EFFEKSEER
 	// EffekseerÇÃèâä˙âª
 	InitEffekseer();
-#endif
 
 	return true;
 }
 
-#ifdef APPLICATION_USE_EFFEKSEER
 bool Application::InitEffekseer()
 {
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
@@ -178,7 +172,6 @@ bool Application::InitEffekseer()
 
 	return true;
 }
-#endif
 
 void Application::Update()
 {

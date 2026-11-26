@@ -13,10 +13,6 @@ Platform::Platform()
 {
 }
 
-Platform::~Platform()
-{
-}
-
 void Platform::Update()
 {
 	auto qRot = AngleAxis(Vector3(0, 1, 0), 0.0001);

@@ -12,10 +12,9 @@ public:
 	};
 
 	EnemyBase(EnemyManager* manager);
-	virtual ~EnemyBase();
 
 	void Draw() override;
-	void DrawUI() override;
+	void Release() override;
 
 	void GetSoundPos(const Position3& pos);
 
@@ -26,7 +25,7 @@ private:
 	static constexpr float CHASE_UPDATE_SOUND_LEN_SPACE = 25.0f;
 	static constexpr float TARGET_NEAR = 38.0f;
 	static constexpr float ATTACK_RANGE = TARGET_NEAR * 1.25f;
-	static constexpr float ATTACK_HIT_RADIUS = 3.0f;
+	static constexpr float ATTACK_HIT_RADIUS = 4.2f;
 
 	// マネージャ
 	EnemyManager& enmMng_;

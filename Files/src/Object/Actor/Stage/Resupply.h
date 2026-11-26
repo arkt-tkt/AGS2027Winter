@@ -13,8 +13,6 @@ public:
 
 	// コンストラクタ
 	Resupply(Stage* ptr);
-	// デストラクタ
-	~Resupply();
 
 	// 描画処理
 	void Draw() override;

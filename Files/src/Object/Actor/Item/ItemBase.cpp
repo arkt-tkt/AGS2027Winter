@@ -88,7 +88,11 @@ void ItemBase::Draw()
 
 bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 {
+	const auto& ins = InputManager::GetInstance();
+
 	bool ret = false;
+
+	if (ins.CheckNowMap(pad_num, tag)) ret = true;
 
 	if (shotTimer_ > 0.0f) return ret;
 
@@ -100,14 +104,14 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 
 	if (fireCount_ < fireCountTarget_)
 	{
+		ret = true;
+
 		if (pad_num != -1) return ret;
 
 		++fireCount_;
 	}
 	else if (pad_num > 0)
 	{
-		const auto& ins = InputManager::GetInstance();
-
 		int fireRound = baseData_.firemode[firemode_];
 
 		if (fireRound == -1 && !ins.CheckNowMap(pad_num, tag) ||
@@ -115,6 +119,8 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 		{
 			return ret;
 		}
+
+		ret = true;
 
 		fireCountTarget_ = fireRound;
 		fireCount_ = fireRound > 0 ? 1 : -1;
@@ -186,13 +192,11 @@ bool ItemBase::Main(int pad_num, InputManager::TAGS tag)
 			AudioManager::GetInstance().Play(ResourceManager::SRC::SE_FIRE_AR);
 
 			EnemyManager::GetInstance().TriggerSoundEvent(transform_.position, EnemyManager::SOUND_EVENT::GUNFIRE);
-
-			ret = true;
 		}
 		else
 		{
 			// ‚±‚êˆÈã‹ó‚«‚ª–³‚¢‚Ì‚ÅA‘±s‚Í–³‘Ê
-			return ret;
+			break;
 		}
 	}
 
@@ -223,6 +227,9 @@ void ItemBase::Reload()
 
 void ItemBase::CycleFiremode()
 {
+	if (fireCount_ < fireCountTarget_ ||
+		shotTimer_ > 0.0f) return;
+
 	firemode_ = (firemode_ + 1) % (unsigned int)baseData_.firemode.size();
 
 	_SetFiremodeLabel();

@@ -11,8 +11,6 @@ Transform3D::Transform3D()
 	localPosition = Position3();
 	rotation = Vector3();
 	localRotation = Vector3();
-
-	Init();
 }
 
 Transform3D::Transform3D(int model_id)
@@ -24,8 +22,6 @@ Transform3D::Transform3D(int model_id)
 	localPosition = Position3();
 	rotation = Vector3();
 	localRotation = Vector3();
-
-	Init();
 }
 
 Transform3D::~Transform3D()
@@ -34,6 +30,8 @@ Transform3D::~Transform3D()
 
 void Transform3D::Update()
 {
+	if (modelId == -1) return;
+
 	mScale = ScaleMatrix(scale);
 
 	Matrix4x4 mp = TranslationMatrix(position);
@@ -49,14 +47,13 @@ void Transform3D::Update()
 
 	Matrix4x4 mat = mScale * mRot % mPos;
 
-	if (modelId != -1)
-	{
-		MV1SetMatrix(modelId, DxLibUtil::Mat4x4ToMAT(mat));
-	}
+	MV1SetMatrix(modelId, DxLibUtil::Mat4x4ToMAT(mat));
 }
 
 void Transform3D::Draw()
 {
+	if (modelId == -1) return;
+
 	MV1DrawModel(modelId);
 }
 
@@ -65,5 +62,8 @@ void Transform3D::Release()
 	position = position2nd = localPosition = {};
 	rotation = localRotation = {};
 
+	if (modelId == -1) return;
+
 	MV1DeleteModel(modelId);
+	modelId = -1;
 }

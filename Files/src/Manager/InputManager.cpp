@@ -28,9 +28,9 @@ InputManager::InputManager(int pad_max)
 		gamepads_[i] = std::make_unique<Gamepad>(i);
 	}
 
-	InitInputMap();
+	SetMouseVisibility(true);
 
-	SetMouseDispFlag(FALSE);
+	InitInputMap();
 
 	Update();
 }
@@ -50,6 +50,25 @@ bool InputManager::Release()
 	gamepads_.clear();
 
 	return true;
+}
+
+const bool& InputManager::GetMouseVisibility() const
+{
+	return mousePtrDisp_;
+}
+
+void InputManager::SetMouseVisibility(bool flag)
+{
+	SetMouseDispFlag(int(flag));
+
+	if (mousePtrDisp_ != flag)
+	{
+		nowMousePos_ = { Application::RESOLUTION_WIDTH / 2, Application::RESOLUTION_HEIGHT / 2 };
+
+		SetMousePoint(Application::RESOLUTION_WIDTH / 2, Application::RESOLUTION_HEIGHT / 2);
+	}
+
+	mousePtrDisp_ = flag;
 }
 
 void InputManager::AddorReplaceMap(int padNum, TAGS tag, INPUT_MAP map)
@@ -246,7 +265,7 @@ bool InputManager::CheckUpMouse(int mouse_button_num) const
 	return !nowMouse_[mouse_button_num] && prevMouse_[mouse_button_num];
 }
 
-bool InputManager::IsGamepadConnected(int pad_num) const
+bool InputManager::IsExistPad(int pad_num) const
 {
 	// 0`9FÚ‘±‚ ‚èA-1FÚ‘±‚È‚µ
 	return gamepads_.at(pad_num)->GetPadTypeNumber() >= 0;
@@ -343,11 +362,16 @@ void InputManager::UpdateKey()
 
 void InputManager::UpdateMouse()
 {
+	prevMousePos_ = nowMousePos_;
+
 	int intX, intY;
 	GetMousePoint(&intX, &intY);
-	prevMousePos_ = nowMousePos_;
 	nowMousePos_ = { static_cast<float>(intX), static_cast<float>(intY) };
-	SetMousePoint(Application::RESOLUTION_WIDTH / 2, Application::RESOLUTION_HEIGHT / 2);
+
+	if (!mousePtrDisp_)
+	{
+		SetMousePoint(Application::RESOLUTION_WIDTH / 2, Application::RESOLUTION_HEIGHT / 2);
+	}
 
 	prevMouse_ = nowMouse_;
 	nowMouse_ = {};

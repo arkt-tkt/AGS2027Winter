@@ -25,23 +25,27 @@ public:
 
 	void Update() override;
 	void Draw() override;
+	void Release() override;
 
 	Data GetData() const { return dat_; }
 	void SetData(Data dat) { dat_ = dat; }
-	bool IsAlive() const { return hp_ > 0; }
-	bool IsCanHit(CharacterBase3D* chara);
+	bool IsCanHit(CharacterBase3D* chara) const;
+	bool IsCanDest() const;
 	void Hit(CharacterBase3D* chara);
 	void HitEnv();
 
 private:
 	static constexpr float ALIVE_TIME_MAX = 1.5f;
+	static constexpr int EFFECT_DRAW_FRAME_MAX = 10;
 
 	// マネージャ
 	ProjectileManager& projMng_;
 
 	Data dat_;
-	int hp_;
+	int effectPId_ = -1;
+	int hp_ = 0;
 	float aliveTimer_ = 0.0f;
+	int effectTimer_ = 0;
 
 	std::list<CharacterBase3D*> hitAways_;
 

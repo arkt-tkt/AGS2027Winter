@@ -23,7 +23,6 @@ public:
 	Camera();
 	~Camera();
 
-	bool Init();
 	void Update();
 	// カメラおよび3D機能のセットアップ(SetDrawScreen関数使用後は呼び出し必須)
 	void BeforeDraw();
@@ -71,6 +70,7 @@ private:
 	static constexpr Vector3 FIXED_TARGET_POS = { 0.0f, 0.0f, 0.0f };
 	static constexpr Vector3 FIXED_CAMERA_LOCAL_POS = { 0.0f, 0.0f, -320.0f };
 	static constexpr Vector3 FIXED_CAMERA_ANGLES = { 0.0f, 0.0f, 0.0f };
+	static constexpr Vector3 INIT_ANGLES = { 0.0f, MathUtil::PI_F, 0.0f };
 
 	static constexpr float FOLLOW_TP_LOCAL_POS_X_TRANS_RATE = 0.12f;
 	static constexpr float FOLLOW_TP_LOCAL_POS_X = 35.0f;
@@ -108,6 +108,7 @@ private:
 	bool isReverseX_ = false;
 	float posLocalX_ = FOLLOW_TP_LOCAL_POS_X;
 
+	bool mouseCamControl_;
 	float mouseSensitivity_ = MOUSE_SENSITIVITY_INIT;
 
 	void UpdateDxLibCamera();

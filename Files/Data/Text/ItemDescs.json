@@ -1,11 +1,23 @@
 {
 	"Weap_SG553": {
 		"Name": "STG-556.3 'Commando'",
-		"Description": "標準的なアサルトライフル。"
+		"Description": "URS工作員の標準装備。穏やかな反動が特徴のアサルトライフル。"
+	},
+	"Weap_MP5K": {
+		"Name": "MMP9 K",
+		"Description": "短機関銃。軽量かつ低反動、走りながらでも発砲可能。"
 	},
 	"Weap_GL06": {
 		"Name": "KL-40 'Breaker'/FLEC",
 		"Description": "中折れ式ランチャー。フレシェット弾のキャニスターを装填。"
+	},
+	"Weap_Scout": {
+		"Name": "RE-CON 762",
+		"Description": "軽量で取り回しの良いスカウト小銃。"
+	},
+	"Weap_MG3": {
+		"Name": "'Madness' DMG",
+		"Description": "汎用機関銃。ベルト給弾のため重いが長時間連続射撃できる。"
 	},
 	"Weap_MCX": {
 		"Name": "MRX 6.5mm 'Lightning'",

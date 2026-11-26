@@ -20,6 +20,7 @@ public:
 	void Update();
 	void Draw();
 	void DrawUI();
+	void Release();
 
 	std::vector<std::shared_ptr<Collider3D>> GetColliders() const;
 	int GetCaptureCount();

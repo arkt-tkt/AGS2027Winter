@@ -15,10 +15,6 @@ Player::Player(int player_num)
 {
 }
 
-Player::~Player()
-{
-}
-
 void Player::Draw()
 {
 	if (!isAlive_) return;
@@ -41,6 +37,13 @@ void Player::Draw()
 	inv_->Draw();
 
 	CharacterBase3D::Draw();
+}
+
+void Player::Release()
+{
+	inv_->Release();
+
+	CharacterBase3D::Release();
 }
 
 void Player::InitParam()
@@ -149,7 +152,21 @@ void Player::Move()
 	// ê≥ãKâª
 	moveDir_.Normalize();
 
-	isSprinting_ = INS.CheckNowMap(INPUT_NUM, tag::SPRINT) || isSprinting_ && moveDir_.XZ().LengthSquare() ? true : false;
+	if (INS.CheckDownMap(INPUT_NUM, tag::SPRINT))
+	{
+		sprintSwitch_ = !sprintSwitch_;
+	}
+
+	if (sprintSwitch_ && moveDir_.XZ().LengthSquare())
+	{
+		sprintRate_ = (std::min)(sprintRate_ + SPRINT_STANCE_RATE * dt, 1.0f);
+	}
+	else
+	{
+		sprintRate_ = (std::max)(sprintRate_ - SPRINT_STANCE_RATE * dt, 0.0f);
+
+		if (sprintRate_ <= 0.0f) sprintSwitch_ = false;
+	}
 
 	auto toTarget = scnMng_.GetCameraPtr().GetTargetPosition() - transform_.position;
 
@@ -158,7 +175,7 @@ void Player::Move()
 		Vector2(toTarget.x, toTarget.z).Normalized());
 	const auto DIR_MOVE_MULT = 1.0f - 0.1f + DOT * 0.1f;
 
-	const auto SPRINT_MULT = isSprinting_ ? sprintMult_ : 1.0f;
+	const auto SPRINT_MULT = 1.0f + sprintRate_ * (sprintMult_ - 1.0f);
 	auto maxSpd_ = maxSpeed_ * SPRINT_MULT * dt * inv_->GetData().movement;
 
 	maxSpd_ *= (godMode_ ? 1.75f : 1.0f);
@@ -263,6 +280,8 @@ void Player::LateMove()
 	if (!isAlive_) return;
 
 	inv_->Update();
+
+	if (inv_->IsActed()) sprintSwitch_ = false;
 }
 
 void Player::TurnVisual()

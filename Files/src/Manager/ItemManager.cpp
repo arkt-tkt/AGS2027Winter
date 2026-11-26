@@ -30,9 +30,9 @@ void ItemManager::_LoadValue()
 	{
 		ItemBase::ItemData item;
 
-		if (data.contains("Category"))
+		if (data.contains("Type"))
 		{
-			auto cat = data["Category"].get<std::string>();
+			auto cat = data["Type"].get<std::string>();
 
 			int ci = 0;
 			for (; ci < _countof(CAT_NAME); ++ci)
@@ -116,7 +116,7 @@ void ItemManager::_LoadValue()
 		{
 			item.fireRate.clear();
 
-			if (data["RPM"].is_array())
+			if (data["RPM"].is_array() && data["RPM"].size() <= 2)
 			{
 				for (auto& rpm : data["RPM"])
 				{

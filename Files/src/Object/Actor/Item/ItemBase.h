@@ -41,7 +41,6 @@ public:
 	};
 
 	ItemBase(ItemData data) : baseData_(data) {}
-	virtual ~ItemBase() {}
 
 	void Update() override;
 	void LateUpdate() override;
@@ -66,7 +65,7 @@ protected:
 	static constexpr const char* FIREMODE_LABEL_AUTO = "AUTO";
 	static constexpr const char* FIREMODE_LABEL_BURST = " BR";
 	static constexpr const char* FIREMODE_LABEL_SEMI = "SEMI";
-	static constexpr Position3 HAND_OFFSET = { 3.5f, 22.5f, -6.0f };
+	static constexpr Position3 HAND_OFFSET = { 3.5f, 22.5f, -12.0f };
 
 	Transform3D* parent_;
 

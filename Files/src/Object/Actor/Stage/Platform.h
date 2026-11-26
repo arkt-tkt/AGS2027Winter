@@ -5,7 +5,6 @@ class Platform : public ActorBase3D
 {
 public:
 	Platform();
-	virtual ~Platform();
 
 	void Update() override;
 	void Draw() override;

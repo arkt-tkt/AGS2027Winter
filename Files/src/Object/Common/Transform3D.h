@@ -8,7 +8,7 @@ class Transform3D
 {
 public:
 	// 3Dモデル用ハンドルID
-	int modelId;
+	int modelId = -1;
 
 	// 拡縮
 	Vector3 scale;
@@ -28,9 +28,8 @@ public:
 	// コンストラクタ(3Dモデルと紐付)
 	Transform3D(int model_id);
 	// デストラクタ
-	virtual ~Transform3D();
+	~Transform3D();
 
-	virtual void Init() {}
 	// 拡縮・座標・回転を更新
 	void Update();
 	// 描画

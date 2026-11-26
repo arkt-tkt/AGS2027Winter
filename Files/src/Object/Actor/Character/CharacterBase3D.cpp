@@ -274,9 +274,8 @@ void CharacterBase3D::CollisionProjectile()
 
 		for (auto& p : actProj)
 		{
-			if (!p->IsAlive()) continue;
-
 			auto myPtr = this;
+
 			if (!p->IsCanHit(myPtr)) continue;
 
 			for (auto& pCol : p->GetTypedColliders(awayType))
@@ -322,11 +321,11 @@ void CharacterBase3D::CollisionProjectile()
 					ProjectileManager::GetInstance().CreateDamagePopUp(
 						VECToVec3(hits.Dim[0].Position[0]),
 						finalDmg);
-
-					break;
 				}
 
 				MV1CollResultPolyDimTerminate(hits);
+
+				break;
 			}
 		}
 	}

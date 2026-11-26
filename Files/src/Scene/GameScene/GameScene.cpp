@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <EffekseerForDXLib.h>
 #include "../../Application.h"
 #include "../../Common/DxLibUtil.h"
 #include "../../Common/MathUtil.h"
@@ -167,6 +168,8 @@ void GameScene::LateUpdate()
 
 void GameScene::Draw()
 {
+    //DrawEffekseer3D_Begin();
+
     stage_->Draw();
 
     EnemyManager::GetInstance().Draw();
@@ -174,6 +177,9 @@ void GameScene::Draw()
     player_->Draw();
 
     ProjectileManager::GetInstance().Draw();
+
+    //DrawEffekseer3D_End();
+    DrawEffekseer3D();
 
     if (godMode_) return;
 
@@ -241,6 +247,9 @@ bool GameScene::Release()
     auto& cam = SceneManager::GetInstance().GetCameraPtr();
     cam.SetFollowTransform();
     cam.ResetAwayColliders();
+
+    stage_->Release();
+    player_->Release();
 
     EnemyManager::DeleteInstance();
     ProjectileManager::DeleteInstance();

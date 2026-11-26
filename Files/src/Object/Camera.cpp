@@ -15,25 +15,21 @@
 
 Camera::Camera()
 {
-	Init();
-}
-
-Camera::~Camera()
-{
-	ResetAwayColliders();
-}
-
-bool Camera::Init()
-{
 	mode_ = MODE::FIXED;
 
 	prevPos_ = pos_ = FIXED_CAMERA_LOCAL_POS;
 	prevTargetPos_ = targetPos_ = FIXED_TARGET_POS;
 	prevAngles_ = angles_ = FIXED_CAMERA_ANGLES;
+	angles_ = INIT_ANGLES;
+
+	mouseCamControl_ = !InputManager::GetInstance().GetMouseVisibility();
 
 	followTarget_ = nullptr;
+}
 
-	return true;
+Camera::~Camera()
+{
+	ResetAwayColliders();
 }
 
 void Camera::Update()
@@ -44,6 +40,8 @@ void Camera::Update()
 
 	auto x = isReverseX_ ? -FOLLOW_TP_LOCAL_POS_X : FOLLOW_TP_LOCAL_POS_X;
 	posLocalX_ = MathUtil::Lerp(posLocalX_, x, FOLLOW_TP_LOCAL_POS_X_TRANS_RATE);
+
+	mouseCamControl_ = !InputManager::GetInstance().GetMouseVisibility();
 
 	if (!SceneManager::GetInstance().IsPause()) switch (mode_)
 	{
@@ -79,7 +77,7 @@ void Camera::BeforeDraw()
 	// 画面の揺れを計算して反映させる
 	ShakeScreen(finalPos, finalTarget);
 
-	//
+	// 反動を考慮して上ベクトルを曲げる四元数
 	auto nowAngles = _AngleClamp(angles_ + kick_);
 	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
@@ -281,9 +279,12 @@ void Camera::UpdateAngles()
 	auto& ins = InputManager::GetInstance();
 	const float dt = SceneManager::GetInstance().GetDeltaTime();
 
-	Vector2 mVec = ins.GetMouseMoveLength() * mouseSensitivity_ * dt;
-	angles_.x += mVec.y;
-	angles_.y += mVec.x;
+	if (mouseCamControl_)
+	{
+		Vector2 mVec = ins.GetMouseMoveLength() * mouseSensitivity_ * dt;
+		angles_.x += mVec.y;
+		angles_.y += mVec.x;
+	}
 
 	const float stickSensitivity = 1.8f / float(Gamepad::DINPUT_STICK_MAX) * dt;
 	Vector2 pVec(0, 0);

@@ -112,8 +112,8 @@ std::vector<int> PathFind::PathGet(const Vector3& start_pos, const Vector3& goal
 			if (tentative_g < g_score[next_id])
 			{
 				came_from[next_id] = current_id;
-				g_score[next_id] = tentative_g;
-				float f = tentative_g + (nodes_.at(next_id).pos - nodes_.at(goal_id).pos).Length();
+				g_score[next_id] = static_cast<float>(tentative_g);
+				float f = static_cast<float>(tentative_g + (nodes_.at(next_id).pos - nodes_.at(goal_id).pos).Length());
 				open_set.push({ next_id, f });
 			}
 		}
@@ -187,8 +187,8 @@ std::vector<int> PathFind::PathGetR(const Vector3& start_pos, const Vector3& goa
 			if (tentative_g < g_score[next_id])
 			{
 				came_from[next_id] = current_id;
-				g_score[next_id] = tentative_g;
-				float f = tentative_g + (nodes_.at(next_id).pos - nodes_.at(goal_id).pos).Length();
+				g_score[next_id] = static_cast<float>(tentative_g);
+				float f = static_cast<float>(tentative_g + (nodes_.at(next_id).pos - nodes_.at(goal_id).pos).Length());
 				open_set.push({ next_id, f });
 			}
 		}
@@ -228,7 +228,7 @@ void PathFind::LoadData()
 	auto& rawData = ResourceManager::GetInstance().Reload(ResourceManager::SRC::JSON_PATHFIND).json_;
 
 	std::string str = "Node_";
-	size_t index = 0;
+	int index = 0;
 
 	for (auto& nodes : rawData)
 	{

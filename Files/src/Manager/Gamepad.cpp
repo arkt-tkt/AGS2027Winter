@@ -330,7 +330,7 @@ bool Gamepad::IsNintendoJoypad() const
 int Gamepad::_DZFunc(int in, bool xin)
 {
 	int ret;
-	const int IN_MAX = !xin ? DINPUT_STICK_MAX : XINPUT_STICK_MAX;
+	const float IN_MAX = !xin ? DINPUT_STICK_MAX : XINPUT_STICK_MAX;
 
 	ret = (int)(in - IN_MAX * DEADZONE);
 	return (int)(ret / (1.0 - DEADZONE));

@@ -9,9 +9,9 @@ class Player : public CharacterBase3D
 {
 public:
 	Player(int player_num);
-	virtual ~Player();
 
 	void Draw() override;
+	void Release() override;
 
 	// プレイヤー番号（0始まり）
 	const int& GetPlayerNumber() const { return PLAYER_NUM; }
@@ -37,6 +37,7 @@ private:
 
 	std::unique_ptr<Inventory> inv_;
 
+	bool sprintSwitch_ = false;
 	bool godMode_ = false;
 
 	void InitParam() override;

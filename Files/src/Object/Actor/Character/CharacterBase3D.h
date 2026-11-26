@@ -9,11 +9,11 @@ public:
 	static constexpr float JUMP_POW = 6.0f;
 	static constexpr float GRAVITY_POW = 32.0f;
 	static constexpr float MAX_FALL_VELOCITY = -24.0f;
+	static constexpr float SPRINT_STANCE_RATE = 4.0f;
 
 	static constexpr float DAMAGE_TIMER_MAX = 1.0f;
 
 	CharacterBase3D() : ActorBase3D() {}
-	virtual ~CharacterBase3D() {}
 
 	void Update() override final;
 	void LateUpdate() override final;
@@ -68,8 +68,8 @@ protected:
 
 	// 着地状態
 	bool isLanding_ = true;
-	// ダッシュ状態
-	bool isSprinting_ = false;
+	// ダッシュ状態値
+	float sprintRate_ = 0.0f;
 	// 衝突時の対法線平行移動速度をフルスピードで可能にするかどうか
 	bool fullSpeedParallel_ = false;
 

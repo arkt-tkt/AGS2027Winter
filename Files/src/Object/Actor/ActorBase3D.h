@@ -30,7 +30,7 @@ public:
 	virtual void DrawUI() {}
 
 	// ‰ğ•úˆ—
-	void Release();
+	virtual void Release();
 
 	// Õ“Ë”»’è‚ğæ‚é‘Šè‚ğ’Ç‰Á
 	void AddAwayCollider(std::weak_ptr<Collider3D> col) { awayColliders_.push_back(col); }

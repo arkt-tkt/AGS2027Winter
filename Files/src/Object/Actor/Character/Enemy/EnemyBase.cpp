@@ -16,10 +16,6 @@ EnemyBase::EnemyBase(EnemyManager* manager)
 	hp_ = 0.0f;
 }
 
-EnemyBase::~EnemyBase()
-{
-}
-
 void EnemyBase::Draw()
 {
 	if (!isAlive_) return;
@@ -41,8 +37,11 @@ void EnemyBase::Draw()
 	CharacterBase3D::Draw();
 }
 
-void EnemyBase::DrawUI()
+void EnemyBase::Release()
 {
+	pathData_.clear();
+
+	CharacterBase3D::Release();
 }
 
 void EnemyBase::GetSoundPos(const Position3& pos)

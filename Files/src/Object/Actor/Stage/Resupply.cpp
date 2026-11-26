@@ -13,10 +13,6 @@ Resupply::Resupply(Stage* ptr)
 {
 }
 
-Resupply::~Resupply()
-{
-}
-
 void Resupply::Draw()
 {
 	// ƒ‚ƒfƒ‹

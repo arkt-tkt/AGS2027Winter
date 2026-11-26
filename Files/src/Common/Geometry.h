@@ -103,6 +103,8 @@ float Cross(const Vector2& va, const Vector2& vb);
 Vector2 Lerp(const Vector2& start, const Vector2& end, const float& rate);
 // 角度からベクトルを取得
 Vector2 GetVector2FromAngle(float radian, float length);
+// 直方体領域内にあるかどうか
+bool IsInBox(const Vector2& v, const Vector2& low, const Vector2& high);
 #pragma endregion
 
 #pragma region 3次元ベクトル
@@ -306,11 +308,11 @@ struct Quaternion
 	// クォータニオンの直接加算
 	Quaternion& operator+=(const Quaternion& q);
 	// スカラー倍
-	Quaternion& operator*=(float f);
+	Quaternion& operator*=(double f);
 	// クォータニオンの合成
 	Quaternion& operator*=(const Quaternion& q);
 	// スカラー割
-	Quaternion& operator/=(float f);
+	Quaternion& operator/=(double f);
 
 	// クォータニオンの合成
 	Quaternion Multiplication(const Quaternion& q) const;

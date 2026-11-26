@@ -23,7 +23,8 @@ void ResourceManager::DeleteInstance()
 {
 	if (instance_ == nullptr) return;
 
-	instance_->Release();
+	instance_->UnLoad();
+
 	for (auto& res : instance_->resourcesMap_)
 	{
 		res.second->Release();
@@ -128,6 +129,10 @@ void ResourceManager::Init()
 	res = std::make_unique<RES>(RES_T::PIXEL_SHADER, "ScreenEffect.pso", 3u);
 	resourcesMap_.emplace(SRC::SHADER_SCREEN, std::move(res));
 
+	// Effekseer
+	res = std::make_unique<RES>(RES_T::EFFEKSEER, "BulletTrail.efk");
+	resourcesMap_.emplace(SRC::EFFEKSEER_BULLET, std::move(res));
+	
 	// JSONファイル
 	res = std::make_unique<RES>(RES_T::JSON, "Items.json");
 	resourcesMap_.emplace(SRC::JSON_ITEMS, std::move(res));
@@ -138,12 +143,16 @@ void ResourceManager::Init()
 
 	// 武器モデル
 	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/sg553-assault-rifle/source/sg553.mv1");
-	resourcesMap_.emplace(SRC::MODEL_WPN_AR_SG553, std::move(res));
+	resourcesMap_.emplace(SRC::MODEL_WPN_AR_SG553, std::move(res)); 
 	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly-gl06/gl06.mv1");
 	resourcesMap_.emplace(SRC::MODEL_WPN_SG_GL06, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly_steyr_scout/steyr_scout.mv1");
+	resourcesMap_.emplace(SRC::MODEL_WPN_SR_SCOUT, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/mg-3-low-poly/MG3.mv1");
+	resourcesMap_.emplace(SRC::MODEL_WPN_MG_MG3, std::move(res));
 }
 
-void ResourceManager::Release()
+void ResourceManager::UnLoad()
 {
 	for (auto& p : loadedMap_)
 	{

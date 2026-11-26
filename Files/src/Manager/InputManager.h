@@ -70,6 +70,7 @@ public:
 	};
 
 	using KEY_STATE_ARRAY = std::array<char, 256ULL>;
+	// 該当なしの0番 + Dxライブラリの8ボタン + マウスホイール上下 = 11スロット
 	using MOUSE_STATE_ARRAY = std::array<int, 11ULL>;
 
 	using PAD_MAP_ARRAY = std::array<Gamepad::PAD_INPUT, 2ULL>;
@@ -84,6 +85,9 @@ public:
 
 	void Update();
 	bool Release();
+
+	const bool& GetMouseVisibility() const;
+	void SetMouseVisibility(bool flag);
 
 	void AddorReplaceMap(int padNum, TAGS tag, INPUT_MAP map);
 	void AddMap(int padNum, TAGS tag, INPUT_MAP map);
@@ -114,7 +118,7 @@ public:
 	bool CheckUpMouse(int mouse_button_num) const;
 
 	// 指定した番号のゲームパッドの接続状態を返す
-	bool IsGamepadConnected(int pad_num) const;
+	bool IsExistPad(int pad_num) const;
 
 private:
 	static constexpr int KEYBOARD_NUM = 0; // キーボード入力を割り当てる番号（添字）
@@ -129,12 +133,13 @@ private:
 	KEY_STATE_ARRAY nowKey_; // 現在のキー情報
 	KEY_STATE_ARRAY prevKey_; // 直前のキー情報
 
+	bool mousePtrDisp_ = true; // マウスポインタ表示フラグ
+
 	Vector2 prevMousePos_; // マウスポインタの座標
 	Vector2 nowMousePos_; // マウスポインタの座標
+
 	MOUSE_STATE_ARRAY nowMouse_; // 現在のマウスボタン情報
 	MOUSE_STATE_ARRAY prevMouse_; // 直前のマウスボタン情報
-	float nowMouseWheel_; // 現在のマウスホイール情報
-	float prevMouseWheel_; // 直前のマウスホイール情報
 
 	void InitInputMap(); // 入力マップの初期設定
 
