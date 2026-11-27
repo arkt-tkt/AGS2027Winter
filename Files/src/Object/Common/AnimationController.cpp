@@ -7,10 +7,29 @@ AnimationController::AnimationController(int model_id)
 	:
 	modelId_(model_id)
 {
-	rootFrameIdx_ = MV1SearchFrame(modelId_, "mixamorig:Hips");
-	upperFrameIdx_ = MV1SearchFrame(modelId_, "mixamorig:Spine");
-	legFrameIdx_ = { MV1SearchFrame(modelId_, "mixamorig:LeftUpLeg"),
-		MV1SearchFrame(modelId_, "mixamorig:RightUpLeg") };
+	auto name = MV1GetFrameName(modelId_, 0);
+
+	if (MV1SearchFrame(modelId_, "mixamorig5:Hips") >= 0)
+	{
+		rootFrameIdx_ = MV1SearchFrame(modelId_, "mixamorig5:Hips");
+		upperFrameIdx_ = MV1SearchFrame(modelId_, "mixamorig5:Spine");
+		legFrameIdx_ = {
+			MV1SearchFrame(modelId_, "mixamorig5:LeftUpLeg"),
+			MV1SearchFrame(modelId_, "mixamorig5:RightUpLeg") };
+
+		return;
+	}
+
+	if (MV1SearchFrame(modelId_, "mixamorig:Hips") >= 0)
+	{
+		rootFrameIdx_ = MV1SearchFrame(modelId_, "mixamorig:Hips");
+		upperFrameIdx_ = MV1SearchFrame(modelId_, "mixamorig:Spine");
+		legFrameIdx_ = {
+			MV1SearchFrame(modelId_, "mixamorig:LeftUpLeg"),
+			MV1SearchFrame(modelId_, "mixamorig:RightUpLeg") };
+
+		return;
+	}
 }
 
 AnimationController::~AnimationController()
@@ -70,10 +89,12 @@ void AnimationController::Update()
 
 			if (play->isLoop)
 			{
+				// ループさせる
 				play->time -= play->totalTime * playDir;
 			}
 			else if (play->speed != 0.0f)
 			{
+				// ループしない場合
 				if (play->autoDetach) _Stop(it);
 
 				play->speed = 0.0f;
@@ -182,12 +203,21 @@ void AnimationController::Play(ResourceManager::SRC res, int anim_index,
 	{
 		if (play->resId == id && play->animIndex == anim_index)
 		{
+			if (play->time >= play->totalTime && speed > 0.0f ||
+				play->time <= 0.0f && speed < 0.0f)
+			{
+				if (!is_loop && !auto_detach)
+				{
+					return;
+				}
+				else
+				{
+					play->time = speed > 0.0f ? 0.0f : play->totalTime;
+				}
+			}
+
 			play->maxPower = power;
 			play->speed = speed;
-
-			if (play->time > play->totalTime && speed > 0.0f ||
-				play->time < 0.0f && speed < 0.0f)
-				play->time = speed > 0.0f ? 0.0f : play->totalTime;
 
 			return;
 		}

@@ -23,6 +23,7 @@ public:
 	void Release();
 
 	std::vector<std::shared_ptr<Collider3D>> GetColliders() const;
+	std::vector<std::weak_ptr<Collider3D>> GetWeakColliders() const;
 	int GetCaptureCount();
 	float GetSpStability() { return stability_; }
 

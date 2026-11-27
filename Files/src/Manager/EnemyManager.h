@@ -69,6 +69,10 @@ private:
 	std::vector<std::unique_ptr<EnemyBase>> pool_;
 	std::vector<EnemyBase*> active_;
 
+	std::vector<CharacterBase3D::Stats> data_;
+
 	float spawnTimer_ = 0.0f;
+
+	void _LoadValue();
 
 };

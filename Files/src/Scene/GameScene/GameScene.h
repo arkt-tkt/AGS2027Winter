@@ -19,7 +19,12 @@ public:
 
 private:
     static constexpr float GAUSSIAN_SIGMA_RATIO = 2.57f;
-    static constexpr float GAUSSIAN_STEPS = 4.0f;
+    static constexpr float GAUSSIAN_STEPS = 12.0f;
+    static constexpr float SIGMA_DECREMENT = 0.8f;
+
+    static constexpr float SPATIAL_DAMAGE_START = 15.0f;
+    static constexpr float SPATIAL_DAMAGE_MULT = 1.0f / 3.0f;
+    static constexpr float SPATIAL_DAMAGE_FREQ = 1.0f;
 
     static constexpr float SURVIVAL_TIME = 240.0f;
 
@@ -32,9 +37,13 @@ private:
     int effectScreen1Id_;
     int effectScreen2Id_;
     float sigma_ = 0.0f;
+    float spDmgTimer_ = 0.0f;
 
     float surviveTime_ = 0.0f;
 
     bool godMode_ = false;
+
+    void _StageProgress();
+    void _PostEffect();
 
 };

@@ -11,7 +11,25 @@ public:
 	static constexpr float MAX_FALL_VELOCITY = -24.0f;
 	static constexpr float SPRINT_STANCE_RATE = 4.0f;
 
-	static constexpr float DAMAGE_TIMER_MAX = 1.0f;
+	static constexpr float DAMAGE_TIMER_MAX = 0.5f;
+
+	struct Stats
+	{
+		int model = 0;
+		Vector3 scale = { 1.0f, 1.0f, 1.0f };
+		int bounty = 0;
+		float hp = 100;
+		float regen = 1.0f;
+		float shield = 0;
+		float recharge = 0.0f;
+		float armor = 0;
+		float damage = 5;
+		float attackSpeed = 1.0f;
+		float movement = 120;
+		float sprint = 1.8f;
+		float accel = 9.0f;
+		float deccel = 9.0f;
+	};
 
 	CharacterBase3D() : ActorBase3D() {}
 
@@ -25,7 +43,7 @@ public:
 	// HPを取得
 	float GetHP() const { return hp_; }
 	// 最大HPを取得
-	float GetMaxHP() const { return maxHp_; }
+	float GetMaxHP() const { return baseStats_.hp; }
 	// HPを計算
 	virtual void CalcHP(float add);
 	// ダメージタイマを取得
@@ -41,23 +59,16 @@ protected:
 	// 地面用線分コライダ
 	std::pair<Vector3, Vector3> lineCollider_;
 
+	// 基礎ステータス
+	Stats baseStats_;
 	// 生存フラグ
 	bool isAlive_ = true;
+
 	// HP
 	float hp_ = 100.0f;
-	// 最大HP
-	float maxHp_ = hp_;
 	// ダメージを受けると作動するタイマ
 	float damageTimer_ = 0.0f;
-	
-	// 1秒あたりの最大移動速度
-	float maxSpeed_ = 120.0f;
-	// ダッシュ倍率
-	float sprintMult_ = 1.8f;
-	// 加速力
-	float accel_ = 9.0f;
-	// 減速力
-	float deccel_ = 9.0f;
+
 	// 無敵状態タイマー
 	float invincible_ = 0.0f;
 	// スコア

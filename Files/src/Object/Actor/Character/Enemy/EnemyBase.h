@@ -1,10 +1,10 @@
 #pragma once
 #include "../CharacterBase3D.h"
 
-class EnemyManager;
-
 class EnemyBase : public CharacterBase3D
 {
+	friend class EnemyManager;
+
 public:
 	enum class TYPE
 	{

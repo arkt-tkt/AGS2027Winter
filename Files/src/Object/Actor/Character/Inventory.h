@@ -22,6 +22,7 @@ public:
 	Inventory(Player* player);
 	~Inventory();
 
+	void Init();
 	void Update();
 	void LateUpdate();
 	void Draw();
@@ -32,6 +33,7 @@ public:
 	float GetReloadProg() { return inv_[nowSlot_]->GetReloadProg(); }
 	bool IsActed() const { return isActed_; }
 
+	void SetSharedAwayColliders(std::vector<std::weak_ptr<Collider3D>> cols) { sharedAwayCol_ = cols; }
 	const std::pair<const int&, const int&> GetAmmo() { return inv_[nowSlot_]->GetAmmo(); }
 	const std::string& GetFiremodeLabel() { return inv_[nowSlot_]->GetFiremodeLabel(); }
 	const ItemBase::ItemData& GetData() { return inv_[nowSlot_]->GetData(); }
@@ -42,6 +44,8 @@ public:
 private:
 	Player& player_;
 	std::map<SLOT, std::unique_ptr<ItemBase>> inv_;
+
+	std::vector<std::weak_ptr<Collider3D>> sharedAwayCol_;
 
 	SLOT nowSlot_;
 	bool isActed_ = false;

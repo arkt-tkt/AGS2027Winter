@@ -59,22 +59,25 @@ void EnemyBase::GetSoundPos(const Position3& pos)
 void EnemyBase::InitParam()
 {
 	isAlive_ = true;
-	maxHp_ = hp_ = 150;
-	maxSpeed_ *= 1.4f;
 	fullSpeedParallel_ = true;
+
+	hp_ = baseStats_.hp;
 }
 
 void EnemyBase::InitModel()
 {
 	Position3 pos;
-	pos.x = Application::GetInstance().GetRNGPointer().GetRandReal(-1600.0f, 1600.0f);
+	pos.x = Application::GetInstance().GetRNGPointer().GetRandReal(-900.0f, 900.0f);
 	pos.y = 800.0f;
-	pos.z = Application::GetInstance().GetRNGPointer().GetRandReal(-1600.0f, 1600.0f);
+	pos.z = Application::GetInstance().GetRNGPointer().GetRandReal(-900.0f, 900.0f);
 
 	float rot = Application::GetInstance().GetRNGPointer().GetRandReal(0.0f, 2.0f * MathUtil::PI_F);
 
-	transform_.modelId = resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_ENEMY1);
-	transform_.scale = SCALE;
+	transform_.modelId = resMng_.LoadModelDuplicate(
+		static_cast<ResourceManager::SRC>(
+			static_cast<int>(ResourceManager::SRC::MODEL_ENEMY_RUSH) + baseStats_.model));
+
+	transform_.scale = baseStats_.scale;
 	transform_.position = pos;
 	transform_.rotation.y = rot;
 	transform_.localRotation.y = DX_PI_F;
@@ -99,9 +102,11 @@ void EnemyBase::InitAnim()
 	animation_ = std::make_unique<AnimationController>(transform_.modelId);
 
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_IDLE, 0, 30.0f);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_MOVE, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_MOVE, 0, 30.0f * baseStats_.movement / 160.0f,
 		AnimationController::PARTS::FULL_BODY);
-	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_PUNCH, 0, 30.0f,
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_JUMP, 0, 30.0f,
+		AnimationController::PARTS::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_EN_PUNCH, 0, 30.0f * baseStats_.attackSpeed,
 		AnimationController::PARTS::UPPER_BODY);
 
 	animation_->Play(ResourceManager::SRC::ANIME_EN_IDLE, 0);
@@ -192,7 +197,7 @@ void EnemyBase::LateMove()
 			}
 		}
 
-		moveDir *= maxSpeed_ * scnMng_.GetDeltaTime();
+		moveDir *= baseStats_.movement * scnMng_.GetDeltaTime();
 
 		velocity_.x = moveDir.x;
 		velocity_.z = moveDir.y;
@@ -203,15 +208,24 @@ void EnemyBase::LateMove()
 
 void EnemyBase::AnimationSwitch()
 {
-	if (velocity_.XZ().LengthSquare() > 0.0f)
+	if (isLanding_)
 	{
-		animation_->Stop(ResourceManager::SRC::ANIME_EN_IDLE, 0);
-		animation_->Play(ResourceManager::SRC::ANIME_EN_MOVE, 0);
+		animation_->Stop(ResourceManager::SRC::ANIME_EN_JUMP, 0);
+
+		if (velocity_.XZ().LengthSquare() > 0.0f)
+		{
+			animation_->Play(ResourceManager::SRC::ANIME_EN_MOVE, 0);
+		}
+		else
+		{
+			animation_->Stop(ResourceManager::SRC::ANIME_EN_MOVE, 0);
+		}
 	}
 	else
 	{
+		animation_->Play(ResourceManager::SRC::ANIME_EN_JUMP, 0, false, 1.0f, 1.0f, false);
+
 		animation_->Stop(ResourceManager::SRC::ANIME_EN_MOVE, 0);
-		animation_->Play(ResourceManager::SRC::ANIME_EN_IDLE, 0);
 	}
 }
 

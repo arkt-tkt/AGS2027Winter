@@ -13,14 +13,14 @@
 	},
 	"Weap_Scout": {
 		"Name": "RE-CON 762",
-		"Description": "軽量で取り回しの良いスカウト小銃。"
+		"Description": "軽量で取り回しの良いスカウト小銃。連射は効かない。"
 	},
 	"Weap_MG3": {
-		"Name": "'Madness' DMG",
+		"Name": "DMG 'Madness'",
 		"Description": "汎用機関銃。ベルト給弾のため重いが長時間連続射撃できる。"
 	},
 	"Weap_MCX": {
-		"Name": "MRX 6.5mm 'Lightning'",
+		"Name": "MRX-6.5 Serial A",
 		"Description": "カスタムアサルトライフル。6.5mm特殊弾を使用する。"
 	},
 	"Weap_Glock": {

@@ -67,8 +67,10 @@ void ResourceManager::Init()
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Player/character.mv1");
 	resourcesMap_.emplace(SRC::MODEL_PLAYER, std::move(res));
 
-	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Enemy/character.mv1");
-	resourcesMap_.emplace(SRC::MODEL_ENEMY1, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Enemy/Maynard/character.mv1");
+	resourcesMap_.emplace(SRC::MODEL_ENEMY_RUSH, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Enemy/Parasite_L_Starkie/character.mv1");
+	resourcesMap_.emplace(SRC::MODEL_ENEMY_ARMOR, std::move(res));
 
 	// アニメーション
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/rifle_aiming_idle.mv1");
@@ -91,6 +93,8 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_WALK_BR, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Rifle_Run.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_DASH_FRONT, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Rifle_Jump.mv1");
+	resourcesMap_.emplace(SRC::ANIME_PL_RF_JUMP, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/reloading.mv1");
 	resourcesMap_.emplace(SRC::ANIME_PL_RF_RELOAD, std::move(res));
 
@@ -98,6 +102,8 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::ANIME_EN_IDLE, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Drunk_Run_Forward.mv1");
 	resourcesMap_.emplace(SRC::ANIME_EN_MOVE, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Jumping_Up.mv1");
+	resourcesMap_.emplace(SRC::ANIME_EN_JUMP, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, "Chara/Animation/Mutant_Punch.mv1");
 	resourcesMap_.emplace(SRC::ANIME_EN_PUNCH, std::move(res));
 
@@ -134,6 +140,8 @@ void ResourceManager::Init()
 	resourcesMap_.emplace(SRC::EFFEKSEER_BULLET, std::move(res));
 	
 	// JSONファイル
+	res = std::make_unique<RES>(RES_T::JSON, "Enemies.json");
+	resourcesMap_.emplace(SRC::JSON_ENEMIES, std::move(res));
 	res = std::make_unique<RES>(RES_T::JSON, "Items.json");
 	resourcesMap_.emplace(SRC::JSON_ITEMS, std::move(res));
 	res = std::make_unique<RES>(RES_T::JSON, "ItemDescs.json");
@@ -143,7 +151,9 @@ void ResourceManager::Init()
 
 	// 武器モデル
 	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/sg553-assault-rifle/source/sg553.mv1");
-	resourcesMap_.emplace(SRC::MODEL_WPN_AR_SG553, std::move(res)); 
+	resourcesMap_.emplace(SRC::MODEL_WPN_AR_SG553, std::move(res));
+	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly-mp5k/mp5k.mv1");
+	resourcesMap_.emplace(SRC::MODEL_WPN_SMG_MP5K, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly-gl06/gl06.mv1");
 	resourcesMap_.emplace(SRC::MODEL_WPN_SG_GL06, std::move(res));
 	res = std::make_unique<RES>(RES_T::MODEL, "Weapon/low-poly_steyr_scout/steyr_scout.mv1");

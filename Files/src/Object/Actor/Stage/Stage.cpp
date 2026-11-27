@@ -104,6 +104,27 @@ std::vector<std::shared_ptr<Collider3D>> Stage::GetColliders() const
 	return ret;
 }
 
+std::vector<std::weak_ptr<Collider3D>> Stage::GetWeakColliders() const
+{
+	const auto GET_COL_TYPE = Collider3D::TYPE::STAGE;
+
+	std::vector<std::weak_ptr<Collider3D>> ret =
+		platform_->GetTypedWeakColliders(GET_COL_TYPE);
+
+	ret.reserve(ret.size() + capturePoints_.size() + 1);
+
+	for (auto& capPoint : capturePoints_)
+	{
+		auto capColliders = capPoint->GetTypedWeakColliders(GET_COL_TYPE);
+		ret.insert(ret.end(), capColliders.begin(), capColliders.end());
+	}
+
+	auto resupColliders = resupply_->GetTypedWeakColliders(GET_COL_TYPE);
+	ret.insert(ret.end(), resupColliders.begin(), resupColliders.end());
+
+	return ret;
+}
+
 int Stage::GetCaptureCount()
 {
 	int ret = 0;

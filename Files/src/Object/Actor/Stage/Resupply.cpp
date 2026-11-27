@@ -17,25 +17,27 @@ void Resupply::Draw()
 {
 	// モデル
 	MV1DrawModel(transform_.modelId);
+}
 
+void Resupply::DrawUI()
+{
 	// オーバーレイ表示
-	Vector3 pos = transform_.position + Vector3(0, 20, 0);
+	if (inRange_ && activeTimer_ <= 0.0f)
+	{
+		DrawString(80, 900, "Eキー/右ボタン: 長押しで弾薬を補充する", 0xffffffu);
+	}
 
-	VECTOR scPos = ConvWorldPosToScreenPos(Vec3ToVEC(pos));
+	Vector3 pos = transform_.position + Vector3(0, 20, 0);
+	auto& cPos = scnMng_.GetCameraPtr().GetPosition();
+	auto vec = (pos - cPos).Normalized();
+
+	VECTOR scPos = ConvWorldPosToScreenPos(Vec3ToVEC(cPos + vec * 10.0f));
 
 	if (!MathUtil::Within(scPos.z, 0.0f, 1.0f)) return;
 
 	auto col = activeTimer_ > 0.0f ? 0x808080u : 0xffffffu;
 
 	DrawStringToCenterPos(MathUtil::Round(scPos.x), MathUtil::Round(scPos.y), "R", col);
-}
-
-void Resupply::DrawUI()
-{
-	if (inRange_ && activeTimer_ <= 0.0f)
-	{
-		DrawString(80, 900, "Eキー/右ボタン: 長押しで弾薬を補充する", 0xffffffu);
-	}
 }
 
 void Resupply::Activate()

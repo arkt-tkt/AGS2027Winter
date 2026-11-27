@@ -70,7 +70,7 @@ public:
 	const auto& GetPlayData() { return playData_; }
 
 private:
-	static constexpr float POWER_ADJUST_PER_SECOND = 3.3f;
+	static constexpr float POWER_ADJUST_PER_SECOND = 6.0f;
 
 	int modelId_;
 

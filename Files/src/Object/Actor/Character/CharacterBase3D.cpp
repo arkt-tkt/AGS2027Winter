@@ -68,7 +68,7 @@ void CharacterBase3D::CalcHP(float add)
 	{
 		return;
 	}
-	else if (add < 0.0f)
+	else if (add <= -1.0f)
 	{
 		damageTimer_ = DAMAGE_TIMER_MAX;
 	}
@@ -78,6 +78,10 @@ void CharacterBase3D::CalcHP(float add)
 	{
 		hp_ = 0.0f;
 		isAlive_ = false;
+	}
+	else if (hp_ > baseStats_.hp)
+	{
+		hp_ = baseStats_.hp;
 	}
 }
 

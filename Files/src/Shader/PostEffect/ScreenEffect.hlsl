@@ -38,7 +38,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     color.rgb *= lerp(vignetteColor, float3(1.0, 1.0, 1.0), vignette * vignetteStrength);
     
     // カラーオーバーレイ
-    //color.rgb *= lerp(float3(1.0, 1.0, 1.0), colorOverlayColor, colorOverlayStrength);
+    color.rgb *= lerp(float3(1.0, 1.0, 1.0), colorOverlayColor, colorOverlayStrength);
     
     return color;
 }

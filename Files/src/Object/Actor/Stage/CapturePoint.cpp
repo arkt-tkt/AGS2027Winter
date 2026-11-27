@@ -32,20 +32,22 @@ void CapturePoint::Draw()
 void CapturePoint::DrawUI()
 {
 	// オーバーレイ表示
-	Vector3 pos = transform_.position + Vector3(0, 20, 0);
+	if (inRange_ && activeTimer_ <= 0.0f)
+	{
+		DrawString(80, 900, "Eキー/右ボタン: 長押しで発電機を起動する", 0xffffffu);
+	}
 
-	VECTOR scPos = ConvWorldPosToScreenPos(Vec3ToVEC(pos));
+	auto pos = transform_.position + Vector3(0, 20, 0);
+	auto& cPos = scnMng_.GetCameraPtr().GetPosition();
+	auto vec = (pos - cPos).Normalized();
+
+	VECTOR scPos = ConvWorldPosToScreenPos(Vec3ToVEC(cPos + vec * 10.0f));
 
 	if (!scnMng_.GetCameraPtr().IsInCameraBounds(VECToVec3(scPos))) return;
 
 	auto col = activeTimer_ > 0.0f ? COLOR_ACTIVE : COLOR_STANDBY;
 
 	DrawStringToCenterPos(MathUtil::Round(scPos.x), MathUtil::Round(scPos.y), "G", col);
-
-	if (inRange_ && activeTimer_ <= 0.0f)
-	{
-		DrawString(80, 900, "Eキー/右ボタン: 長押しで発電機を起動する", 0xffffffu);
-	}
 }
 
 void CapturePoint::Activate()

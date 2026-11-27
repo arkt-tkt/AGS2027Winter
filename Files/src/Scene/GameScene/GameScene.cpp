@@ -29,8 +29,12 @@ bool GameScene::Init()
     // プレイヤー
     player_ = std::make_shared<Player>(0);
     player_->Init();
-    player_->AddAwayColliders(stage_->GetColliders());
 
+    auto stCols = stage_->GetWeakColliders();
+    player_->AddAwayColliders(stCols);
+    player_->GetInventoryPtr()->SetSharedAwayColliders(stCols);
+    player_->GetInventoryPtr()->Init();
+    
     // ステージ
     stage_->SetPlayerPtr(player_);
 
@@ -74,7 +78,7 @@ bool GameScene::Init()
     screenEffect_->SetTexAddressMode(PostEffect::TEXADDRESS::WRAP);
     screenEffect_->AddConstantBuffer({ 1.0f, 0.75f, 0.5f, false });
     screenEffect_->AddConstantBuffer({ 0.25f, 0.25f, 0.25f, false });
-    screenEffect_->AddConstantBuffer({ 0.0f, 1.0f, 0.1f, 0.6f });
+    screenEffect_->AddConstantBuffer({ 0.0f, 1.0f, 0.0f, 0.75f });
 
     return true;
 }
@@ -98,31 +102,7 @@ void GameScene::Update()
         godMode_ = !godMode_;
     }
 
-    auto dt = scnMng_.GetDeltaTime();
-
-    auto stability = stage_->GetSpStability();
-
-    // 空間安定度
-    {
-        if (stability < 15.0f)
-        {
-            auto spatialDmg = (15.0f - stability) / 3.0f * dt;
-
-            player_->CalcHP(-spatialDmg);
-        }
-    }
-
-    // ステージ進行
-    {
-        surviveTime_ += stability >= 100.0f ? dt * 2.0f : dt;
-
-        if (surviveTime_ >= SURVIVAL_TIME)
-        {
-            scnMng_.SetNextSceneVariable(1);
-
-            nextScene_ = SceneBase::SCENE::END;
-        }
-    }
+    _StageProgress();
 
     if (input.CheckDownMap(
         player_->GetInputNumber(), InputManager::TAGS::VIEW_CHANGE_MODE))
@@ -145,18 +125,7 @@ void GameScene::Update()
     player_->SetGodMode(godMode_);
     player_->Update();
 
-    {
-        auto rate = player_->GetDamageTimer() / CharacterBase3D::DAMAGE_TIMER_MAX;
-        auto hRate = (std::max)(0.0f, rate - CharacterBase3D::DAMAGE_TIMER_MAX * 0.5f);
-        
-        sigma_ = rate * GAUSSIAN_SIGMA_RATIO;
-        gaussian_->EditConstantBuffer(1, { sigma_, GAUSSIAN_STEPS, false, false });
-
-        unsigned int col1 = 0x404040u;
-        unsigned int col2 = 0xff0000u;
-        auto vigCol = UInt2ColorF(LerpColor(col1, col2, hRate));
-        screenEffect_->EditConstantBuffer(1, { vigCol.r, vigCol.g, vigCol.b, false });
-    }
+    _PostEffect();
 }
 
 void GameScene::LateUpdate()
@@ -256,4 +225,75 @@ bool GameScene::Release()
     ItemManager::DeleteInstance();
 
     return true;
+}
+
+void GameScene::_StageProgress()
+{
+    auto dt = scnMng_.GetDeltaTime();
+
+    auto stability = stage_->GetSpStability();
+
+    // 空間安定度
+    {
+        if (stability < SPATIAL_DAMAGE_START)
+        {
+            spDmgTimer_ += dt;
+
+            if (spDmgTimer_ >= SPATIAL_DAMAGE_FREQ)
+            {
+                while (spDmgTimer_ >= SPATIAL_DAMAGE_FREQ)
+                    spDmgTimer_ -= SPATIAL_DAMAGE_FREQ;
+                
+                auto spatialDmg = (SPATIAL_DAMAGE_START - stability) * SPATIAL_DAMAGE_MULT;
+
+                player_->CalcHP(-spatialDmg);
+            }
+        }
+        else
+        {
+            spDmgTimer_ = 0.0f;
+        }
+    }
+
+    // ステージ進行
+    {
+        surviveTime_ += stability >= 100.0f ? dt * 2.0f : dt;
+
+        if (surviveTime_ >= SURVIVAL_TIME)
+        {
+            scnMng_.SetNextSceneVariable(1);
+
+            nextScene_ = SceneBase::SCENE::END;
+        }
+    }
+}
+
+void GameScene::_PostEffect()
+{
+    auto dt = scnMng_.GetDeltaTime();
+
+    auto spRate = MathUtil::Clamp(-(stage_->GetSpStability() - 40.0f) / 40.0f, 0.0f, 1.0f);
+    
+    float nextSigma = spRate;
+    
+    nextSigma = nextSigma > player_->GetDamageTimer() / CharacterBase3D::DAMAGE_TIMER_MAX ?
+        nextSigma : player_->GetDamageTimer() / CharacterBase3D::DAMAGE_TIMER_MAX;
+
+    nextSigma = player_->GetHP() < 35.0f ?
+        1.0f : nextSigma;
+
+    if (sigma_ < nextSigma)
+        sigma_ = nextSigma;
+    else
+        sigma_ = (std::max)(0.0f, sigma_ - SIGMA_DECREMENT * dt);
+
+    gaussian_->EditConstantBuffer(1, { sigma_ * GAUSSIAN_SIGMA_RATIO, GAUSSIAN_STEPS, false, false });
+
+    unsigned int col1 = 0x404040u;
+    unsigned int col2 = 0xff0000u;
+    auto vigCol = UInt2ColorF(LerpColor(col1, col2,
+        player_->GetDamageTimer() / CharacterBase3D::DAMAGE_TIMER_MAX));
+    screenEffect_->EditConstantBuffer(1, { vigCol.r, vigCol.g, vigCol.b, false });
+
+    screenEffect_->EditConstantBuffer(2, { spRate, 1.0f, 0.0f, 0.75f });
 }

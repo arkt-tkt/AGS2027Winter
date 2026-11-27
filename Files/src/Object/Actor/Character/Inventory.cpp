@@ -6,17 +6,22 @@ Inventory::Inventory(Player* player)
 	:
 	player_(*player)
 {
-	Add(SLOT::SLOT_PRIMARY1, "Weap_SG553");
-	Add(SLOT::SLOT_PRIMARY2, "Weap_GL06");
-	Add(SLOT::SLOT_SECONDARY, "Weap_Scout");
-	Add(SLOT::SLOT_BATTERY, "Weap_MG3");
-
-	Switch(SLOT::SLOT_PRIMARY1);
 }
 
 Inventory::~Inventory()
 {
 	Release();
+}
+
+void Inventory::Init()
+{
+	Add(SLOT::SLOT_PRIMARY1, "Weap_SG553");
+	Add(SLOT::SLOT_PRIMARY2, "Weap_MP5K");
+	Add(SLOT::SLOT_SECONDARY, "Weap_GL06");
+	Add(SLOT::SLOT_BATTERY, "Weap_Scout");
+	Add(SLOT::SLOT_AUXILIARY1, "Weap_MG3");
+
+	Switch(SLOT::SLOT_PRIMARY1);
 }
 
 void Inventory::Update()
@@ -131,6 +136,7 @@ void Inventory::Add(SLOT slot, const std::string& name, bool replace)
 
 	std::unique_ptr<ItemBase> newItem = std::make_unique<ItemBase>(data);
 	newItem->SetParentTransform(player_.GetTransform());
+	newItem->AddAwayColliders(sharedAwayCol_);
 	newItem->Init();
 
 	if (inv_[slot] != nullptr) inv_[slot]->Release();

@@ -48,112 +48,145 @@ void ItemManager::_LoadValue()
 		}
 		else continue;
 
-		if (data.contains("Model"))
-			item.model = data["Model"].get<int>();
+		std::string keyName = "Model";
+		if (data.contains(keyName))
+			item.model = data[keyName].get<int>();
 
-		if (data.contains("Scale"))
+		keyName = "Scale";
+		if (data.contains(keyName))
 		{
-			if (data["Scale"].is_array() && data["Scale"].size() == 3)
+			if (data[keyName].is_array() && data[keyName].size() == 3)
 			{
 				item.scale = Vector3(
-					data["Scale"][0].get<float>(),
-					data["Scale"][1].get<float>(),
-					data["Scale"][2].get<float>());
+					data[keyName][0].get<float>(),
+					data[keyName][1].get<float>(),
+					data[keyName][2].get<float>());
 			}
 			else
 			{
-				item.scale = data["Scale"].get<float>();
+				item.scale = data[keyName].get<float>();
 			}
 		}
 
-		if (data.contains("Offset"))
+		keyName = "Offset";
+		if (data.contains(keyName))
 		{
-			if (data["Offset"].is_array() && data["Offset"].size() == 3)
+			if (data[keyName].is_array() && data[keyName].size() == 3)
 			{
 				item.offset = Vector3(
-					data["Offset"][0].get<float>(),
-					data["Offset"][1].get<float>(),
-					data["Offset"][2].get<float>());
+					data[keyName][0].get<float>(),
+					data[keyName][1].get<float>(),
+					data[keyName][2].get<float>());
 			}
 			else
 			{
-				item.offset = data["Offset"].get<float>();
+				item.offset = data[keyName].get<float>();
 			}
 		}
 
-		if (data.contains("Price"))
-			item.price = data["Price"].get<int>();
+		keyName = "Muzzle";
+		if (data.contains(keyName))
+		{
+			if (data[keyName].is_array() && data[keyName].size() == 3)
+			{
+				item.muzzle = Vector3(
+					data[keyName][0].get<float>(),
+					data[keyName][1].get<float>(),
+					data[keyName][2].get<float>());
+			}
+			else
+			{
+				item.muzzle = data[keyName].get<float>();
+			}
+		}
 
-		if (data.contains("Movement"))
-			item.movement = data["Movement"].get<float>();
+		keyName = "Price";
+		if (data.contains(keyName))
+			item.price = data[keyName].get<int>();
 
-		if (data.contains("Firemode"))
-			item.firemode = data["Firemode"].get<std::vector<int>>();
+		keyName = "Movement";
+		if (data.contains(keyName))
+			item.movement = data[keyName].get<float>();
 
-		if (data.contains("Chambering"))
-			item.chambering = data["Chambering"].get<int>();
+		keyName = "FireMode";
+		if (data.contains(keyName))
+			item.fireMode = data[keyName].get<std::vector<int>>();
 
-		if (data.contains("Damage"))
-			item.damage = data["Damage"].get<float>();
+		keyName = "Chambering";
+		if (data.contains(keyName))
+			item.chambering = data[keyName].get<int>();
 
-		if (data.contains("Penetration"))
-			item.penetration = data["Penetration"].get<int>();
+		keyName = "Damage";
+		if (data.contains(keyName))
+			item.damage = data[keyName].get<float>();
 
-		if (data.contains("Shots"))
-			item.shots = data["Shots"].get<int>();
+		keyName = "Penetration";
+		if (data.contains(keyName))
+			item.penetration = data[keyName].get<int>();
 
-		if (data.contains("Clipsize"))
-			item.clipsize = data["Clipsize"].get<int>();
+		keyName = "Shots";
+		if (data.contains(keyName))
+			item.shots = data[keyName].get<int>();
 
-		if (data.contains("Reserve"))
-			item.reserve = item.clipsize * data["Reserve"].get<int>();
+		keyName = "ClipSize";
+		if (data.contains(keyName))
+			item.clipSize = data[keyName].get<int>();
 
-		if (data.contains("Dispersion"))
-			item.dispersion = data["Dispersion"].get<float>();
+		keyName = "ReserveClip";
+		if (data.contains(keyName))
+			item.reserve = item.clipSize * data[keyName].get<int>();
 
+		keyName = "DispersionRad";
+		if (data.contains(keyName))
+			item.dispersionRad = data[keyName].get<float>();
 
-		if (data.contains("RPM"))
+		keyName = "RPM";
+		if (data.contains(keyName))
 		{
 			item.fireRate.clear();
 
-			if (data["RPM"].is_array() && data["RPM"].size() <= 2)
+			if (data[keyName].is_array() && data[keyName].size() <= 2)
 			{
-				for (auto& rpm : data["RPM"])
+				for (auto& rpm : data[keyName])
 				{
 					item.fireRate.emplace_back(60.0f / rpm.get<float>());
 				}
 			}
 			else
 			{
-				item.fireRate.emplace_back(60.0f / data["RPM"].get<float>());
+				item.fireRate.emplace_back(60.0f / data[keyName].get<float>());
 			}
 		}
 
-		if (data.contains("Velocity"))
-			item.velocity = data["Velocity"].get<float>();
+		keyName = "Velocity";
+		if (data.contains(keyName))
+			item.velocity = data[keyName].get<float>();
 
-		if (data.contains("Reload"))
-			item.reload = data["Reload"].get<float>();
+		keyName = "ReloadTime";
+		if (data.contains(keyName))
+			item.reloadTime = data[keyName].get<float>();
 
-		if (data.contains("Recoilkick"))
+		keyName = "RecoilKick";
+		if (data.contains(keyName))
 		{
-			if (data["Recoilkick"].is_array() && data["Recoilkick"].size() == 3)
+			if (data[keyName].is_array() && data[keyName].size() == 3)
 			{
 				item.recoilKick = Vector3(
-					data["Recoilkick"][0].get<float>(),
-					data["Recoilkick"][1].get<float>(),
-					data["Recoilkick"][2].get<float>());
+					data[keyName][0].get<float>(),
+					data[keyName][1].get<float>(),
+					data[keyName][2].get<float>());
 			}
 		}
 
-		if (data.contains("Recoilshake"))
+		keyName = "RecoilShake";
+		if (data.contains(keyName))
 		{
-			if (data["Recoilshake"].is_array() && data["Recoilshake"].size() == 3)
+			if (data[keyName].is_array() && data[keyName].size() == 3)
 			{
 				item.recoilShake = Vector3(
-					data["Recoilshake"][0].get<float>(),
-					data["Recoilshake"][1].get<float>(),
-					data["Recoilshake"][2].get<float>());
+					data[keyName][0].get<float>(),
+					data[keyName][1].get<float>(),
+					data[keyName][2].get<float>());
 			}
 		}
 

@@ -78,8 +78,8 @@ void Camera::BeforeDraw()
 	ShakeScreen(finalPos, finalTarget);
 
 	// 反動を考慮して上ベクトルを曲げる四元数
-	auto nowAngles = _AngleClamp(angles_ + kick_);
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
+	auto nowAngles = _AngleClamp(angles_ + recoil_);
+	Quaternion qRot = AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	// カメラの設定(位置と注視点による制御)
 	SetCameraPositionAndTargetAndUpVec(
@@ -244,8 +244,8 @@ void Camera::UpdateFollowTP()
 		return;
 	}
 
-	auto nowAngles = _AngleClamp(angles_ + kick_);
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
+	auto nowAngles = _AngleClamp(angles_ + recoil_);
+	Quaternion qRot = AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	auto fPos = followTarget_->position;
 
@@ -263,8 +263,8 @@ void Camera::UpdateFollowFP()
 		return;
 	}
 
-	auto nowAngles = _AngleClamp(angles_ + kick_);
-	Quaternion qRot = AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
+	auto nowAngles = _AngleClamp(angles_ + recoil_);
+	Quaternion qRot = AngleAxis(Vector3(0, 0, 1), nowAngles.z) * AngleAxis(Vector3(1, 0, 0), nowAngles.x) * AngleAxis(Vector3(0, 1, 0), nowAngles.y);
 
 	auto fPos = followTarget_->position;
 	auto fNeckPos = VECToVec3(MV1GetFramePosition(followTarget_->modelId, 5));
@@ -302,9 +302,9 @@ void Camera::UpdateAngles()
 	angles_.x = MathUtil::Clamp(angles_.x, UP_ANGLE_LIMIT, DOWN_ANGLE_LIMIT);
 	angles_.y = MathUtil::RadIn2PI(angles_.y);
 
-	kick_ += Lerp(Vector3(), -kick_, 4.0f * dt);
+	recoil_ += Lerp(Vector3(), -recoil_, 4.0f * dt);
 	auto kickDiff = Lerp(Vector3(), kickPower_, 20.0f * dt);
-	kick_ += kickDiff;
+	recoil_ += kickDiff;
 	kickPower_ -= kickDiff;
 }
 

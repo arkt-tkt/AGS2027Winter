@@ -52,14 +52,14 @@ public:
 	const Vector3& GetPosition() const { return pos_; }
 	const Vector3& GetTargetPosition() const { return targetPos_; }
 	const Vector3& GetAngles() const { return angles_; }
-	const Vector3 GetVisualAngles() const { return _AngleClamp(angles_ + kick_); }
+	const Vector3 GetVisualAngles() const { return _AngleClamp(angles_ + recoil_); }
 	const MODE& GetCameraMode() const { return mode_; }
 
 	void StartShake(float intensity, float duration);
 
 private:
 	static constexpr float CAMERA_NEAR_RANGE = 1.0f;
-	static constexpr float CAMERA_FAR_RANGE = 3000.0f;
+	static constexpr float CAMERA_FAR_RANGE = 2000.0f;
 
 	static constexpr float FOG_START_RANGE = 1333.0f;
 	static constexpr float FOG_END_RANGE = 2000.0f;
@@ -99,7 +99,7 @@ private:
 	Vector3 prevAngles_; // ƒ‰ƒWƒAƒ““x
 
 	Vector3 kickPower_;
-	Vector3 kick_;
+	Vector3 recoil_;
 
 	float shakeTimer_ = 0.0f;
 	float shakeDuration_ = 0.0f;

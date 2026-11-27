@@ -51,6 +51,8 @@ void Player::InitParam()
 	isAlive_ = true;
 	
 	invincible_ = 3.0f;
+
+	hp_ = baseStats_.hp;
 }
 
 void Player::InitModel()
@@ -105,6 +107,8 @@ void Player::InitAnim()
 		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_DASH_FRONT, 0, 30.0f,
 		AnimationController::FULL_BODY);
+	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_JUMP, 0, 30.0f,
+		AnimationController::FULL_BODY);
 	animation_->AddFromOther(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, 30.0f,
 		AnimationController::UPPER_BODY);
 
@@ -125,7 +129,7 @@ void Player::Move()
 	// –ˆ•b1HP‰ñ•œ
 	if (!damageTimer_)
 	{
-		hp_ = std::clamp(hp_ + dt, 0.0f, maxHp_);
+		hp_ = std::clamp(hp_ + dt, 0.0f, baseStats_.hp);
 	}
 
 	// •Ê–¼
@@ -175,8 +179,8 @@ void Player::Move()
 		Vector2(toTarget.x, toTarget.z).Normalized());
 	const auto DIR_MOVE_MULT = 1.0f - 0.1f + DOT * 0.1f;
 
-	const auto SPRINT_MULT = 1.0f + sprintRate_ * (sprintMult_ - 1.0f);
-	auto maxSpd_ = maxSpeed_ * SPRINT_MULT * dt * inv_->GetData().movement;
+	const auto SPRINT_MULT = 1.0f + sprintRate_ * (baseStats_.sprint - 1.0f);
+	auto maxSpd_ = baseStats_.movement * SPRINT_MULT * dt * inv_->GetData().movement;
 
 	maxSpd_ *= (godMode_ ? 1.75f : 1.0f);
 
@@ -188,14 +192,14 @@ void Player::Move()
 	{
 		// ˆÚ“®•ûŒü‚ðƒJƒƒ‰‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]
 		Quaternion quaMat = AngleAxis(Vector3(0, 1, 0), CAMERA.GetAngles().y);
-		moveSpeed = (quaMat * moveDir_).Normalized() * len * accel_ * dt;
+		moveSpeed = (quaMat * moveDir_).Normalized() * len * baseStats_.accel * dt;
 
 		// ˆÚ“®•ûŒü‚Æ‘¬“x‚Ì“àÏ‚ðŒvŽZ‚µ‚ÄAŒ¸‘¬—¦‚ð’²®
 		dotRate = (Dot(moveSpeed.XZ(), velocity_.XZ()) + 1.0f) * 0.5f;
 	}
 
 	// ŠÉ‚â‚©‚ÉŒ¸‘¬A‘½­ŠŠ‚é
-	float decaySpeed = MathUtil::Lerp(std::exp(-deccel_ * dt), 1.0f, dotRate);
+	float decaySpeed = MathUtil::Lerp(std::exp(-baseStats_.deccel * dt), 1.0f, dotRate);
 	velocity_.x *= decaySpeed;
 	velocity_.z *= decaySpeed;
 
@@ -238,7 +242,7 @@ void Player::AnimationSwitch()
 
 	if (inv_->GetReloadProg())
 	{
-		float animLen = inv_->GetData().reload;
+		float animLen = inv_->GetData().reloadTime;
 		animation_->PlayInSeconds(ResourceManager::SRC::ANIME_PL_RF_RELOAD, 0, animLen);
 	}
 
@@ -254,19 +258,35 @@ void Player::AnimationSwitch()
 		Vector3(1, 0, -1)
 	};
 
-	for (auto i = 0; i <= 7; ++i)
+	if (isLanding_)
 	{
+		animation_->Stop(ResourceManager::SRC::ANIME_PL_RF_JUMP, 0);
+
 		auto src = int(ResourceManager::SRC::ANIME_PL_RF_WALK_F);
 
-		const float DOT_RATE = 0.75f;
-		float dot = (Dot(moveDir_, dirs[i].Normalized()) - DOT_RATE) / (1.0f - DOT_RATE);
-
-		if (dot > 0.0f)
+		for (auto i = 0; i <= 7; ++i)
 		{
-			animation_->Play(ResourceManager::SRC(src + i), 0,
-				true, dot, dot);
+			const float DOT_RATE = 0.75f;
+			float dot = (Dot(moveDir_, dirs[i].Normalized()) - DOT_RATE) / (1.0f - DOT_RATE);
+
+			if (dot > 0.0f)
+			{
+				animation_->Play(ResourceManager::SRC(src + i), 0,
+					true, dot, dot);
+			}
+			else
+			{
+				animation_->Stop(ResourceManager::SRC(src + i), 0);
+			}
 		}
-		else
+	}
+	else
+	{
+		animation_->Play(ResourceManager::SRC::ANIME_PL_RF_JUMP, 0, false, 1.0f, 1.0f, false);
+
+		auto src = int(ResourceManager::SRC::ANIME_PL_RF_WALK_F);
+
+		for (auto i = 0; i <= 7; ++i)
 		{
 			animation_->Stop(ResourceManager::SRC(src + i), 0);
 		}
@@ -312,12 +332,6 @@ void Player::TurnVisual()
 		MV1ResetFrameUserLocalMatrix(transform_.modelId, idx);
 		mat = MV1GetFrameLocalMatrix(transform_.modelId, idx);
 		MV1SetFrameUserLocalMatrix(transform_.modelId, idx, MMult(mat, Mat4x4ToMAT(qRot.ToMatrix())));
-
-		//auto qua = GetRotation(MATToMat4x4(mat));
-		//qua *= qRot;
-		//mat = Mat4x4ToMAT(qua.ToMatrix());
-
-		//MV1SetFrameUserLocalMatrix(transform_.modelId, idx, mat);
 	}
 
 	transform_.Update();

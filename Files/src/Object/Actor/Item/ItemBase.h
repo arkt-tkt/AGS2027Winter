@@ -15,27 +15,28 @@ public:
 
 	struct ItemData
 	{
-		std::string name = "";
-		std::string description = "";
+		std::string name = "_NAME_";
+		std::string description = "_DESC_";
 
-		int model = 100;
+		int model = 0;
 		Vector3 scale = { 1.0f, 1.0f, 1.0f };
 		Vector3 offset = { 0.0f, 0.0f, 0.0f };
+		Vector3 muzzle = { 0.0f, 0.0f, 0.0f };
 
 		int price = 200;
 		float movement = 1.0f;
 
-		std::vector<int> firemode = { 1 };
+		std::vector<int> fireMode = { 1 };
 		int chambering = 0;
 		float damage = 30;
 		int penetration = 0;
 		int shots = 1;
-		int clipsize = 40;
+		int clipSize = 40;
 		int reserve = 200;
-		float dispersion = 0.01f;
+		float dispersionRad = 0.01f;
 		std::vector<float> fireRate = { 60.0f / 800.0f };
 		float velocity = 4000.0f;
-		float reload = 2.0f;
+		float reloadTime = 2.0f;
 		Vector3 recoilKick = { 0.0f, 0.0f, 0.0f };
 		Vector3 recoilShake = { 0.0f, 0.0f, 0.0f };
 	};
@@ -63,6 +64,7 @@ public:
 
 protected:
 	static constexpr const char* FIREMODE_LABEL_AUTO = "AUTO";
+	static constexpr const char* FIREMODE_LABEL_AUTO_ALT = "ADVERSE";
 	static constexpr const char* FIREMODE_LABEL_BURST = " BR";
 	static constexpr const char* FIREMODE_LABEL_SEMI = "SEMI";
 	static constexpr Position3 HAND_OFFSET = { 3.5f, 22.5f, -12.0f };
@@ -78,6 +80,7 @@ protected:
 	float shotTimer_ = 0.0f;
 	float reloadProg_ = 0.0f;
 
+	bool muzzleLock_ = false;
 	unsigned int firemode_ = 0u;
 	std::string firemodeLabel_ = "";
 	int fireCountTarget_ = -1;
@@ -87,10 +90,14 @@ protected:
 	void InitModel() override;
 	void InitAnim() override {}
 
+	void Collision() override;
+
 	void TurnVisual() override;
 
 	void _SetFiremodeLabel();
 
 	float _FireRate();
+
+	Vector3 GetEuler(const Matrix4x4& m);
 
 };
